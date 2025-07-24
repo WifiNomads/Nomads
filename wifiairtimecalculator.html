@@ -41,7 +41,7 @@
     <div class="container mt-5">
         <div class="card p-4">
             <a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer">
-                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiA-xsHIXATnNwKK4pqoWKc4fiMHjJj62UNf4DpuPp9WP_IKbqdlQckYSg17JhQIodZt7Wyy6qkWRniQfQIB57CHO1El5K67xQ4G6G1XTQprrqw_Zr3rZbflhVJ0uehVupFzQyLqeFydLKap6K7f4e2r6Pzp2uXehGBOvNFULR7q_o0t5l4hR4dgXXbaZI/w1684-h1069-p-k-no-nu/Wi-Fi%20Nomads%20Logo.png" alt="Wi-Fi Nomads Logo" class="logo">
+                <img src="Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="logo">
             </a>
             <h1 class="text-center mb-4">WiFi Airtime Calculator</h1>
             
@@ -81,7 +81,16 @@
                 <input type="number" id="cw" class="form-control" value="8" min="0" step="0.5" title="Average number of backoff slots before transmission. Lower values = less delay but higher collision probability. Range depends on Access Category (VO: 1.5-3.5, VI: 3.5-7.5, BE/BK: 7.5-511.5)">
                 
                 <label class="form-label">Spatial Streams:</label>
-                <input type="number" id="ss" class="form-control" value="1" min="1" max="8" title="Number of MIMO spatial streams (1-8). More streams = higher data rate. Typical values: 1x1, 2x2, 4x4, 8x8 antenna configurations">
+                <select type="number" id="ss" class="form-select" onchange="" value="1" min="1" max="8" title="Number of MIMO spatial streams (1-8). More streams = higher data rate. Typical values: 1x1, 2x2, 4x4, 8x8 antenna configurations">
+                    <option value="1" selected>1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="2">6</option>
+                    <option value="3">7</option>
+                    <option value="4">8</option>
+                </select>
                 
                 <label class="form-label">Guard Interval (us):</label>
                 <input type="number" id="gi" class="form-control" value="0.4" step="0.4" min="0.4" max="0.8" title="Guard interval between OFDM symbols to prevent interference. Legacy: 0.8μs, HT/VHT: 0.4μs or 0.8μs, HE: 0.8μs, 1.6μs, or 3.2μs. Shorter GI = higher efficiency">
@@ -156,37 +165,37 @@
             {text: '54 Mbps (64-QAM 3/4)', bits:6, coding:0.75}
         ];
 
-        // IEEE 802.11ax OFDMA Resource Units (corrected)
+        // Corrected OFDMA Resource Units per IEEE 802.11ax
         const ofdma_map = {
             20: {
-                1: {data_sub:234, bits_sigb:20},  // Corrected HE-SIG-B bits
-                2: {data_sub:117, bits_sigb:40},  // Corrected subcarriers per RU
-                4: {data_sub:52, bits_sigb:80},
-                9: {data_sub:26, bits_sigb:180}
+                1: {data_sub:242, ru_type:'RU242'},
+                2: {data_sub:106, ru_type:'RU106'},
+                4: {data_sub:52, ru_type:'RU52'},
+                9: {data_sub:26, ru_type:'RU26'}
             },
             40: {
-                1: {data_sub:468, bits_sigb:20},
-                2: {data_sub:234, bits_sigb:40},
-                4: {data_sub:117, bits_sigb:80},
-                8: {data_sub:52, bits_sigb:160},
-                18: {data_sub:26, bits_sigb:360}
+                1: {data_sub:484, ru_type:'RU484'},
+                2: {data_sub:242, ru_type:'RU242'},
+                4: {data_sub:106, ru_type:'RU106'},
+                8: {data_sub:52, ru_type:'RU52'},
+                18: {data_sub:26, ru_type:'RU26'}
             },
             80: {
-                1: {data_sub:980, bits_sigb:20},
-                2: {data_sub:490, bits_sigb:40},
-                4: {data_sub:245, bits_sigb:80},
-                8: {data_sub:117, bits_sigb:160},
-                16: {data_sub:52, bits_sigb:320},
-                37: {data_sub:26, bits_sigb:740}
+                1: {data_sub:980, ru_type:'RU980'},
+                2: {data_sub:484, ru_type:'RU484'},
+                4: {data_sub:242, ru_type:'RU242'},
+                8: {data_sub:106, ru_type:'RU106'},
+                16: {data_sub:52, ru_type:'RU52'},
+                37: {data_sub:26, ru_type:'RU26'}
             },
             160: {
-                1: {data_sub:1960, bits_sigb:20},
-                2: {data_sub:980, bits_sigb:40},
-                4: {data_sub:490, bits_sigb:80},
-                8: {data_sub:245, bits_sigb:160},
-                16: {data_sub:117, bits_sigb:320},
-                32: {data_sub:52, bits_sigb:640},
-                74: {data_sub:26, bits_sigb:1480}
+                1: {data_sub:1960, ru_type:'RU1960'},
+                2: {data_sub:980, ru_type:'RU980'},
+                4: {data_sub:484, ru_type:'RU484'},
+                8: {data_sub:242, ru_type:'RU242'},
+                16: {data_sub:106, ru_type:'RU106'},
+                32: {data_sub:52, ru_type:'RU52'},
+                74: {data_sub:26, ru_type:'RU26'}
             }
         };
 
@@ -222,7 +231,7 @@
             options.forEach(u => {
                 const option = document.createElement('option');
                 option.value = u;
-                option.text = u;
+                option.text = `${u} (${ofdma_map[bandwidth][u].ru_type})`;
                 users.appendChild(option);
             });
             users.value = options[1] || 1;
@@ -233,11 +242,11 @@
             const cw = document.getElementById('cw');
             let minAvg, maxAvg, defaultVal;
             if (ac === 'VO') {
-                minAvg = 1.5; maxAvg = 3.5; defaultVal = 2.5;
+                minAvg = 1; maxAvg = 3; defaultVal = 2;
             } else if (ac === 'VI') {
-                minAvg = 3.5; maxAvg = 7.5; defaultVal = 5.5;
+                minAvg = 3; maxAvg = 7; defaultVal = 5;
             } else if (ac === 'BE' || ac === 'BK' || ac === 'DIFS') {
-                minAvg = 7.5; maxAvg = 511.5; defaultVal = 15.5;
+                minAvg = 7; maxAvg = 511; defaultVal = 15;
             }
             cw.min = minAvg;
             cw.max = maxAvg;
@@ -262,7 +271,7 @@
                 usersLabel.style.display = 'block';
                 users.style.display = 'block';
                 updateUsersOptions();
-                gi.value = 1.6;
+                gi.value = 0.8;
                 gi.min = 0.8;
                 gi.max = 3.2;
                 gi.step = 0.8;
@@ -339,16 +348,19 @@
 
             updateCWRange();
             
-            // CORRECTED: MCS availability per scenario
+            // MCS availability per scenario and bandwidth
             let maxMcs;
-            if (scenario === '2') {
-                maxMcs = 9; // HT/VHT: No 1024-QAM
-            } else {
-                maxMcs = 11; // HE: Includes 1024-QAM
+            if (scenario === '1') {
+                updateLegacyOptions(0);
+            } else if (scenario === '2') {
+                // HT/VHT: VHT supports MCS 0-9, HT only 0-7
+                const bw = parseInt(bandwidth.value);
+                maxMcs = (bw >= 80) ? 9 : 7; // VHT for 80/160MHz, HT for 20/40MHz
+            } else if (scenario === '3' || scenario === '4') {
+                maxMcs = 11; // HE supports MCS 0-11
             }
             let defaultMcs = Math.min(7, maxMcs);
             if (scenario !== '1') updateMCSOptions(maxMcs, defaultMcs);
-            if (scenario === '1') updateLegacyOptions(0);
             if (scenario === '4') updateUsersOptions();
         }
 
@@ -372,7 +384,6 @@
             return params[mcs];
         }
 
-        // CORRECTED: Control frame rate selection based on user input
         function getControlRate(selectedRate) {
             const controlRateMap = {
                 6: {bits: 1, coding: 0.5},     // BPSK 1/2
@@ -386,7 +397,7 @@
             };
             
             const params = controlRateMap[selectedRate];
-            const bits_per_symbol = 52 * params.bits * params.coding; // 52 subcarriers for 20MHz
+            const bits_per_symbol = 48 * params.bits * params.coding; // 48 subcarriers for legacy
             const symbol_time = 4; // Legacy OFDM symbol time
             
             return {bits_per_symbol: bits_per_symbol, symbol_time: symbol_time};
@@ -432,88 +443,124 @@
             const lp = 20; // L-STF(8) + L-LTF(8) + L-SIG(4)
             const legacy_symbol = 4;
             
-            // CORRECTED: Control frame calculations using user-selected rate
+            // Control frame calculations
             const controlRate = getControlRate(controlFrameRate);
 
             let aifs = sifs + aifsn * slot;
             let backoff = cw * slot;
 
-            // Control frames with corrected rates
-            const rts_length = 20;
-            let databits_rts = rts_length * 8 + 16 + 6; // SERVICE + DATA + TAIL
-            let symbols_rts = Math.ceil(databits_rts / controlRate.bits_per_symbol);
-            let duration_rts = symbols_rts * controlRate.symbol_time;
+            const b_ack_length = 32; // CORRECTED: Block ACK frame is 32 bytes per IEEE 802.11
+            let databits_b_ack = b_ack_length * 8 + 16 + 6; // SERVICE(16) + DATA + TAIL(6)
 
-            const cts_length = 14;
-            let databits_cts = cts_length * 8 + 16 + 6;
-            let symbols_cts = Math.ceil(databits_cts / controlRate.bits_per_symbol);
-            let duration_cts = symbols_cts * controlRate.symbol_time;
-
-            const b_ack_length = 34;
-            let databits_b_ack = b_ack_length * 8 + 16 + 6;
-
-            // CORRECTED: Preamble calculations
+            // Preamble calculations
             let preamble_duration;
             if (scenario === '1') {
                 preamble_duration = lp; // Legacy only
             } else if (scenario === '2') {
-                // CORRECTED: HT/VHT preamble = Legacy + HT-SIG/VHT-SIG-A + HT-STF + HT-LTF
-                const ht_sig = 8; // HT-SIG: 8μs or VHT-SIG-A: 8μs
-                const ht_stf = 4; // HT-STF: 4μs
-                const ht_ltf = 4 * ss; // HT-LTF: 4μs per spatial stream
+                // HT/VHT preamble
+                const ht_sig = 8; // HT-SIG or VHT-SIG-A
+                const ht_stf = 4; // HT-STF
+                const ht_ltf = 4 * ss; // HT-LTF per spatial stream
                 preamble_duration = lp + ht_sig + ht_stf + ht_ltf;
             } else {
-                // CORRECTED: HE preamble calculation
-                const rl_sig = 4; // RL-SIG: 4μs
-                const he_sig_a = 8; // HE-SIG-A: 8μs
+                // HE preamble calculation
+                const rl_sig = 4; // RL-SIG
+                const he_sig_a = 8; // HE-SIG-A (2 symbols)
                 let he_sig_b = 0;
-                let he_stf = 4; // HE-STF: 4μs  
-                let he_ltf = 6.4 * ss; // HE-LTF: 6.4μs per spatial stream
+                let he_stf = 4; // HE-STF
+                let he_ltf = 6.4 * ss; // HE-LTF per spatial stream
                 
                 if (scenario === '4') {
-                    const params = ofdma_map[bandwidth][users];
-                    const sigb_bits_per_symbol = 26; // MCS0 for HE-SIG-B
-                    let symbols_sigb = Math.ceil(params.bits_sigb / sigb_bits_per_symbol);
-                    he_sig_b = symbols_sigb * 4; // Each HE-SIG-B symbol is 4μs
+                    // HE-SIG-B calculation for OFDMA
+                    const common_bits = 8 * (bandwidth / 20);
+                    const user_bits = 24 * users;
+                    const total_bits = common_bits + user_bits;
+                    const sigb_subcarriers = {20: 242, 40: 484, 80: 980, 160: 1960}[bandwidth];
+                    const bits_per_symbol = sigb_subcarriers * 1 * 0.5; // MCS0 for HE-SIG-B
+                    const symbols_sigb = Math.ceil(total_bits / bits_per_symbol);
+                    he_sig_b = symbols_sigb * (12.8 + gi);
                 }
                 
                 preamble_duration = lp + rl_sig + he_sig_a + he_sig_b + he_stf + he_ltf;
             }
 
+            // Control frames
+            let duration_rts, duration_cts, rts_preamble_duration, cts_preamble_duration;
+            
+            if (scenario === '4' && users > 1) {
+                // MU-RTS for OFDMA
+                const mu_rts_length = 20 + (4 * users); // CORRECTED frame length
+                let databits_mu_rts = mu_rts_length * 8 + 16 + 6;
+                const mu_rts_subcarriers = {20: 242, 40: 484, 80: 980, 160: 1960}[bandwidth];
+                let control_bits_per_symbol_he = mu_rts_subcarriers * 1 * 0.5; // MCS0
+                let symbols_mu_rts = Math.ceil(databits_mu_rts / control_bits_per_symbol_he);
+                duration_rts = symbols_mu_rts * (12.8 + gi);
+                rts_preamble_duration = preamble_duration;
+                
+                const cts_length = 14;
+                let databits_cts = cts_length * 8 + 16 + 6;
+                let symbols_cts = Math.ceil(databits_cts / control_bits_per_symbol_he);
+                duration_cts = symbols_cts * (12.8 + gi);
+                cts_preamble_duration = preamble_duration;
+            } else {
+                // Legacy RTS/CTS
+                const rts_length = 20;
+                let databits_rts = rts_length * 8 + 16 + 6;
+                let symbols_rts = Math.ceil(databits_rts / controlRate.bits_per_symbol);
+                duration_rts = symbols_rts * controlRate.symbol_time;
+                rts_preamble_duration = lp;
+                
+                const cts_length = 14;
+                let databits_cts = cts_length * 8 + 16 + 6;
+                let symbols_cts = Math.ceil(databits_cts / controlRate.bits_per_symbol);
+                duration_cts = symbols_cts * controlRate.symbol_time;
+                cts_preamble_duration = lp;
+            }
+
             // Data transmission calculation
             let data_sub, symbol_time, data_bits_per_symbol, databits_data, symbols_data, duration_data;
 
-            const subcarriers_non_he = {20: 52, 40: 108, 80: 234, 160: 468};
-            const subcarriers_he = {20: 234, 40: 468, 80: 980, 160: 1960};
+            // Subcarrier counts per standard
+            const subcarriers_legacy = {20: 48, 40: 0, 80: 0, 160: 0};
+            const subcarriers_ht_vht = {20: 52, 40: 108, 80: 234, 160: 468};
+            const subcarriers_he = {20: 242, 40: 484, 80: 980, 160: 1960};
 
-            if (scenario === '1' || scenario === '2') {
-                data_sub = subcarriers_non_he[bandwidth];
-                symbol_time = 3.2 + gi;
+            if (scenario === '1') {
+                data_sub = subcarriers_legacy[bandwidth];
+                symbol_time = 4; // Legacy symbol time
+            } else if (scenario === '2') {
+                data_sub = subcarriers_ht_vht[bandwidth];
+                symbol_time = 3.2 + gi; // HT/VHT symbol time
             } else {
                 if (scenario === '4') {
-                    const params = ofdma_map[bandwidth][users];
-                    data_sub = params.data_sub;
+                    data_sub = ofdma_map[bandwidth][users].data_sub;
                 } else {
                     data_sub = subcarriers_he[bandwidth];
                 }
-                symbol_time = 12.8 + gi;
+                symbol_time = 12.8 + gi; // HE symbol time
             }
 
-            data_bits_per_symbol = data_sub * bits_pr_sub * coding * ss;
+            // Data bits per symbol calculation
+            if (scenario === '1') {
+                data_bits_per_symbol = data_sub * bits_pr_sub * coding; // Legacy: no spatial streams
+            } else {
+                data_bits_per_symbol = data_sub * bits_pr_sub * coding * ss;
+            }
             
-            // CORRECTED: Service field and tail bits
             databits_data = 16 + ampdu * 8 + 6; // SERVICE(16) + DATA + TAIL(6)
-            
             symbols_data = Math.ceil(databits_data / data_bits_per_symbol);
             duration_data = symbols_data * symbol_time;
 
             // ACK calculation
             let symbols_b_ack, duration_b_ack;
-            if (scenario === '4' && users > 1) {
-                let control_bits_per_symbol_he = data_sub * 1 * 0.5; // MCS0 in RU
+            if (scenario === '3' || scenario === '4') {
+                // HE Block ACK
+                const ack_subcarriers = subcarriers_he[bandwidth];
+                let control_bits_per_symbol_he = ack_subcarriers * 1 * 0.5; // MCS0
                 symbols_b_ack = Math.ceil(databits_b_ack / control_bits_per_symbol_he);
                 duration_b_ack = symbols_b_ack * (12.8 + gi);
             } else {
+                // Legacy ACK
                 symbols_b_ack = Math.ceil(databits_b_ack / controlRate.bits_per_symbol);
                 duration_b_ack = symbols_b_ack * controlRate.symbol_time;
             }
@@ -535,12 +582,20 @@
 
             // Protection
             if (protection) {
-                barLabels.push('RTS Preamble');
-                barData.push(lp);
-                total_inc += lp;
-                total_exc += lp;
+                if (scenario === '4' && users > 1) {
+                    barLabels.push('MU-RTS Preamble');
+                    barLabels.push('MU-RTS');
+                    barLabels.push('CTS Preamble (HE)');
+                } else {
+                    barLabels.push('RTS Preamble');
+                    barLabels.push('RTS');
+                    barLabels.push('CTS Preamble');
+                }
+                
+                barData.push(rts_preamble_duration);
+                total_inc += rts_preamble_duration;
+                total_exc += rts_preamble_duration;
 
-                barLabels.push('RTS');
                 barData.push(duration_rts);
                 total_inc += duration_rts;
                 total_exc += duration_rts;
@@ -550,10 +605,9 @@
                 total_inc += sifs;
                 total_exc += sifs;
 
-                barLabels.push('CTS Preamble');
-                barData.push(lp);
-                total_inc += lp;
-                total_exc += lp;
+                barData.push(cts_preamble_duration);
+                total_inc += cts_preamble_duration;
+                total_exc += cts_preamble_duration;
 
                 barLabels.push('CTS');
                 barData.push(duration_cts);
@@ -582,10 +636,18 @@
             total_inc += sifs;
             total_exc += sifs;
 
+            // ACK
+            let ack_preamble_duration;
+            if (scenario === '3' || scenario === '4') {
+                ack_preamble_duration = preamble_duration;
+            } else {
+                ack_preamble_duration = lp;
+            }
+            
             barLabels.push('ACK Preamble');
-            barData.push(lp);
-            total_inc += lp;
-            total_exc += lp;
+            barData.push(ack_preamble_duration);
+            total_inc += ack_preamble_duration;
+            total_exc += ack_preamble_duration;
 
             barLabels.push('ACK/B-ACK');
             barData.push(duration_b_ack);

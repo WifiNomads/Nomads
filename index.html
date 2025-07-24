@@ -6,6 +6,7 @@
     <title>Wi-Fi Nomads - Professional Wi-Fi Knowledge Community</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Fallback styles for Tools section */
         .tools { padding: 80px 0; background: #f1f5f9; }
@@ -68,19 +69,147 @@
         <div class="container">
             <h2 class="section-title">Tools</h2>
             <div class="tools-grid">
-                <div class="tool-card" onclick="window.location.href='wifiairtimecalculator.html'">
+                <div class="tool-card" onclick="openCalculator()">
                     <div class="tool-icon">📊</div>
                     <h3>Wi-Fi Airtime Calculator</h3>
                     <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
                     <div class="tool-features">
                         <span class="feature-tag">802.11ax</span>
                         <span class="feature-tag">OFDMA</span>
-                        <span class="feature-tag">MU-MIMO</span>
+                        <span class="feature-tag">HT/VHT/HE</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Wi-Fi Airtime Calculator Modal -->
+    <div id="calculatorModal" class="calculator-modal">
+        <div class="calculator-modal-content">
+            <div class="calculator-header">
+                <h2>Wi-Fi Airtime Calculator</h2>
+                <button class="close-btn" onclick="closeCalculator()">&times;</button>
+            </div>
+            <div class="calculator-body">
+                <div class="calculator-form">
+                    <div class="form-group">
+                        <label for="scenario" class="form-label">Scenario:</label>
+                        <select id="scenario" class="form-select" onchange="updateForm()" title="Select WiFi PHY mode: Legacy OFDM (802.11a/g), HT/VHT (802.11n/ac), HE SU (802.11ax), or HE MU-OFDMA (802.11ax multi-user)">
+                            <option value="1">Scenario 1: OFDM (non-HT)</option>
+                            <option value="2">Scenario 2: HT or VHT</option>
+                            <option value="3">Scenario 3: HE (OFDMA disabled)</option>
+                            <option value="4">Scenario 4: DL OFDMA</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="band" class="form-label">Band:</label>
+                        <select id="band" class="form-select" onchange="updateForm()" title="Select frequency band. 2.4 GHz supports up to 40 MHz bandwidth, 5 GHz supports up to 160 MHz bandwidth">
+                            <option value="5">5 GHz</option>
+                            <option value="2.4">2.4 GHz</option>
+                        </select>
+                    </div>
+                    
+                    <div id="inputs" class="calculator-inputs">
+                        <div class="form-group">
+                            <label class="form-label">Channel Bandwidth (MHz):</label>
+                            <select id="bandwidth" class="form-select" onchange="updateUsersOptions()" title="Select channel bandwidth. Higher bandwidth provides more subcarriers and higher data rates. 2.4 GHz supports up to 40 MHz, 5 GHz supports up to 160 MHz">
+                                <option value="20">20</option>
+                                <option value="40">40</option>
+                                <option value="80">80</option>
+                                <option value="160">160</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Access Category:</label>
+                            <select id="ac" class="form-select" onchange="updateCWRange()" title="Select traffic priority category. VO (Voice) has highest priority with shortest wait times, BE (Best Effort) is default for data traffic, BK (Background) has lowest priority">
+                                <option value="DIFS" selected>DIFS (AIFSN=2)</option>
+                                <option value="BK">BK (AIFSN=7)</option>
+                                <option value="BE">BE (AIFSN=3)</option>
+                                <option value="VI">VI (AIFSN=2)</option>
+                                <option value="VO">VO (AIFSN=2)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Contention Window (average slots):</label>
+                            <input type="number" id="cw" class="form-control" value="8" min="0" step="0.5" title="Average number of backoff slots before transmission. Lower values = less delay but higher collision probability. Range depends on Access Category (VO: 1.5-3.5, VI: 3.5-7.5, BE/BK: 7.5-511.5)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Spatial Streams:</label>
+                            <select type="number" id="ss" class="form-select" onchange="" value="1" min="1" max="8" title="Number of MIMO spatial streams (1-8). More streams = higher data rate. Typical values: 1x1, 2x2, 4x4, 8x8 antenna configurations">
+                                <option value="1" selected>1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Guard Interval (us):</label>
+                            <input type="number" id="gi" class="form-control" value="0.4" step="0.4" min="0.4" max="0.8" title="Guard interval between OFDM symbols to prevent interference. Legacy: 0.8μs, HT/VHT: 0.4μs or 0.8μs, HE: 0.8μs, 1.6μs, or 3.2μs. Shorter GI = higher efficiency">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Control Frame Rate:</label>
+                            <select id="controlFrameRate" class="form-select" title="Data rate for RTS/CTS/ACK control frames. Lower rates = more reliable but slower. Higher rates = faster but require better signal conditions. Must be from basic rate set">
+                                <option value="6">6 Mbps (BPSK 1/2)</option>
+                                <option value="9">9 Mbps (BPSK 3/4)</option>
+                                <option value="12">12 Mbps (QPSK 1/2)</option>
+                                <option value="18">18 Mbps (QPSK 3/4)</option>
+                                <option value="24">24 Mbps (16-QAM 1/2)</option>
+                                <option value="36">36 Mbps (16-QAM 3/4)</option>
+                                <option value="48">48 Mbps (64-QAM 2/3)</option>
+                                <option value="54">54 Mbps (64-QAM 3/4)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label id="mcsLabel" class="form-label">MCS:</label>
+                            <select id="mcs" class="form-select" title="Modulation and Coding Scheme defines data rate. Higher MCS = higher data rate but requires better signal quality. MCS 0-7: Standard rates, MCS 8-9: 256-QAM (VHT/HE), MCS 10-11: 1024-QAM (HE only)"></select>
+                        </div>
+                        
+                        <div class="form-group" style="display:none;">
+                            <label id="legacyRateLabel" class="form-label">Legacy Data Rate:</label>
+                            <select id="legacyRate" class="form-select" title="Select data rate for legacy OFDM (802.11a/g). Higher rates require better signal conditions. Common rates: 6 Mbps (most reliable), 24 Mbps (balanced), 54 Mbps (maximum)"></select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">A-MPDU bytes:</label>
+                            <input type="number" id="ampdu" class="form-control" value="1500" min="1" title="Size of Aggregated MAC Protocol Data Unit in bytes. Larger A-MPDU improves efficiency but increases error impact. Typical: 64-65535 bytes. Common values: 1500 (single packet), 4000-8000 (good efficiency)">
+                        </div>
+                        
+                        <div class="form-check">
+                            <input type="checkbox" id="protection" class="form-check-input" checked title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">
+                            <label class="form-check-label" for="protection" title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">RTS/CTS Protection</label>
+                        </div>
+                        
+                        <div class="form-group" style="display:none;">
+                            <label id="usersLabel" class="form-label">Users:</label>
+                            <select id="users" class="form-select" title="Number of users (stations) in MU-OFDMA transmission. More users = better spectrum efficiency but requires coordination overhead. Limited by bandwidth and resource unit allocation"></select>
+                        </div>
+                    </div>
+                    
+                    <button onclick="calculate()" class="btn-calculate">Calculate Airtime</button>
+                    
+                    <div id="output" class="calculation-results"></div>
+                </div>
+                
+                <div class="chart-section">
+                    <h3>Airtime Breakdown</h3>
+                    <div class="chart-container">
+                        <canvas id="barChart" class="airtime-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
