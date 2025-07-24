@@ -6,9 +6,6 @@ Sitemap: https://yourdomainname.com/sitemap.xml
 
 # Allow indexing of main pages
 Allow: /index.html
-Allow: /#home
-Allow: /#tools  
-Allow: /#wifiairtimecalculator
 
 # Disallow any future admin or private directories (if any)
 # Disallow: /admin/
