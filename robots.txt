@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://yourdomainname.com/sitemap.xml
+Sitemap: https://wifinomads.net/sitemap.xml
 
 # Allow indexing of main pages
 Allow: /index.html
