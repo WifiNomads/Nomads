@@ -639,6 +639,18 @@ function calculate() {
         
         // Create new chart with delay to ensure DOM is ready
         setTimeout(() => {
+            // Create gradient for bars
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            gradient.addColorStop(0, '#1e3a8a');
+            gradient.addColorStop(0.5, '#0891b2');
+            gradient.addColorStop(1, '#059669');
+            
+            // Create hover gradient
+            const hoverGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+            hoverGradient.addColorStop(0, '#1e40af');
+            hoverGradient.addColorStop(0.5, '#0e7490');
+            hoverGradient.addColorStop(1, '#047857');
+            
             window.myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -646,9 +658,14 @@ function calculate() {
                     datasets: [{
                         label: 'Duration (μs)',
                         data: barData,
-                        backgroundColor: '#1e3a8a',
+                        backgroundColor: gradient,
                         borderColor: '#1e3a8a',
-                        borderWidth: 1
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        borderSkipped: false,
+                        hoverBackgroundColor: hoverGradient,
+                        hoverBorderColor: '#0891b2',
+                        hoverBorderWidth: 3
                     }]
                 },
                 options: {
@@ -659,29 +676,107 @@ function calculate() {
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            enabled: true,
+                            backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#1e3a8a',
+                            borderWidth: 2,
+                            cornerRadius: 8,
+                            displayColors: false,
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold',
+                                family: 'Inter'
+                            },
+                            bodyFont: {
+                                size: 13,
+                                family: 'Inter'
+                            },
+                            callbacks: {
+                                title: function(context) {
+                                    return context[0].label;
+                                },
+                                label: function(context) {
+                                    return `${context.parsed.x.toFixed(1)} μs`;
+                                },
+                                afterLabel: function(context) {
+                                    const percentage = ((context.parsed.x / barData.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
+                                    return `${percentage}% of total time`;
+                                }
+                            }
                         }
                     },
                     scales: {
                         x: {
                             beginAtZero: true,
                             grid: {
-                                display: true
+                                display: true,
+                                color: 'rgba(226, 232, 240, 0.6)',
+                                lineWidth: 1
                             },
                             ticks: {
-                                maxTicksLimit: 8
+                                maxTicksLimit: 6,
+                                color: '#64748b',
+                                font: {
+                                    size: 11,
+                                    family: 'Inter',
+                                    weight: '500'
+                                },
+                                callback: function(value) {
+                                    return value.toFixed(0) + 'μs';
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Duration (microseconds)',
+                                color: '#475569',
+                                font: {
+                                    size: 12,
+                                    family: 'Inter',
+                                    weight: '600'
+                                }
                             }
                         },
                         y: {
                             grid: {
                                 display: false
+                            },
+                            ticks: {
+                                color: '#475569',
+                                font: {
+                                    size: 11,
+                                    family: 'Inter',
+                                    weight: '500'
+                                },
+                                padding: 8
                             }
                         }
                     },
                     animation: {
-                        duration: 0
+                        duration: 1500,
+                        easing: 'easeOutCubic',
+                        animateRotate: true,
+                        animateScale: true,
+                        onProgress: function(animation) {
+                            // Add shimmer effect during animation
+                            const progress = animation.currentStep / animation.numSteps;
+                            this.canvas.style.filter = `brightness(${1 + (progress * 0.1)})`;
+                        },
+                        onComplete: function() {
+                            // Reset filter after animation
+                            this.canvas.style.filter = 'brightness(1)';
+                        }
                     },
                     interaction: {
-                        intersect: false
+                        intersect: true,
+                        mode: 'nearest'
+                    },
+                    onHover: function(event, elements) {
+                        event.native.target.style.cursor = elements.length > 0 ? 'pointer' : 'default';
                     }
                 }
             });
