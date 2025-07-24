@@ -326,7 +326,7 @@ function updateForm() {
     // MCS availability per scenario and bandwidth
     let maxMcs;
     if (scenario === '1') {
-        updateLegacyOptions(0);
+        updateLegacyOptions(7); // Default to 54 Mbps (highest rate)
     } else if (scenario === '2') {
         // HT/VHT: VHT supports MCS 0-9, HT only 0-7
         const bw = parseInt(bandwidth.value);
