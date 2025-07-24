@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Nomads - Professional Wi-Fi Knowledge Community</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Fallback styles for Tools section */
+        .tools { padding: 80px 0; background: #f1f5f9; }
+        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #0f172a; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
+        .tool-card { background: white; padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.3s ease; }
+        .tool-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+        .tool-icon { width: 64px; height: 64px; background: rgba(30, 58, 138, 0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; }
+        .tool-card:hover .tool-icon { background: linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%); color: white; }
+        .feature-tag { background: rgba(37, 99, 235, 0.1); color: #1e3a8a; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-right: 0.5rem; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
+                <h2>Wi-Fi Nomads</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#tools">Tools</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">⚡ Professional Wi-Fi Community</div>
+                <h1 class="hero-title">Share, Learn, and <span class="highlight">Innovate Together!</span></h1>
+                <p class="hero-subtitle">A professional community focused on the exchange of Wi-Fi Networking knowledge. Connect with Wi-Fi experts, access exclusive insights, and stay updated with the latest industry trends.</p>
+            </div>
+            <div class="logo-showcase">
+                <div class="logo-container">
+                    <img src="wifi.jpg" alt="Wi-Fi Nomads 3D Logo" class="hero-logo" />
+                    <div class="logo-glow"></div>
+                    <div class="logo-particles">
+                        <div class="particle particle-1"></div>
+                        <div class="particle particle-2"></div>
+                        <div class="particle particle-3"></div>
+                        <div class="particle particle-4"></div>
+                        <div class="particle particle-5"></div>
+                        <div class="particle particle-6"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="tools">
+        <div class="container">
+            <h2 class="section-title">Tools</h2>
+            <div class="tools-grid">
+                <div class="tool-card" onclick="window.location.href='wifiairtimecalculator.html'">
+                    <div class="tool-icon">📊</div>
+                    <h3>Wi-Fi Airtime Calculator</h3>
+                    <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
+                    <div class="tool-features">
+                        <span class="feature-tag">802.11ax</span>
+                        <span class="feature-tag">OFDMA</span>
+                        <span class="feature-tag">MU-MIMO</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
