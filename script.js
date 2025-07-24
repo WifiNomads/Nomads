@@ -41,6 +41,24 @@ function init3DRotation() {
     }
 }
 
+// Navigation functions
+function goToHome() {
+    // Close calculator if it's open
+    const modal = document.getElementById('calculatorModal');
+    if (modal && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Navigate to home section
+    history.pushState(null, null, '#home');
+    
+    // Scroll to top smoothly
+    document.getElementById('home').scrollIntoView({ 
+        behavior: 'smooth' 
+    });
+}
+
 // Modal functions
 function openCalculator() {
     const modal = document.getElementById('calculatorModal');
