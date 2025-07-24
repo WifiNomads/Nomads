@@ -47,6 +47,9 @@ function openCalculator() {
     modal.classList.add('active');
     document.body.style.overflow = 'hidden';
     
+    // Update URL to show calculator section
+    history.pushState(null, null, '#wifiairtimecalculator');
+    
     // Initialize calculator form
     setTimeout(() => {
         updateForm();
@@ -57,6 +60,9 @@ function closeCalculator() {
     const modal = document.getElementById('calculatorModal');
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
+    
+    // Return to tools section URL
+    history.pushState(null, null, '#tools');
 }
 
 // Close modal when clicking outside
@@ -795,4 +801,21 @@ function calculate() {
 // Initialize the application on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     init3DRotation();
+    
+    // Check URL hash and open calculator if needed
+    if (window.location.hash === '#wifiairtimecalculator') {
+        openCalculator();
+    }
+});
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', () => {
+    if (window.location.hash === '#wifiairtimecalculator') {
+        openCalculator();
+    } else {
+        const modal = document.getElementById('calculatorModal');
+        if (modal && modal.classList.contains('active')) {
+            closeCalculator();
+        }
+    }
 });
