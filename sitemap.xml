@@ -7,7 +7,7 @@
     <!-- Homepage -->
     <url>
         <loc>https://wifinomads.net/</loc>
-        <lastmod>2025-01-24</lastmod>
+        <lastmod>2025-01-26</lastmod>
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
@@ -15,8 +15,24 @@
     <!-- Direct index.html reference -->
     <url>
         <loc>https://wifinomads.net/index.html</loc>
-        <lastmod>2025-01-24</lastmod>
+        <lastmod>2025-01-26</lastmod>
         <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- Wi-Fi Airtime Calculator - High Priority Tool -->
+    <url>
+        <loc>https://wifinomads.net/wifiairtimecalculator.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+
+    <!-- SSID Overhead Calculator - High Priority Tool -->
+    <url>
+        <loc>https://wifinomads.net/ssidoverheadcalculator.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
         <priority>0.9</priority>
     </url>
 

@@ -1039,6 +1039,106 @@ body {
     }
 }
 
+/* Calculator Page Styles */
+.calculator-page {
+    padding: 140px 0 80px;
+    background: var(--light-gray);
+    min-height: 100vh;
+}
+
+.calculator-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 0 2rem;
+}
+
+.calculator-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.calculator-header p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.calculator-page .calculator-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-light);
+    padding: 2.5rem;
+}
+
+.calculator-page .calculator-form h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.calculator-page .calculator-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.calculator-page .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.calculator-page .chart-section h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive Design for Calculator Pages */
+@media (max-width: 1024px) {
+    .calculator-page .calculator-body {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .calculator-page .calculator-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .calculator-page {
+        padding: 100px 0 60px;
+    }
+    
+    .calculator-header h1 {
+        font-size: 2rem;
+    }
+    
+    .calculator-page .calculator-body {
+        padding: 1.5rem;
+    }
+    
+    .calculator-page .calculator-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Smooth Scrolling */
 html {
     scroll-behavior: smooth;

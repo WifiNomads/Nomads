@@ -33,6 +33,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="Wi-Fi Nomads Logo.png">
     <link rel="shortcut icon" href="Wi-Fi Nomads Logo.png">
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <!-- Canonical URL -->
     <link rel="canonical" href="https://wifinomads.net/">
     
@@ -100,8 +103,8 @@
                 <h2>Wi-Fi Nomads</h2>
             </div>
             <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#tools">Tools</a></li>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#tools">Tools</a></li>
             </ul>
             <div class="hamburger">
                 <span></span>
@@ -141,7 +144,7 @@
         <div class="container">
             <h2 class="section-title">Tools</h2>
             <div class="tools-grid">
-                <div class="tool-card" onclick="openCalculator()">
+                <div class="tool-card" onclick="window.location.href='wifiairtimecalculator.html'">
                     <div class="tool-icon">📊</div>
                     <h3>Wi-Fi Airtime Calculator</h3>
                     <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
@@ -149,6 +152,16 @@
                         <span class="feature-tag">802.11ax</span>
                         <span class="feature-tag">OFDMA</span>
                         <span class="feature-tag">HT/VHT/HE</span>
+                    </div>
+                </div>
+                <div class="tool-card" onclick="window.location.href='ssidoverheadcalculator.html'">
+                    <div class="tool-icon">📊</div>
+                    <h3>SSID Overhead Calculator</h3>
+                    <p>Calculate the percentage of airtime consumed by 802.11 beacon frames based on SSIDs, access points, and beacon parameters.</p>
+                    <div class="tool-features">
+                        <span class="feature-tag">Beacon Analysis</span>
+                        <span class="feature-tag">Overhead Calculation</span>
+                        <span class="feature-tag">Network Optimization</span>
                     </div>
                 </div>
             </div>
@@ -277,6 +290,67 @@
                     <h3>Airtime Breakdown</h3>
                     <div class="chart-container">
                         <canvas id="barChart" class="airtime-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SSID Overhead Calculator Modal -->
+    <div id="ssidCalculatorModal" class="calculator-modal">
+        <div class="calculator-modal-content">
+            <div class="calculator-header">
+                <h2>SSID Overhead Calculator</h2>
+                <button class="close-btn" onclick="closeSSIDCalculator()">&times;</button>
+            </div>
+            <div class="calculator-body">
+                <div class="calculator-form">
+                    <h3>Input Parameters</h3>
+                    <div class="calculator-inputs">
+                        <div class="form-group">
+                            <label class="form-label">Number of APs on Channel:</label>
+                            <input type="number" id="numAPs" class="form-control" value="1" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SSIDs per AP:</label>
+                            <input type="number" id="numSSIDs" class="form-control" value="2" min="1" max="50">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Beacon Interval (ms):</label>
+                            <input type="number" id="beaconInterval" class="form-control" value="100" min="20" max="1000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Beacon Frame Size (bytes):</label>
+                            <input type="number" id="beaconFrameSize" class="form-control" value="300" min="100" max="1024">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Beacon Data Rate (Mbps):</label>
+                            <select id="beaconDataRate" class="form-select">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="5.5">5.5</option>
+                                <option value="6" selected>6</option>
+                                <option value="12">12</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Preamble Type:</label>
+                            <select id="preambleType" class="form-select">
+                                <option value="192" selected>802.11g/n/ac/ax Short (192μs)</option>
+                                <option value="96">802.11b Short (96μs)</option>
+                                <option value="144">802.11b Long (144μs)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-calculate" onclick="calculateSSIDOverhead()">Calculate SSID Overhead</button>
+                    <div id="ssidOutput" class="calculation-results" style="display: none;">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+                <div class="chart-section">
+                    <h3>Overhead Visualization</h3>
+                    <div class="chart-container">
+                        <canvas id="ssidOverheadChart" class="airtime-chart"></canvas>
                     </div>
                 </div>
             </div>

@@ -43,20 +43,57 @@ function init3DRotation() {
 
 // Navigation functions
 function goToHome() {
-    // Close calculator if it's open
-    const modal = document.getElementById('calculatorModal');
-    if (modal && modal.classList.contains('active')) {
-        modal.classList.remove('active');
+    // Close any open calculators
+    const wifiModal = document.getElementById('calculatorModal');
+    const ssidModal = document.getElementById('ssidCalculatorModal');
+    
+    if (wifiModal && wifiModal.classList.contains('active')) {
+        wifiModal.classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    
+    if (ssidModal && ssidModal.classList.contains('active')) {
+        ssidModal.classList.remove('active');
         document.body.style.overflow = 'auto';
     }
     
     // Navigate to home section
-    history.pushState(null, null, '#home');
+    updateURL('/');
     
     // Scroll to top smoothly
     document.getElementById('home').scrollIntoView({ 
         behavior: 'smooth' 
     });
+}
+
+// Helper function to determine if we're running on file:// protocol
+function isFileProtocol() {
+    return window.location.protocol === 'file:';
+}
+
+// Helper function to update URL based on protocol
+function updateURL(path) {
+    try {
+        if (isFileProtocol()) {
+            // Use hash-based routing for file:// protocol
+            history.pushState(null, null, '#' + path);
+        } else {
+            // Use path-based routing for http/https
+            history.pushState(null, null, path);
+        }
+    } catch (e) {
+        // Fallback to hash-based routing if pushState fails
+        history.pushState(null, null, '#' + path);
+    }
+}
+
+// Helper function to get current path/hash
+function getCurrentPath() {
+    if (isFileProtocol()) {
+        return window.location.hash.slice(1); // Remove the #
+    } else {
+        return window.location.pathname;
+    }
 }
 
 // Modal functions
@@ -66,7 +103,7 @@ function openCalculator() {
     document.body.style.overflow = 'hidden';
     
     // Update URL to show calculator section
-    history.pushState(null, null, '#wifiairtimecalculator');
+    updateURL('/wifiairtimecalculator');
     
     // Initialize calculator form
     setTimeout(() => {
@@ -79,22 +116,35 @@ function closeCalculator() {
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
     
-    // Return to tools section URL
-    history.pushState(null, null, '#tools');
+    // Return to home page URL
+    updateURL('/');
 }
 
 // Close modal when clicking outside
 document.addEventListener('click', function(event) {
-    const modal = document.getElementById('calculatorModal');
-    if (event.target === modal) {
+    const wifiModal = document.getElementById('calculatorModal');
+    const ssidModal = document.getElementById('ssidCalculatorModal');
+    
+    if (event.target === wifiModal) {
         closeCalculator();
+    }
+    if (event.target === ssidModal) {
+        closeSSIDCalculator();
     }
 });
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape') {
-        closeCalculator();
+        const wifiModal = document.getElementById('calculatorModal');
+        const ssidModal = document.getElementById('ssidCalculatorModal');
+        
+        if (wifiModal && wifiModal.classList.contains('active')) {
+            closeCalculator();
+        }
+        if (ssidModal && ssidModal.classList.contains('active')) {
+            closeSSIDCalculator();
+        }
     }
 });
 
@@ -859,20 +909,211 @@ document.addEventListener('DOMContentLoaded', () => {
     init3DRotation();
     initMobileMenu();
     
-    // Check URL hash and open calculator if needed
-    if (window.location.hash === '#wifiairtimecalculator') {
+    // Check URL path/hash and open calculator if needed
+    const path = getCurrentPath();
+    if (path === '/wifiairtimecalculator') {
         openCalculator();
+    } else if (path === '/ssidoverheadcalculator') {
+        openSSIDCalculator();
     }
 });
 
+// SSID Overhead Calculator Functions
+
+function openSSIDCalculator() {
+    const modal = document.getElementById('ssidCalculatorModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Update URL to show SSID calculator section
+    updateURL('/ssidoverheadcalculator');
+}
+
+function closeSSIDCalculator() {
+    const modal = document.getElementById('ssidCalculatorModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    
+    // Return to home page URL
+    updateURL('/');
+}
+
+function calculateSSIDOverhead() {
+    // Get input values
+    const numAPs = parseInt(document.getElementById('numAPs').value);
+    const numSSIDs = parseInt(document.getElementById('numSSIDs').value);
+    const beaconInterval = parseFloat(document.getElementById('beaconInterval').value);
+    const beaconFrameSize = parseFloat(document.getElementById('beaconFrameSize').value);
+    const beaconDataRate = parseFloat(document.getElementById('beaconDataRate').value);
+    const preambleUs = parseFloat(document.getElementById('preambleType').value);
+
+    // Validate inputs
+    if (!numAPs || !numSSIDs || !beaconInterval || !beaconFrameSize || !beaconDataRate) {
+        alert('Please fill in all required fields');
+        return;
+    }
+
+    // Calculate beacons per second
+    const beaconsPerSec = 1000 / beaconInterval;
+    
+    // Calculate total beacons from all APs and SSIDs
+    const totalBeacons = numAPs * numSSIDs * beaconsPerSec;
+    
+    // Calculate bits per beacon
+    const bitsPerBeacon = beaconFrameSize * 8;
+    
+    // Calculate transmit time per beacon (in milliseconds)
+    const transmitTimeMs = bitsPerBeacon / (beaconDataRate * 1000);
+    
+    // Add preamble time
+    const preambleMs = preambleUs / 1000;
+    const totalBeaconTime = transmitTimeMs + preambleMs;
+    
+    // Calculate total overhead per second
+    const overheadMsPerSec = totalBeacons * totalBeaconTime;
+    
+    // Calculate airtime percentage
+    const airtimePercent = (overheadMsPerSec / 1000) * 100;
+
+    // Determine severity and display results
+    let severity, severityColor, recommendation;
+    if (airtimePercent <= 10) {
+        severity = 'Low';
+        severityColor = '#27ae60';
+        recommendation = 'Excellent! Beacon overhead is within acceptable limits.';
+    } else if (airtimePercent <= 20) {
+        severity = 'Medium';
+        severityColor = '#f6c23e';
+        recommendation = 'Monitor network performance. Consider reducing SSIDs if possible.';
+    } else if (airtimePercent <= 50) {
+        severity = 'High';
+        severityColor = '#e67e22';
+        recommendation = 'High overhead detected! Reduce SSIDs immediately to improve performance.';
+    } else {
+        severity = 'Critical';
+        severityColor = '#c00000';
+        recommendation = 'Critical overhead! Network performance severely degraded. Urgent optimization needed.';
+    }
+
+    // Display comprehensive results with severity indicator and recommendations
+    displaySSIDResults(airtimePercent, severity, severityColor, recommendation, {
+        numAPs, numSSIDs, totalBeacons, beaconDataRate, beaconFrameSize, overheadMsPerSec
+    });
+    
+    // Create visualization chart
+    createSSIDOverheadChart(airtimePercent, severity, severityColor);
+}
+
+function displaySSIDResults(airtimePercent, severity, severityColor, recommendation, params) {
+    const resultsHtml = `
+        <div style="background: ${severityColor}; color: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; text-align: center;">
+            <h3 style="margin: 0; font-size: 1.5rem;">Beacon Airtime Overhead</h3>
+            <div style="font-size: 2rem; font-weight: bold; margin: 0.5rem 0;">${airtimePercent.toFixed(2)}%</div>
+            <div style="font-size: 1.1rem; font-weight: 600;">Severity: ${severity}</div>
+        </div>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 1rem;">
+            <thead>
+                <tr style="background: var(--bg-accent);">
+                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-light);">Parameter</th>
+                    <th style="padding: 0.75rem; text-align: left; border: 1px solid var(--border-light);">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Access Points</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numAPs}</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">SSIDs per AP</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numSSIDs}</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Total SSIDs</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numAPs * params.numSSIDs}</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Beacons per Second</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.totalBeacons.toFixed(1)}</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Overhead Time</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.overheadMsPerSec.toFixed(2)} ms/sec</td></tr>
+            </tbody>
+        </table>
+        
+        <div style="background: var(--bg-accent); padding: 1rem; border-radius: 8px; border-left: 4px solid ${severityColor};">
+            <h4 style="margin: 0 0 0.5rem 0;">Recommendation:</h4>
+            <p style="margin: 0;">${recommendation}</p>
+        </div>
+    `;
+    
+    document.getElementById('ssidOutput').innerHTML = resultsHtml;
+    document.getElementById('ssidOutput').style.display = 'block';
+}
+
+function createSSIDOverheadChart(overheadPercent, severity, severityColor) {
+    const canvas = document.getElementById('ssidOverheadChart');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    
+    // Destroy existing chart
+    if (window.ssidChart) {
+        window.ssidChart.destroy();
+    }
+
+    const availableAirtime = Math.max(0, 100 - overheadPercent);
+    
+    window.ssidChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Beacon Overhead', 'Available Airtime'],
+            datasets: [{
+                data: [overheadPercent, availableAirtime],
+                backgroundColor: [severityColor, '#e2e8f0'],
+                borderColor: ['#ffffff', '#ffffff'],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom'
+                }
+            },
+            cutout: '60%'
+        },
+        plugins: [{
+            beforeDraw: function(chart) {
+                const ctx = chart.ctx;
+                const centerX = chart.getDatasetMeta(0).data[0].x;
+                const centerY = chart.getDatasetMeta(0).data[0].y;
+
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                ctx.font = 'bold 24px Inter';
+                ctx.fillStyle = severityColor;
+                ctx.fillText(overheadPercent.toFixed(1) + '%', centerX, centerY - 10);
+                
+                ctx.font = '12px Inter';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(severity + ' Overhead', centerX, centerY + 15);
+                
+                ctx.restore();
+            }
+        }]
+    });
+}
+
 // Handle browser back/forward buttons
 window.addEventListener('popstate', () => {
-    if (window.location.hash === '#wifiairtimecalculator') {
+    const path = getCurrentPath();
+    if (path === '/wifiairtimecalculator') {
         openCalculator();
+    } else if (path === '/ssidoverheadcalculator') {
+        openSSIDCalculator();
     } else {
-        const modal = document.getElementById('calculatorModal');
-        if (modal && modal.classList.contains('active')) {
+        // Close any open modals
+        const wifiModal = document.getElementById('calculatorModal');
+        const ssidModal = document.getElementById('ssidCalculatorModal');
+        
+        if (wifiModal && wifiModal.classList.contains('active')) {
             closeCalculator();
+        }
+        if (ssidModal && ssidModal.classList.contains('active')) {
+            closeSSIDCalculator();
         }
     }
 });

@@ -1,24 +1,43 @@
+# Robots.txt for Wi-Fi Nomads - Professional Wi-Fi Tools
+# https://wifinomads.net
+
 User-agent: *
 Allow: /
 
-# Sitemap location
-Sitemap: https://wifinomads.net/sitemap.xml
-
-# Allow indexing of main pages
+# High Priority Pages for Crawling
 Allow: /index.html
+Allow: /wifiairtimecalculator.html
+Allow: /ssidoverheadcalculator.html
 
-# Disallow any future admin or private directories (if any)
-# Disallow: /admin/
-# Disallow: /private/
-
-# Allow common resource files
+# Static Assets
 Allow: /style.css
 Allow: /script.js
-Allow: /*.png
-Allow: /*.jpg
-Allow: /*.jpeg
-Allow: /*.gif
-Allow: /*.svg
+Allow: /Wi-Fi Nomads Logo.png
+Allow: /wifi.jpg
 
-# Crawl-delay (optional - uncomment if needed)
-# Crawl-delay: 1
+# SEO Files
+Allow: /sitemap.xml
+Allow: /robots.txt
+
+# Sitemap Location
+Sitemap: https://wifinomads.net/sitemap.xml
+
+# Crawl Delay (optional - helps with server load)
+Crawl-delay: 1
+
+# Additional User Agents for Major Search Engines
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
