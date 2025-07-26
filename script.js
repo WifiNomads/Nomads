@@ -275,6 +275,11 @@ function updateForm() {
         ss.disabled = true;
         bandwidth.value = 20;
         bandwidth.disabled = true;
+        
+        // Force DIFS for legacy scenario and disable Access Category
+        ac.value = 'DIFS';
+        ac.disabled = true;
+        
         mcsLabel.style.display = 'none';
         mcs.style.display = 'none';
         mcsLabel.parentElement.style.display = 'none';
@@ -291,6 +296,10 @@ function updateForm() {
         gi.disabled = false;
         ss.disabled = false;
         bandwidth.disabled = false;
+        
+        // Re-enable Access Category for non-legacy scenarios
+        ac.disabled = false;
+        
         mcsLabel.style.display = 'block';
         mcs.style.display = 'block';
         mcsLabel.parentElement.style.display = 'flex';
@@ -816,9 +825,39 @@ function calculate() {
     }
 }
 
+// Mobile menu toggle functionality
+function initMobileMenu() {
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('.nav-menu');
+    
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on nav links
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!hamburger.contains(event.target) && !navMenu.contains(event.target)) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
+        });
+    }
+}
+
 // Initialize the application on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     init3DRotation();
+    initMobileMenu();
     
     // Check URL hash and open calculator if needed
     if (window.location.hash === '#wifiairtimecalculator') {

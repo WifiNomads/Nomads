@@ -210,9 +210,21 @@ body {
 .hamburger span {
     width: 25px;
     height: 3px;
-    background-color: var(--black);
+    background-color: var(--text-primary);
     margin: 3px 0;
     transition: 0.3s;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(45deg) translate(-5px, -6px);
 }
 
 /* Hero Section */
@@ -776,6 +788,20 @@ body {
 .form-select:hover,
 .form-control:hover {
     border-color: var(--primary-blue);
+}
+
+.form-select:disabled,
+.form-control:disabled {
+    background-color: var(--light-gray);
+    color: var(--text-muted);
+    border-color: var(--border-light);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.form-select:disabled:hover,
+.form-control:disabled:hover {
+    border-color: var(--border-light);
 }
 
 .form-check {
