@@ -242,6 +242,10 @@ function updateForm() {
         gi.disabled = false;
         ss.disabled = false;
         bandwidth.disabled = false;
+        
+        // Enable Access Category for OFDMA scenario
+        ac.disabled = false;
+        
         mcsLabel.style.display = 'block';
         mcs.style.display = 'block';
         mcsLabel.parentElement.style.display = 'flex';
@@ -259,6 +263,10 @@ function updateForm() {
         gi.disabled = false;
         ss.disabled = false;
         bandwidth.disabled = false;
+        
+        // Enable Access Category for HE scenario
+        ac.disabled = false;
+        
         mcsLabel.style.display = 'block';
         mcs.style.display = 'block';
         mcsLabel.parentElement.style.display = 'flex';
@@ -337,9 +345,8 @@ function updateForm() {
     if (scenario === '1') {
         updateLegacyOptions(7); // Default to 54 Mbps (highest rate)
     } else if (scenario === '2') {
-        // HT/VHT: VHT supports MCS 0-9, HT only 0-7
-        const bw = parseInt(bandwidth.value);
-        maxMcs = (bw >= 80) ? 9 : 7; // VHT for 80/160MHz, HT for 20/40MHz
+        // HT/VHT: VHT supports MCS 0-9 for all bandwidths
+        maxMcs = 9; // VHT supports MCS 0-9 for 20/40/80/160 MHz
     } else if (scenario === '3' || scenario === '4') {
         maxMcs = 11; // HE supports MCS 0-11
     }
