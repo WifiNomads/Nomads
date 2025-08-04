@@ -1022,7 +1022,7 @@ function displaySSIDResults(airtimePercent, severity, severityColor, recommendat
             <tbody>
                 <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Access Points</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numAPs}</td></tr>
                 <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">SSIDs per AP</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numSSIDs}</td></tr>
-                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Total SSIDs</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numAPs * params.numSSIDs}</td></tr>
+                <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Total BSSIDs</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.numAPs * params.numSSIDs}</td></tr>
                 <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Beacons per Second</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.totalBeacons.toFixed(1)}</td></tr>
                 <tr><td style="padding: 0.5rem; border: 1px solid var(--border-light);">Overhead Time</td><td style="padding: 0.5rem; border: 1px solid var(--border-light);">${params.overheadMsPerSec.toFixed(2)} ms/sec</td></tr>
             </tbody>
