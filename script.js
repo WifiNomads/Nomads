@@ -562,40 +562,51 @@ function calculate() {
     barData.push(backoff);
     total_inc += backoff;
 
-    // Protection
+    // Protection - IEEE 802.11 compliant RTS/CTS sequence
     if (protection) {
+        // RTS Preamble
         if (scenario === '4' && users > 1) {
             barLabels.push('MU-RTS Preamble');
-            barLabels.push('MU-RTS');
-            barLabels.push('CTS Preamble (HE)');
         } else {
             barLabels.push('RTS Preamble');
-            barLabels.push('RTS');
-            barLabels.push('CTS Preamble');
         }
-        
         barData.push(rts_preamble_duration);
         total_inc += rts_preamble_duration;
         total_exc += rts_preamble_duration;
 
+        // RTS Frame
+        if (scenario === '4' && users > 1) {
+            barLabels.push('MU-RTS');
+        } else {
+            barLabels.push('RTS');
+        }
         barData.push(duration_rts);
         total_inc += duration_rts;
         total_exc += duration_rts;
 
+        // SIFS after RTS
         barLabels.push('SIFS');
         barData.push(sifs);
         total_inc += sifs;
         total_exc += sifs;
 
+        // CTS Preamble
+        if (scenario === '4' && users > 1) {
+            barLabels.push('CTS Preamble (HE)');
+        } else {
+            barLabels.push('CTS Preamble');
+        }
         barData.push(cts_preamble_duration);
         total_inc += cts_preamble_duration;
         total_exc += cts_preamble_duration;
 
+        // CTS Frame
         barLabels.push('CTS');
         barData.push(duration_cts);
         total_inc += duration_cts;
         total_exc += duration_cts;
 
+        // SIFS after CTS
         barLabels.push('SIFS');
         barData.push(sifs);
         total_inc += sifs;
