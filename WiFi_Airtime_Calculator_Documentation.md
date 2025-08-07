@@ -1,551 +1,384 @@
-# WiFi Airtime Calculator - Complete Documentation
+# WiFi Airtime Calculator - Complete Guide
 
 ## Table of Contents
-1. [About the Calculator](#1-about-the-calculator)
-2. [How to Use the Calculator](#2-how-to-use-the-calculator)
-3. [Graph and Results Explanation](#3-graph-and-results-explanation)
-4. [Calculations and Formulas](#4-calculations-and-formulas)
+1. [What is WiFi Airtime?](#what-is-wifi-airtime)
+2. [Calculator Overview](#calculator-overview)
+3. [The Four Scenarios](#the-four-scenarios)
+4. [How to Use the Calculator](#how-to-use-the-calculator)
+5. [Understanding the Parameters](#understanding-the-parameters)
+6. [Calculations and Formulas](#calculations-and-formulas)
+7. [Reading the Results](#reading-the-results)
+8. [Practical Examples](#practical-examples)
+9. [Technical Reference](#technical-reference)
 
 ---
 
-## 1. About the Calculator
+## What is WiFi Airtime?
 
-### 1.1 What is WiFi Airtime?
-WiFi airtime refers to the total time required to transmit a data frame over the wireless medium, including all protocol overhead, timing intervals, and control mechanisms. Understanding airtime is crucial for:
-- **Network Performance Analysis**: Calculating actual throughput and efficiency
-- **Capacity Planning**: Determining how many devices can be supported
-- **Quality of Service (QoS)**: Understanding latency and delay characteristics
-- **Protocol Optimization**: Evaluating different configuration impacts
+WiFi airtime is the total time a wireless transmission occupies the radio medium. This includes not just the data itself, but also all the protocol overhead like headers, acknowledgments, and timing gaps required by the IEEE 802.11 standards.
 
-### 1.2 What This Calculator Does
-The WiFi Airtime Calculator provides IEEE 802.11 standards-compliant airtime calculations for:
-- **All WiFi Generations**: Legacy OFDM (802.11a/g), HT (802.11n), VHT (802.11ac), HE (802.11ax)
-- **Multiple PHY Modes**: Single-user and multi-user OFDMA transmissions
-- **Complete Protocol Overhead**: Including all timing components and control frames
-- **Real-world Scenarios**: Configurable parameters matching actual deployments
+### Why Airtime Matters
+- **Network Capacity**: Determines how many devices can share the spectrum
+- **Performance Optimization**: Helps identify bottlenecks and inefficiencies  
+- **Quality of Service**: Affects latency and throughput for different applications
+- **Network Planning**: Essential for proper WiFi deployment design
 
-### 1.3 What's Included in Calculations
-
-#### Core Components:
-- **DIFS/AIFS (Distributed/Arbitration Inter-Frame Spacing)**: Pre-transmission wait time
-- **Backoff Period**: Random contention window for collision avoidance
-- **RTS/CTS Protection** (Optional): Request-to-Send/Clear-to-Send handshake
-- **Preamble and Headers**: Physical layer signaling and MAC headers
-- **Data Transmission**: Actual payload with proper encoding
-- **SIFS (Short Inter-Frame Spacing)**: Inter-frame gaps
+### What's Included in Airtime
+Every WiFi transmission includes these components:
+- **Channel Access**: Time spent waiting to transmit (DIFS/AIFS + Backoff)
+- **Protection Frames**: Optional RTS/CTS handshake
+- **Data Transmission**: Preamble + actual data payload
 - **Acknowledgment**: ACK or Block-ACK response
-
-#### Advanced Features:
-- **MIMO Support**: Multiple spatial streams (1-8 streams)
-- **Channel Bonding**: 20/40/80/160 MHz bandwidth options
-- **Guard Interval Optimization**: Variable GI for different scenarios
-- **QoS Access Categories**: Different priority levels (VO, VI, BE, BK)
-- **OFDMA Resource Units**: Multi-user resource allocation
-- **Control Frame Rate Selection**: Configurable control frame data rates
+- **Inter-Frame Spacing**: Required gaps between frames (SIFS)
 
 ---
 
-## 2. How to Use the Calculator
+## Calculator Overview
 
-### 2.1 Scenario Selection
+This calculator provides IEEE 802.11 standards-compliant airtime calculations for all major WiFi generations, from legacy 802.11a/g through the latest WiFi 6 (802.11ax) with OFDMA support.
 
-#### **Scenario 1: OFDM (non-HT) - Legacy 802.11a/g**
-- **Use Case**: Legacy devices, compatibility mode
-- **Characteristics**: 
-  - Fixed 20 MHz bandwidth
-  - Single spatial stream only
-  - 0.8 μs guard interval (fixed)
-  - Data rates: 6, 9, 12, 18, 24, 36, 48, 54 Mbps
-- **When to Use**: Legacy device analysis, backward compatibility testing
-
-#### **Scenario 2: HT or VHT - 802.11n/ac**
-- **Use Case**: Modern WiFi 4/5 devices
-- **Characteristics**:
-  - Bandwidth: 20/40/80/160 MHz (5 GHz), 20/40 MHz (2.4 GHz)
-  - Spatial streams: 1-8
-  - Guard interval: 0.4 μs (short) or 0.8 μs (long)
-  - MCS 0-9 (no 1024-QAM)
-- **When to Use**: Most current WiFi deployments, enterprise networks
-
-#### **Scenario 3: HE (OFDMA disabled) - 802.11ax Single User**
-- **Use Case**: WiFi 6 single-user transmissions
-- **Characteristics**:
-  - All bandwidth options available
-  - Enhanced guard intervals: 0.8, 1.6, 3.2 μs
-  - MCS 0-11 (includes 1024-QAM)
-  - Improved efficiency features
-- **When to Use**: WiFi 6 performance analysis, single-device optimization
-
-#### **Scenario 4: DL OFDMA - 802.11ax Multi-User**
-- **Use Case**: WiFi 6 multi-user OFDMA transmissions
-- **Characteristics**:
-  - Resource Unit (RU) based allocation
-  - Multiple users simultaneously
-  - Coordinated transmissions
-  - Enhanced signaling overhead
-- **When to Use**: Dense deployment analysis, multi-user efficiency studies
-
-### 2.2 Input Parameters Explained
-
-#### **Frequency Band**
-- **2.4 GHz**: Maximum 40 MHz bandwidth, higher propagation, more interference
-- **5 GHz**: Up to 160 MHz bandwidth, better performance, more spectrum
-
-#### **Channel Bandwidth**
-- **20 MHz**: Basic bandwidth, maximum compatibility
-- **40 MHz**: 2x subcarriers, ~2x throughput potential
-- **80 MHz**: 4x subcarriers, ~4x throughput potential  
-- **160 MHz**: 8x subcarriers, ~8x throughput potential
-
-#### **Access Category (QoS)**
-| Category | AIFSN | CW Min | CW Max | Use Case |
-|----------|-------|--------|--------|----------|
-| VO (Voice) | 2 | 3 | 7 | Real-time voice |
-| VI (Video) | 2 | 7 | 15 | Real-time video |
-| BE (Best Effort) | 3 | 15 | 1023 | General data |
-| BK (Background) | 7 | 15 | 1023 | Bulk transfers |
-
-#### **Contention Window (CW)**
-- **Lower Values**: Less delay, higher collision risk
-- **Higher Values**: More delay, lower collision risk
-- **Range**: Depends on access category
-- **Input**: Average number of backoff slots
-
-#### **Spatial Streams**
-- **1 Stream**: Basic SISO configuration
-- **2 Streams**: 2x2 MIMO, ~2x throughput
-- **4 Streams**: 4x4 MIMO, ~4x throughput
-- **8 Streams**: 8x8 MIMO, maximum throughput
-
-#### **Guard Interval**
-- **Legacy**: 0.8 μs (fixed)
-- **HT/VHT**: 0.4 μs (short GI) or 0.8 μs (long GI)
-- **HE**: 0.8 μs, 1.6 μs, or 3.2 μs
-- **Trade-off**: Shorter GI = higher efficiency but requires better channel conditions
-
-#### **Control Frame Rate**
-- **6 Mbps**: Most reliable, maximum range
-- **12-24 Mbps**: Balanced reliability/speed
-- **48-54 Mbps**: Fastest but requires good signal
-
-#### **MCS (Modulation and Coding Scheme)**
-| MCS | Modulation | Coding Rate | Signal Quality Required |
-|-----|------------|-------------|------------------------|
-| 0 | BPSK | 1/2 | Poor (-82 dBm) |
-| 1 | QPSK | 1/2 | Fair (-79 dBm) |
-| 2 | QPSK | 3/4 | Fair (-77 dBm) |
-| 3 | 16-QAM | 1/2 | Good (-74 dBm) |
-| 4 | 16-QAM | 3/4 | Good (-70 dBm) |
-| 5 | 64-QAM | 2/3 | Very Good (-66 dBm) |
-| 6 | 64-QAM | 3/4 | Very Good (-65 dBm) |
-| 7 | 64-QAM | 5/6 | Excellent (-64 dBm) |
-| 8 | 256-QAM | 3/4 | Excellent (-59 dBm) |
-| 9 | 256-QAM | 5/6 | Excellent (-57 dBm) |
-| 10 | 1024-QAM | 3/4 | Perfect (-54 dBm) |
-| 11 | 1024-QAM | 5/6 | Perfect (-52 dBm) |
-
-#### **A-MPDU Size**
-- **Small (64-1500 bytes)**: Lower latency, less efficiency
-- **Medium (1500-4000 bytes)**: Balanced performance
-- **Large (4000-65535 bytes)**: Maximum efficiency, higher latency
-
-#### **RTS/CTS Protection**
-- **Enabled**: Prevents hidden node collisions, adds overhead
-- **Disabled**: Lower overhead, potential for collisions
-
-#### **Users (OFDMA Only)**
-Number of simultaneous users in multi-user transmission:
-- **More Users**: Better spectrum efficiency, higher coordination overhead
-- **Fewer Users**: Lower overhead, higher per-user throughput
+### Key Features
+- **Four Calculation Scenarios** covering all WiFi generations
+- **Complete Protocol Implementation** including all timing overhead
+- **OFDMA Support** for WiFi 6 multi-user transmissions
+- **Interactive Results** with detailed timing breakdown charts
+- **Professional Accuracy** based on official IEEE specifications
 
 ---
 
-## 3. Graph and Results Explanation
+## The Four Scenarios
 
-### 3.1 Results Table
+### Scenario 1: OFDM (non-HT) - Legacy 802.11a/g
+**When to use**: Legacy devices, compatibility analysis
+- Fixed 20 MHz bandwidth
+- Single spatial stream only
+- Data rates: 6, 9, 12, 18, 24, 36, 48, 54 Mbps
+- 0.8 μs guard interval (fixed)
+- 48 data subcarriers
 
-The calculator provides two key metrics:
+### Scenario 2: HT or VHT - 802.11n/ac (WiFi 4/5)
+**When to use**: Modern WiFi 4/5 deployments
+- Bandwidth: 20/40/80/160 MHz
+- Spatial streams: 1-8
+- MCS 0-9 (no 1024-QAM)
+- Guard interval: 0.4 μs or 0.8 μs
+- Enhanced throughput with MIMO
 
-#### **Duration including DIFS & CW**
-- **What it shows**: Complete transmission time including all overhead
-- **Includes**: DIFS/AIFS + Backoff + Protection + Data + ACK
-- **Use case**: Real-world performance analysis
+### Scenario 3: HE (OFDMA disabled) - 802.11ax Single User (WiFi 6)
+**When to use**: WiFi 6 single-user transmissions
+- All bandwidth options available
+- MCS 0-11 (includes 1024-QAM)
+- Guard intervals: 0.8, 1.6, 3.2 μs
+- Improved efficiency over VHT
 
-#### **Duration excluding DIFS & CW**  
-- **What it shows**: Transmission time without random access overhead
-- **Includes**: Protection + Data + ACK (no DIFS/Backoff)
-- **Use case**: Pure protocol efficiency analysis
-
-#### **Throughput Calculation**
-```
-Throughput (Mbps) = (A-MPDU size × 8 bits) / (Total Duration × 10^-6 seconds) / 10^6
-```
-
-**Step-by-step verification:**
-```
-1. A-MPDU size × 8 = Total bits transmitted
-2. Total Duration × 10^-6 = Duration in seconds (since duration is in microseconds)
-3. Bits ÷ Seconds = Bits per second
-4. Bits per second ÷ 10^6 = Megabits per second (Mbps)
-```
-
-**Example calculation:**
-```
-A-MPDU size = 1500 bytes
-Total Duration = 100 microseconds
-
-Step 1: 1500 × 8 = 12,000 bits
-Step 2: 100 × 10^-6 = 0.0001 seconds  
-Step 3: 12,000 ÷ 0.0001 = 120,000,000 bits/second
-Step 4: 120,000,000 ÷ 10^6 = 120 Mbps
-```
-
-**✅ Formula is CORRECT** - This matches the implementation in the calculator code.
-
-### 3.2 Airtime Bar Graph
-
-The horizontal bar chart shows the duration breakdown of each component:
-
-#### **Channel Access Components** (Only in "including DIFS & CW"):
-- **DIFS/AIFS**: Inter-frame spacing before transmission
-- **Backoff**: Random wait time for collision avoidance
-
-#### **Protection Components** (If RTS/CTS enabled):
-- **RTS Preamble**: Legacy preamble for RTS frame
-- **RTS**: Request-to-Send frame transmission
-- **SIFS**: Short inter-frame spacing
-- **CTS Preamble**: Legacy preamble for CTS frame  
-- **CTS**: Clear-to-Send frame transmission
-- **SIFS**: Another short inter-frame spacing
-
-#### **Data Transmission Components**:
-- **Data Preamble**: PHY preamble (varies by scenario)
-- **A-MPDU**: Actual data transmission time
-- **SIFS**: Short inter-frame spacing
-
-#### **Acknowledgment Components**:
-- **ACK Preamble**: Legacy preamble for acknowledgment
-- **ACK/B-ACK**: Acknowledgment frame transmission
-
-### 3.3 Graph Interpretation
-
-#### **Efficiency Analysis**:
-- **Large Data Portion**: High efficiency
-- **Large Overhead Portions**: Low efficiency, optimization needed
-
-#### **Bottleneck Identification**:
-- **Long Preambles**: Consider higher-order modulation
-- **Long Protection**: Evaluate RTS/CTS necessity
-- **Long Backoff**: Consider access category optimization
+### Scenario 4: DL OFDMA - 802.11ax Multi-User (WiFi 6)
+**When to use**: WiFi 6 multi-user scenarios, high-density environments
+- Multiple users transmit simultaneously
+- Resource Unit (RU) based spectrum allocation
+- Enhanced signaling overhead (HE-SIG-B)
+- Coordinated multi-user transmissions
 
 ---
 
-## 4. Calculations and Formulas
+## How to Use the Calculator
 
-### 4.1 Timing Parameters (IEEE 802.11 Compliant)
+### Step 1: Select Your Scenario
+Choose the scenario that matches your WiFi deployment:
+- Legacy devices → Scenario 1
+- WiFi 4/5 → Scenario 2  
+- WiFi 6 single-user → Scenario 3
+- WiFi 6 multi-user → Scenario 4
 
-#### **Basic Timing Values**
+### Step 2: Configure Basic Parameters
+- **Band**: 2.4 GHz (up to 40 MHz) or 5 GHz (up to 160 MHz)
+- **Bandwidth**: Channel width (20/40/80/160 MHz)
+- **A-MPDU Size**: Data payload in bytes (typical: 1500 bytes)
+
+### Step 3: Set Advanced Parameters
+- **MCS/Data Rate**: Modulation scheme (higher = faster but needs better signal)
+- **Spatial Streams**: Number of MIMO streams (1, 2, 4, 8)
+- **Guard Interval**: Symbol protection time
+- **Access Category**: Traffic priority (VO, VI, BE, BK)
+- **RTS/CTS Protection**: Enable for hidden node protection
+
+### Step 4: Calculate and Analyze
+- Click "Calculate" to get results
+- Review the timing breakdown table
+- Analyze the airtime bar chart
+- Compare different configurations
+
+---
+
+## Understanding the Parameters
+
+### Channel Bandwidth
+| Bandwidth | Subcarriers (Legacy) | Subcarriers (HT/VHT) | Subcarriers (HE) | Typical Use |
+|-----------|---------------------|---------------------|------------------|-------------|
+| 20 MHz    | 48                 | 52                  | 242             | Basic, crowded areas |
+| 40 MHz    | -                  | 108                 | 484             | Moderate performance |
+| 80 MHz    | -                  | 234                 | 980             | High performance |
+| 160 MHz   | -                  | 468                 | 1960            | Maximum throughput |
+
+### MCS (Modulation and Coding Scheme)
+| MCS | Modulation | Coding Rate | Bits/Symbol | Signal Quality Needed |
+|-----|------------|-------------|-------------|----------------------|
+| 0   | BPSK       | 1/2         | 1           | Poor (-82 dBm)       |
+| 1   | QPSK       | 1/2         | 2           | Fair (-79 dBm)       |
+| 2   | QPSK       | 3/4         | 2           | Fair (-77 dBm)       |
+| 3   | 16-QAM     | 1/2         | 4           | Good (-74 dBm)       |
+| 4   | 16-QAM     | 3/4         | 4           | Good (-70 dBm)       |
+| 5   | 64-QAM     | 2/3         | 6           | Very Good (-66 dBm)  |
+| 6   | 64-QAM     | 3/4         | 6           | Very Good (-65 dBm)  |
+| 7   | 64-QAM     | 5/6         | 6           | Excellent (-64 dBm)  |
+| 8   | 256-QAM    | 3/4         | 8           | Excellent (-59 dBm)  |
+| 9   | 256-QAM    | 5/6         | 8           | Excellent (-57 dBm)  |
+| 10  | 1024-QAM   | 3/4         | 10          | Perfect (-54 dBm)    |
+| 11  | 1024-QAM   | 5/6         | 10          | Perfect (-52 dBm)    |
+
+### Access Categories (QoS)
+| Category | AIFSN | CW Min-Max | Typical Use | Priority |
+|----------|-------|------------|-------------|----------|
+| VO (Voice) | 2   | 3-7        | VoIP calls  | Highest  |
+| VI (Video) | 2   | 7-15       | Video streaming | High |
+| BE (Best Effort) | 3 | 15-1023  | Web browsing | Normal |
+| BK (Background) | 7 | 15-1023   | File transfers | Lowest |
+
+### OFDMA Resource Units (WiFi 6 Only)
+| Bandwidth | Users | RU Type | Subcarriers/User | Efficiency |
+|-----------|-------|---------|------------------|------------|
+| 20 MHz    | 1     | RU242   | 242             | Single-user |
+| 20 MHz    | 2     | RU106   | 106             | Good sharing |
+| 20 MHz    | 4     | RU52    | 52              | High sharing |
+| 20 MHz    | 9     | RU26    | 26              | Maximum sharing |
+| 80 MHz    | 1     | RU980   | 980             | Single-user |
+| 80 MHz    | 4     | RU242   | 242             | Balanced |
+| 80 MHz    | 16    | RU52    | 52              | High density |
+
+---
+
+## Calculations and Formulas
+
+### Basic Timing Parameters
 ```
-SIFS = 16 μs (5 GHz), 10 μs (2.4 GHz)
+SIFS = 16 μs (5 GHz) or 10 μs (2.4 GHz)
 Slot Time = 9 μs
-Legacy Symbol Duration = 4 μs
-Legacy Preamble = 20 μs (L-STF + L-LTF + L-SIG = 8 + 8 + 4)
+Legacy Preamble = 20 μs (L-STF + L-LTF + L-SIG)
 ```
 
-#### **Inter-Frame Spacing Calculations**
+### Inter-Frame Spacing
 ```
 DIFS = SIFS + 2 × Slot Time = SIFS + 18 μs
 AIFS = SIFS + AIFSN × Slot Time
 
-Where AIFSN:
-- VO: 2 → AIFS = SIFS + 18 μs  
-- VI: 2 → AIFS = SIFS + 18 μs
-- BE: 3 → AIFS = SIFS + 27 μs
+Where AIFSN values:
+- VO/VI: 2 → AIFS = SIFS + 18 μs
+- BE: 3 → AIFS = SIFS + 27 μs  
 - BK: 7 → AIFS = SIFS + 63 μs
 ```
 
-#### **Backoff Calculation**
+### Backoff Time
 ```
-Backoff Duration = CW_avg × Slot Time
-
-Where CW_avg = Average Contention Window slots (user input)
+Backoff Duration = Average_CW × Slot Time
 ```
 
-### 4.2 Preamble Duration Calculations
+### Preamble Durations
 
-#### **Legacy OFDM (Scenario 1)**
+#### Legacy OFDM (Scenario 1)
 ```
 Preamble Duration = 20 μs (fixed)
 ```
 
-#### **HT/VHT (Scenario 2)**
+#### HT/VHT (Scenario 2)
 ```
-Preamble Duration = Legacy Preamble + HT-SIG + HT-STF + HT-LTF
-                  = 20 + 8 + 4 + (4 × NSS) μs
-
-Where NSS = Number of Spatial Streams
+Preamble Duration = Legacy_Preamble + HT-SIG + HT-STF + HT-LTF
+                  = 20 + 8 + 4 + (4 × Spatial_Streams) μs
 ```
 
-#### **HE (Scenarios 3 & 4)**
+#### HE (Scenarios 3 & 4)
 ```
 Preamble Duration = Legacy + RL-SIG + HE-SIG-A + HE-SIG-B + HE-STF + HE-LTF
-                  = 20 + 4 + 8 + HE-SIG-B + 4 + (6.4 × NSS) μs
+                  = 20 + 4 + 8 + HE-SIG-B + 4 + (6.4 × Spatial_Streams) μs
 
-HE-SIG-B Duration (OFDMA only):
-= ceil(HE-SIG-B bits / 26) × 4 μs
+For OFDMA (Scenario 4):
+HE-SIG-B Duration = ceil(Signaling_Bits / 26) × 4 μs
+Signaling_Bits = 8 × (Bandwidth/20) + 24 × Users
 ```
 
-### 4.3 Data Transmission Calculations
+### Data Transmission
 
-#### **Subcarrier Counts (IEEE Standards)**
+#### Symbol Duration
 ```
-Non-HE (802.11a/g/n/ac):
-- 20 MHz: 52 data subcarriers
-- 40 MHz: 108 data subcarriers  
-- 80 MHz: 234 data subcarriers
-- 160 MHz: 468 data subcarriers
-
-HE (802.11ax):
-- 20 MHz: 234 data subcarriers
-- 40 MHz: 468 data subcarriers
-- 80 MHz: 980 data subcarriers
-- 160 MHz: 1960 data subcarriers
+Legacy Symbol = 4 μs (fixed)
+HT/VHT Symbol = 3.2 + Guard_Interval μs
+HE Symbol = 12.8 + Guard_Interval μs
 ```
 
-#### **Symbol Duration**
+#### Data Rate Calculation
 ```
-Non-HE Symbol Duration = 3.2 + GI μs
-HE Symbol Duration = 12.8 + GI μs
+Data_Bits_per_Symbol = Subcarriers × MCS_Bits × Coding_Rate × Spatial_Streams
+
+Total_Data_Bits = 16 + (A-MPDU_bytes × 8) + 6
+                = SERVICE(16) + DATA + TAIL(6)
+
+Data_Symbols = ceil(Total_Data_Bits / Data_Bits_per_Symbol)
+Data_Duration = Data_Symbols × Symbol_Duration
 ```
 
-#### **Data Rate Calculation**
+#### Subcarrier Counts by Standard
 ```
-Data Bits per Symbol = Subcarriers × Bits_per_Subcarrier × Coding_Rate × Spatial_Streams
+Legacy (20 MHz only): 48 data subcarriers
+HT/VHT: 20MHz→52, 40MHz→108, 80MHz→234, 160MHz→468
+HE: 20MHz→242, 40MHz→484, 80MHz→980, 160MHz→1960
+```
+
+### Control Frames
+
+#### Frame Sizes
+```
+RTS Frame: 20 bytes → 182 total bits (including SERVICE + TAIL)
+CTS Frame: 14 bytes → 134 total bits
+ACK Frame: 14 bytes → 134 total bits
+Block-ACK: 32 bytes → 278 total bits
+```
+
+#### Control Frame Duration
+```
+Control_Bits_per_Symbol = 48 × MCS_Bits × Coding_Rate (legacy rates)
+Control_Duration = ceil(Frame_Bits / Control_Bits_per_Symbol) × 4μs
+```
+
+### Complete Airtime Formula
+```
+Total_Airtime = AIFS + Backoff + Protection + Data_Transmission + ACK
 
 Where:
-- Bits_per_Subcarrier: From MCS table (1,2,4,6,8,10)
-- Coding_Rate: From MCS table (1/2, 2/3, 3/4, 5/6)
+Protection = RTS_Preamble + RTS + SIFS + CTS_Preamble + CTS + SIFS (if enabled)
+Data_Transmission = Data_Preamble + Data_Duration
+ACK = SIFS + ACK_Preamble + ACK_Duration
 ```
 
-#### **Data Duration Calculation**
+### Throughput Calculation
 ```
-Data Bits = SERVICE(16) + A-MPDU(bytes × 8) + TAIL(6)
-Data Symbols = ceil(Data Bits / Data_Bits_per_Symbol) 
-Data Duration = Data_Symbols × Symbol_Duration
+Throughput (Mbps) = (A-MPDU_bytes × 8) / (Total_Airtime_μs × 10^-6) / 10^6
+
+Simplified:
+Throughput = (A-MPDU_bytes × 8) / Total_Airtime_μs
 ```
-
-### 4.4 Control Frame Calculations
-
-#### **Control Frame Parameters**
-```
-RTS Frame: 20 bytes → 160 + 16 + 6 = 182 bits total
-CTS Frame: 14 bytes → 112 + 16 + 6 = 134 bits total  
-ACK Frame: 34 bytes → 272 + 16 + 6 = 294 bits total
-
-Control Frame Bits per Symbol = 52 × Modulation_Bits × Coding_Rate
-Control Frame Duration = ceil(Total_Bits / Bits_per_Symbol) × 4μs
-```
-
-### 4.5 OFDMA Resource Unit Calculations (Scenario 4)
-
-#### **IEEE 802.11ax Resource Unit Concepts**
-OFDMA (Orthogonal Frequency Division Multiple Access) allows multiple users to transmit simultaneously using different subcarriers. Resource Units (RUs) are predefined allocations of subcarriers assigned to each user.
-
-#### **Resource Unit Types in 802.11ax:**
-- **26-tone RU**: 26 subcarriers per user
-- **52-tone RU**: 52 subcarriers per user  
-- **106-tone RU**: 106 subcarriers per user
-- **242-tone RU**: 242 subcarriers per user
-- **484-tone RU**: 484 subcarriers per user
-- **996-tone RU**: 996 subcarriers per user
-- **2×996-tone RU**: 1992 subcarriers per user
-
-#### **How RU Allocation Works in the Calculator**
-
-The calculator uses predefined RU allocation tables based on IEEE 802.11ax specifications:
-
-```javascript
-const ofdma_map = {
-    20: {
-        1: {data_sub:234, bits_sigb:20},  // Single user = full bandwidth
-        2: {data_sub:117, bits_sigb:40},  // 2 users = ~106-tone RUs each  
-        4: {data_sub:52, bits_sigb:80},   // 4 users = 52-tone RUs each
-        9: {data_sub:26, bits_sigb:180}   // 9 users = 26-tone RUs each
-    },
-    // ... similar for 40MHz, 80MHz, 160MHz
-};
-```
-
-#### **Example: 80 MHz Channel with Different User Counts**
-
-**Case 1: 2 Users in 80 MHz**
-```
-Total subcarriers available: 980 (80 MHz HE)
-Allocation: 2 × 484-tone RUs (approximately)
-Data subcarriers per user: 490
-HE-SIG-B overhead: 40 bits
-```
-
-**Case 2: 4 Users in 80 MHz**  
-```
-Total subcarriers available: 980 (80 MHz HE)
-Allocation: 4 × 242-tone RUs (approximately)
-Data subcarriers per user: 245
-HE-SIG-B overhead: 80 bits
-```
-
-**Case 3: 8 Users in 80 MHz**
-```
-Total subcarriers available: 980 (80 MHz HE)  
-Allocation: 8 × 106-tone RUs (approximately)
-Data subcarriers per user: 117
-HE-SIG-B overhead: 160 bits
-```
-
-#### **Step-by-Step OFDMA Calculation Process**
-
-**Step 1: RU Selection**
-```
-Based on (bandwidth, users), lookup predefined RU allocation:
-- data_sub = subcarriers per user from ofdma_map
-- bits_sigb = HE-SIG-B overhead bits
-```
-
-**Step 2: Data Rate per User**
-```
-Data_Bits_per_Symbol_per_User = data_sub × MCS_bits × Coding_Rate × Spatial_Streams
-
-Example for MCS 7, 1 spatial stream:
-- 2 users, 80MHz: 490 × 6 × (5/6) × 1 = 2450 bits/symbol/user
-- 4 users, 80MHz: 245 × 6 × (5/6) × 1 = 1225 bits/symbol/user
-```
-
-**Step 3: Data Duration Calculation**
-```
-Per_User_Data_Bits = 16 + A-MPDU_bytes × 8 + 6
-Per_User_Symbols = ceil(Per_User_Data_Bits / Data_Bits_per_Symbol_per_User)
-Data_Duration = Per_User_Symbols × HE_Symbol_Duration
-
-Note: All users transmit simultaneously, so total duration = individual user duration
-```
-
-**Step 4: HE-SIG-B Overhead Calculation**
-```
-HE-SIG-B encodes resource allocation information for all users:
-- Which RUs are assigned to which users
-- MCS information per user
-- Power allocation details
-
-HE-SIG-B_Duration = ceil(bits_sigb / 26) × 4μs
-Where 26 = MCS0 bits per symbol for signaling
-```
-
-#### **Detailed Comparison: 2 Users vs 4 Users (80 MHz Example)**
-
-**Scenario: 80 MHz, A-MPDU=1500 bytes, MCS 7, 1 spatial stream**
-
-**2 Users Configuration:**
-```
-Resource Allocation:
-- Each user gets: 490 subcarriers (≈484-tone RU)
-- Data rate per user: 490 × 6 × (5/6) = 2450 bits/symbol
-- HE-SIG-B overhead: 40 bits
-
-Data Calculation per User:
-- Total bits: 16 + (1500 × 8) + 6 = 12,022 bits
-- Symbols needed: ceil(12,022 / 2450) = 5 symbols
-- Data duration: 5 × (12.8 + GI) μs
-
-HE-SIG-B Duration:
-- ceil(40 / 26) × 4 = 2 × 4 = 8 μs
-
-Total Preamble: 20 + 4 + 8 + 8 + 4 + (6.4 × NSS) = 44 + 6.4 = 50.4 μs
-```
-
-**4 Users Configuration:**
-```
-Resource Allocation:
-- Each user gets: 245 subcarriers (≈242-tone RU)  
-- Data rate per user: 245 × 6 × (5/6) = 1225 bits/symbol
-- HE-SIG-B overhead: 80 bits
-
-Data Calculation per User:
-- Total bits: 16 + (1500 × 8) + 6 = 12,022 bits
-- Symbols needed: ceil(12,022 / 1225) = 10 symbols  
-- Data duration: 10 × (12.8 + GI) μs
-
-HE-SIG-B Duration:
-- ceil(80 / 26) × 4 = 4 × 4 = 16 μs
-
-Total Preamble: 20 + 4 + 8 + 16 + 4 + (6.4 × NSS) = 52 + 6.4 = 58.4 μs
-```
-
-#### **Key OFDMA Observations:**
-
-**Efficiency Trade-offs:**
-- **2 Users**: Higher per-user throughput, less signaling overhead
-- **4 Users**: Lower per-user throughput, more signaling overhead, better spectrum utilization
-
-**Overhead Impact:**
-- More users → More HE-SIG-B bits → Longer preamble
-- Fewer subcarriers per user → More symbols needed → Longer data transmission
-
-**Real-world Implications:**
-- **Small Packets**: More users may be inefficient due to overhead
-- **Large Packets**: More users can improve overall efficiency
-- **Mixed Traffic**: Dynamic allocation based on queue lengths
-
-### 4.6 Total Airtime Calculation
-
-#### **Complete Formula**
-```
-Total Airtime = AIFS + Backoff + Protection_Overhead + Data_Transmission + ACK_Overhead
-
-Where:
-Protection_Overhead = 0 (if disabled) OR 
-                     Legacy_Preamble + RTS + SIFS + Legacy_Preamble + CTS + SIFS
-
-Data_Transmission = Data_Preamble + Data_Duration  
-
-ACK_Overhead = SIFS + Legacy_Preamble + ACK_Duration
-```
-
-#### **Throughput Calculation**
-```
-Throughput_including_overhead = (A-MPDU_bytes × 8) / (Total_Airtime_μs × 10^-6) / 10^6 Mbps
-
-Throughput_excluding_contention = (A-MPDU_bytes × 8) / (Airtime_without_AIFS_Backoff_μs × 10^-6) / 10^6 Mbps
-```
-
-### 4.7 MCS Parameter Table
-
-| MCS | Modulation | Coding | Bits/Subcarrier | Coding Rate |
-|-----|------------|--------|------------------|-------------|
-| 0 | BPSK | 1/2 | 1 | 0.5 |
-| 1 | QPSK | 1/2 | 2 | 0.5 |
-| 2 | QPSK | 3/4 | 2 | 0.75 |
-| 3 | 16-QAM | 1/2 | 4 | 0.5 |
-| 4 | 16-QAM | 3/4 | 4 | 0.75 |
-| 5 | 64-QAM | 2/3 | 6 | 0.667 |
-| 6 | 64-QAM | 3/4 | 6 | 0.75 |
-| 7 | 64-QAM | 5/6 | 6 | 0.833 |
-| 8 | 256-QAM | 3/4 | 8 | 0.75 |
-| 9 | 256-QAM | 5/6 | 8 | 0.833 |
-| 10 | 1024-QAM | 3/4 | 10 | 0.75 |
-| 11 | 1024-QAM | 5/6 | 10 | 0.833 |
 
 ---
 
-## 5. IEEE Standards Compliance
+## Reading the Results
 
+### Results Table
+The calculator provides two key measurements:
+
+**Duration including DIFS & CW**
+- Complete real-world transmission time
+- Includes channel access overhead
+- Best for capacity planning
+
+**Duration excluding DIFS & CW**  
+- Pure protocol transmission time
+- Excludes random access delays
+- Best for protocol efficiency analysis
+
+### Airtime Breakdown Chart
+The horizontal bar chart shows time spent in each phase:
+
+**Channel Access (blue bars)**
+- DIFS/AIFS: Inter-frame spacing
+- Backoff: Random collision avoidance
+
+**Protection (green bars, if enabled)**
+- RTS Preamble + RTS Frame
+- SIFS gap
+- CTS Preamble + CTS Frame
+- SIFS gap
+
+**Data Transmission (orange bars)**
+- Data Preamble: PHY signaling
+- A-MPDU: Actual data payload
+
+**Acknowledgment (red bars)**
+- SIFS gap
+- ACK Preamble + ACK/Block-ACK
+
+### Interpreting Efficiency
+- **Large data portion** = High efficiency
+- **Large overhead portions** = Low efficiency, needs optimization
+- **Long preambles** = Consider higher MCS if signal quality allows
+- **Long protection** = Evaluate if RTS/CTS is necessary
+
+---
+
+## Practical Examples
+
+### Example 1: Legacy WiFi (Scenario 1)
+**Configuration:**
+- 20 MHz, 54 Mbps, 1500 bytes
+- RTS/CTS enabled, BE access category
+
+**Calculation Steps:**
+1. **Channel Access**: AIFS(43μs) + Backoff(135μs) = 178μs
+2. **Protection**: RTS(20+46μs) + SIFS(16μs) + CTS(20+34μs) + SIFS(16μs) = 152μs
+3. **Data**: Preamble(20μs) + Data(288μs) = 308μs
+4. **ACK**: SIFS(16μs) + ACK(20+34μs) = 70μs
+5. **Total**: 708μs
+6. **Throughput**: (1500×8) / 708 = 16.9 Mbps
+
+### Example 2: WiFi 6 Single User (Scenario 3)
+**Configuration:**
+- 80 MHz, MCS 7, 4 streams, 4000 bytes
+- 0.8μs GI, no protection
+
+**Calculation Steps:**
+1. **Channel Access**: AIFS(43μs) + Backoff(135μs) = 178μs
+2. **Data**: Preamble(58.6μs) + Data(61.6μs) = 120.2μs
+3. **ACK**: SIFS(16μs) + Block-ACK(58.6+17.6μs) = 92.2μs
+4. **Total**: 390.4μs
+5. **Throughput**: (4000×8) / 390.4 = 82.0 Mbps
+
+### Example 3: WiFi 6 OFDMA (Scenario 4)
+**Configuration:**
+- 80 MHz, 4 users, MCS 5, 1500 bytes each
+- 0.8μs GI, RU242 per user
+
+**Calculation Steps:**
+1. **Channel Access**: AIFS(43μs) + Backoff(135μs) = 178μs
+2. **Data**: Preamble(74.6μs) + Data(83.2μs) = 157.8μs
+3. **ACK**: SIFS(16μs) + Block-ACK(74.6+17.6μs) = 108.2μs
+4. **Total per user**: 444.0μs
+5. **Throughput per user**: (1500×8) / 444.0 = 27.0 Mbps
+6. **Total system throughput**: 27.0 × 4 = 108.0 Mbps
+
+---
+
+## Technical Reference
+
+### IEEE Standards Compliance
 This calculator implements calculations according to:
-- **IEEE 802.11-2020**: Main standard for WiFi protocols
-- **IEEE 802.11ax-2021**: WiFi 6 specific amendments
-- **IEEE 802.11ac-2013**: WiFi 5 specific amendments  
-- **IEEE 802.11n-2009**: WiFi 4 specific amendments
+- **IEEE 802.11-2020**: Main WiFi standard
+- **IEEE 802.11ax-2021**: WiFi 6 specifications
+- **IEEE 802.11ac-2013**: WiFi 5 specifications
+- **IEEE 802.11n-2009**: WiFi 4 specifications
 
-All timing parameters, subcarrier counts, preamble structures, and protocol behaviors match the official IEEE specifications for accurate real-world airtime prediction.
+### Browser Compatibility
+- Modern browsers with JavaScript enabled
+- HTML5 Canvas support for charts
+- Responsive design for mobile devices
+
+### Accuracy Notes
+- All timing values match IEEE specifications
+- Calculations include complete protocol overhead
+- Real-world performance may vary due to channel conditions
+- Results represent ideal conditions without interference
+
+### Limitations
+- Does not account for channel errors or retransmissions
+- Assumes ideal propagation conditions
+- Multi-user coordination overhead is simplified
+- Does not include higher layer protocol overhead
 
 ---
 
-*This documentation provides complete technical details for understanding and using the WiFi Airtime Calculator effectively. For additional questions or advanced use cases, refer to the specific IEEE 802.11 standards documentation.*
+*This documentation provides complete technical details for understanding and using the WiFi Airtime Calculator. All calculations are based on official IEEE 802.11 standards for maximum accuracy.*

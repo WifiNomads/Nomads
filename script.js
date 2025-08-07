@@ -560,8 +560,16 @@ function calculate() {
     let total_inc = 0;
     let total_exc = 0;
 
-    // AIFS and backoff
-    barLabels.push('DIFS/AIFS');
+    // Dynamic Access Category label for output
+    let acLabel;
+    if (ac_type === 'DIFS') acLabel = 'DIFS';
+    else if (ac_type === 'BK') acLabel = 'BK';
+    else if (ac_type === 'BE') acLabel = 'BE';
+    else if (ac_type === 'VI') acLabel = 'VI';
+    else if (ac_type === 'VO') acLabel = 'VO';
+
+    // AIFS and backoff with dynamic AC label
+    barLabels.push(`${acLabel}/AIFS`);
     barData.push(aifs);
     total_inc += aifs;
 
@@ -658,10 +666,10 @@ function calculate() {
     const throughput_inc = (ampdu * 8 / (total_inc * 1e-6)) / 1e6;
     const throughput_exc = (ampdu * 8 / (total_exc * 1e-6)) / 1e6;
 
-    // Output results
+    // Output results with dynamic AC labels
     let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (us)</th><th>Throughput (Mbps)</th></tr></thead><tbody>';
-    table += `<tr><td>Duration including DIFS & CW</td><td>${total_inc.toFixed(1)}</td><td>${throughput_inc.toFixed(3)}</td></tr>`;
-    table += `<tr><td>Duration excluding DIFS & CW</td><td>${total_exc.toFixed(1)}</td><td>${throughput_exc.toFixed(3)}</td></tr>`;
+    table += `<tr><td>Duration including IFS ${acLabel} & CW</td><td>${total_inc.toFixed(1)}</td><td>${throughput_inc.toFixed(3)}</td></tr>`;
+    table += `<tr><td>Duration excluding IFS ${acLabel} & CW</td><td>${total_exc.toFixed(1)}</td><td>${throughput_exc.toFixed(3)}</td></tr>`;
     table += '</tbody></table>';
     document.getElementById('output').innerHTML = table;
 
