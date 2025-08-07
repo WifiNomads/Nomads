@@ -1,7 +1,7 @@
-# WiFi Airtime Calculator - Complete Guide
+# Wi-Fi Airtime Calculator - Complete Guide
 
 ## Table of Contents
-1. [What is WiFi Airtime?](#what-is-wifi-airtime)
+1. [What is Wi-Fi Airtime?](#what-is-Wi-Fi-airtime)
 2. [Calculator Overview](#calculator-overview)
 3. [The Four Scenarios](#the-four-scenarios)
 4. [How to Use the Calculator](#how-to-use-the-calculator)
@@ -13,18 +13,12 @@
 
 ---
 
-## What is WiFi Airtime?
+## What is Wi-Fi Airtime?
 
-WiFi airtime is the total time a wireless transmission occupies the radio medium. This includes not just the data itself, but also all the protocol overhead like headers, acknowledgments, and timing gaps required by the IEEE 802.11 standards.
-
-### Why Airtime Matters
-- **Network Capacity**: Determines how many devices can share the spectrum
-- **Performance Optimization**: Helps identify bottlenecks and inefficiencies  
-- **Quality of Service**: Affects latency and throughput for different applications
-- **Network Planning**: Essential for proper WiFi deployment design
+When a device wants to transmit a frame, it's important to estimate the total time required for the transmission. This includes not only the actual data but also all protocol overhead—such as headers, acknowledgments, and mandatory timing intervals—defined by the IEEE 802.11 standards
 
 ### What's Included in Airtime
-Every WiFi transmission includes these components:
+Every Wi-Fi transmission includes these components:
 - **Channel Access**: Time spent waiting to transmit (DIFS/AIFS + Backoff)
 - **Protection Frames**: Optional RTS/CTS handshake
 - **Data Transmission**: Preamble + actual data payload
@@ -35,12 +29,12 @@ Every WiFi transmission includes these components:
 
 ## Calculator Overview
 
-This calculator provides IEEE 802.11 standards-compliant airtime calculations for all major WiFi generations, from legacy 802.11a/g through the latest WiFi 6 (802.11ax) with OFDMA support.
+This calculator provides IEEE 802.11 standards-compliant airtime calculations for all major Wi-Fi generations, from legacy 802.11a/g through the latest Wi-Fi 6 (802.11ax) with OFDMA support.
 
 ### Key Features
-- **Four Calculation Scenarios** covering all WiFi generations
+- **Four Calculation Scenarios** covering all Wi-Fi generations
 - **Complete Protocol Implementation** including all timing overhead
-- **OFDMA Support** for WiFi 6 multi-user transmissions
+- **OFDMA Support** for Wi-Fi 6 multi-user transmissions
 - **Interactive Results** with detailed timing breakdown charts
 - **Professional Accuracy** based on official IEEE specifications
 
@@ -56,23 +50,23 @@ This calculator provides IEEE 802.11 standards-compliant airtime calculations fo
 - 0.8 μs guard interval (fixed)
 - 48 data subcarriers
 
-### Scenario 2: HT or VHT - 802.11n/ac (WiFi 4/5)
-**When to use**: Modern WiFi 4/5 deployments
+### Scenario 2: HT or VHT - 802.11n/ac (Wi-Fi 4/5)
+**When to use**: Modern Wi-Fi 4/5 deployments
 - Bandwidth: 20/40/80/160 MHz
 - Spatial streams: 1-8
 - MCS 0-9 (no 1024-QAM)
 - Guard interval: 0.4 μs or 0.8 μs
 - Enhanced throughput with MIMO
 
-### Scenario 3: HE (OFDMA disabled) - 802.11ax Single User (WiFi 6)
-**When to use**: WiFi 6 single-user transmissions
+### Scenario 3: HE (OFDMA disabled) - 802.11ax Single User (Wi-Fi 6)
+**When to use**: Wi-Fi 6 single-user transmissions
 - All bandwidth options available
 - MCS 0-11 (includes 1024-QAM)
 - Guard intervals: 0.8, 1.6, 3.2 μs
 - Improved efficiency over VHT
 
-### Scenario 4: DL OFDMA - 802.11ax Multi-User (WiFi 6)
-**When to use**: WiFi 6 multi-user scenarios, high-density environments
+### Scenario 4: DL OFDMA - 802.11ax Multi-User (Wi-Fi 6)
+**When to use**: Wi-Fi 6 multi-user scenarios, high-density environments
 - Multiple users transmit simultaneously
 - Resource Unit (RU) based spectrum allocation
 - Enhanced signaling overhead (HE-SIG-B)
@@ -83,11 +77,11 @@ This calculator provides IEEE 802.11 standards-compliant airtime calculations fo
 ## How to Use the Calculator
 
 ### Step 1: Select Your Scenario
-Choose the scenario that matches your WiFi deployment:
+Choose the scenario that matches your Wi-Fi deployment:
 - Legacy devices → Scenario 1
-- WiFi 4/5 → Scenario 2  
-- WiFi 6 single-user → Scenario 3
-- WiFi 6 multi-user → Scenario 4
+- Wi-Fi 4/5 → Scenario 2  
+- Wi-Fi 6 single-user → Scenario 3
+- Wi-Fi 6 multi-user → Scenario 4
 
 ### Step 2: Configure Basic Parameters
 - **Band**: 2.4 GHz (up to 40 MHz) or 5 GHz (up to 160 MHz)
@@ -143,7 +137,7 @@ Choose the scenario that matches your WiFi deployment:
 | BE (Best Effort) | 3 | 15-1023  | Web browsing | Normal |
 | BK (Background) | 7 | 15-1023   | File transfers | Lowest |
 
-### OFDMA Resource Units (WiFi 6 Only)
+### OFDMA Resource Units (Wi-Fi 6 Only)
 | Bandwidth | Users | RU Type | Subcarriers/User | Efficiency |
 |-----------|-------|---------|------------------|------------|
 | 20 MHz    | 1     | RU242   | 242             | Single-user |
@@ -313,7 +307,7 @@ The horizontal bar chart shows time spent in each phase:
 
 ## Practical Examples
 
-### Example 1: Legacy WiFi (Scenario 1)
+### Example 1: Legacy Wi-Fi (Scenario 1)
 **Configuration:**
 - 20 MHz, 54 Mbps, 1500 bytes
 - RTS/CTS enabled, BE access category
@@ -326,7 +320,7 @@ The horizontal bar chart shows time spent in each phase:
 5. **Total**: 708μs
 6. **Throughput**: (1500×8) / 708 = 16.9 Mbps
 
-### Example 2: WiFi 6 Single User (Scenario 3)
+### Example 2: Wi-Fi 6 Single User (Scenario 3)
 **Configuration:**
 - 80 MHz, MCS 7, 4 streams, 4000 bytes
 - 0.8μs GI, no protection
@@ -338,7 +332,7 @@ The horizontal bar chart shows time spent in each phase:
 4. **Total**: 390.4μs
 5. **Throughput**: (4000×8) / 390.4 = 82.0 Mbps
 
-### Example 3: WiFi 6 OFDMA (Scenario 4)
+### Example 3: Wi-Fi 6 OFDMA (Scenario 4)
 **Configuration:**
 - 80 MHz, 4 users, MCS 5, 1500 bytes each
 - 0.8μs GI, RU242 per user
@@ -357,10 +351,10 @@ The horizontal bar chart shows time spent in each phase:
 
 ### IEEE Standards Compliance
 This calculator implements calculations according to:
-- **IEEE 802.11-2020**: Main WiFi standard
-- **IEEE 802.11ax-2021**: WiFi 6 specifications
-- **IEEE 802.11ac-2013**: WiFi 5 specifications
-- **IEEE 802.11n-2009**: WiFi 4 specifications
+- **IEEE 802.11-2020**: Main Wi-Fi standard
+- **IEEE 802.11ax-2021**: Wi-Fi 6 specifications
+- **IEEE 802.11ac-2013**: Wi-Fi 5 specifications
+- **IEEE 802.11n-2009**: Wi-Fi 4 specifications
 
 ### Browser Compatibility
 - Modern browsers with JavaScript enabled
@@ -381,4 +375,4 @@ This calculator implements calculations according to:
 
 ---
 
-*This documentation provides complete technical details for understanding and using the WiFi Airtime Calculator. All calculations are based on official IEEE 802.11 standards for maximum accuracy.*
+*This documentation provides complete technical details for understanding and using the Wi-Fi Airtime Calculator. All calculations are based on official IEEE 802.11 standards for maximum accuracy.*
