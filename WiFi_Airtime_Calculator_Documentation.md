@@ -373,6 +373,3 @@ This calculator implements calculations according to:
 - Multi-user coordination overhead is simplified
 - Does not include higher layer protocol overhead
 
----
-
-*This documentation provides complete technical details for understanding and using the Wi-Fi Airtime Calculator. All calculations are based on official IEEE 802.11 standards for maximum accuracy.*
