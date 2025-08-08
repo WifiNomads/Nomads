@@ -228,6 +228,7 @@ function updateForm() {
     const mcs = document.getElementById('mcs');
     const legacyRateLabel = document.getElementById('legacyRateLabel');
     const legacyRate = document.getElementById('legacyRate');
+    const ackType = document.getElementById('ackType');
 
     // Show/hide elements based on scenario
     if (scenario === '4') {
@@ -288,6 +289,10 @@ function updateForm() {
         ac.value = 'DIFS';
         ac.disabled = true;
         
+        // Force ACK for legacy scenario (Block ACK not supported in 802.11a/g)
+        ackType.value = 'ack';
+        ackType.disabled = true;
+        
         mcsLabel.style.display = 'none';
         mcs.style.display = 'none';
         mcsLabel.parentElement.style.display = 'none';
@@ -308,12 +313,20 @@ function updateForm() {
         // Re-enable Access Category for non-legacy scenarios
         ac.disabled = false;
         
+        // Enable ACK type selection for modern scenarios (Block ACK supported)
+        ackType.disabled = false;
+        
         mcsLabel.style.display = 'block';
         mcs.style.display = 'block';
         mcsLabel.parentElement.style.display = 'flex';
         legacyRateLabel.style.display = 'none';
         legacyRate.style.display = 'none';
         legacyRateLabel.parentElement.style.display = 'none';
+    }
+    
+    // Enable ACK type selection for HE scenarios as well
+    if (scenario === '3' || scenario === '4') {
+        ackType.disabled = false;
     }
 
     // Band-specific bandwidth limitations
@@ -412,6 +425,7 @@ function calculate() {
     const users = parseInt(document.getElementById('users').value) || 1;
     const bandwidth = parseInt(document.getElementById('bandwidth').value);
     const controlFrameRate = parseInt(document.getElementById('controlFrameRate').value);
+    const ackType = document.getElementById('ackType').value;
 
     let bits_pr_sub, coding;
     if (scenario === '1') {
@@ -438,8 +452,13 @@ function calculate() {
     let aifs = sifs + aifsn * slot;
     let backoff = cw * slot;
 
-    const b_ack_length = 32; // CORRECTED: Block ACK frame is 32 bytes per IEEE 802.11
-    let databits_b_ack = b_ack_length * 8 + 16 + 6; // SERVICE(16) + DATA + TAIL(6)
+    // ACK/Block ACK frame sizes based on user selection
+    const ack_length = 14; // Standard ACK frame size
+    const b_ack_length = 32; // Block ACK frame size (compressed)
+    
+    // Select appropriate ACK frame size based on user choice
+    const selected_ack_length = (ackType === 'ack') ? ack_length : b_ack_length;
+    let databits_ack = selected_ack_length * 8 + 16 + 6; // SERVICE(16) + DATA + TAIL(6)
 
     // Preamble calculations
     let preamble_duration;
@@ -540,18 +559,18 @@ function calculate() {
     symbols_data = Math.ceil(databits_data / data_bits_per_symbol);
     duration_data = symbols_data * symbol_time;
 
-    // ACK calculation
-    let symbols_b_ack, duration_b_ack;
+    // ACK calculation based on selected type
+    let symbols_ack, duration_ack;
     if (scenario === '3' || scenario === '4') {
-        // HE Block ACK
+        // HE ACK/Block ACK
         const ack_subcarriers = subcarriers_he[bandwidth];
         let control_bits_per_symbol_he = ack_subcarriers * 1 * 0.5; // MCS0
-        symbols_b_ack = Math.ceil(databits_b_ack / control_bits_per_symbol_he);
-        duration_b_ack = symbols_b_ack * (12.8 + gi);
+        symbols_ack = Math.ceil(databits_ack / control_bits_per_symbol_he);
+        duration_ack = symbols_ack * (12.8 + gi);
     } else {
-        // Legacy ACK
-        symbols_b_ack = Math.ceil(databits_b_ack / controlRate.bits_per_symbol);
-        duration_b_ack = symbols_b_ack * controlRate.symbol_time;
+        // Legacy ACK/Block ACK
+        symbols_ack = Math.ceil(databits_ack / controlRate.bits_per_symbol);
+        duration_ack = symbols_ack * controlRate.symbol_time;
     }
 
     // Build timing breakdown
@@ -657,10 +676,12 @@ function calculate() {
     total_inc += ack_preamble_duration;
     total_exc += ack_preamble_duration;
 
-    barLabels.push('B-ACK');
-    barData.push(duration_b_ack);
-    total_inc += duration_b_ack;
-    total_exc += duration_b_ack;
+    // Dynamic ACK label based on selected type
+    const ackLabel = (ackType === 'ack') ? 'ACK' : 'Block ACK';
+    barLabels.push(ackLabel);
+    barData.push(duration_ack);
+    total_inc += duration_ack;
+    total_exc += duration_ack;
 
     // Throughput calculation
     const throughput_inc = (ampdu * 8 / (total_inc * 1e-6)) / 1e6;
