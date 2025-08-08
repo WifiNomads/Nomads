@@ -880,6 +880,136 @@ function initMobileMenu() {
     }
 }
 
+// Cache Management System
+class CacheManager {
+    constructor() {
+        this.version = Date.now().toString();
+        this.init();
+    }
+    
+    init() {
+        // Clear any existing cache on load
+        this.clearBrowserCache();
+        
+        // Set up cache prevention
+        this.preventCaching();
+        
+        // Monitor for updates
+        this.setupUpdateDetection();
+    }
+    
+    clearBrowserCache() {
+        try {
+            // Clear application cache if available
+            if ('applicationCache' in window && window.applicationCache.status !== window.applicationCache.UNCACHED) {
+                window.applicationCache.update();
+            }
+            
+            // Clear service worker cache if available
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => {
+                        registration.unregister();
+                    });
+                });
+            }
+            
+            // Force reload stylesheets
+            this.reloadStylesheets();
+            
+        } catch (error) {
+            console.warn('Cache clearing encountered an issue:', error);
+        }
+    }
+    
+    reloadStylesheets() {
+        const links = document.querySelectorAll('link[rel="stylesheet"]');
+        links.forEach(link => {
+            if (link.href.includes('style.css')) {
+                const newLink = link.cloneNode();
+                const timestamp = Date.now() + Math.random().toString(36).substr(2, 9);
+                newLink.href = link.href.split('?')[0] + '?v=' + timestamp;
+                link.parentNode.insertBefore(newLink, link);
+                setTimeout(() => link.remove(), 100);
+            }
+        });
+    }
+    
+    preventCaching() {
+        // Add no-cache headers to all AJAX requests
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            if (args[1]) {
+                args[1].headers = args[1].headers || {};
+                args[1].headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
+                args[1].headers['Pragma'] = 'no-cache';
+            } else {
+                args[1] = {
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache'
+                    }
+                };
+            }
+            return originalFetch.apply(this, args);
+        };
+    }
+    
+    setupUpdateDetection() {
+        // Check for updates every 5 minutes
+        setInterval(() => {
+            this.checkForUpdates();
+        }, 300000);
+    }
+    
+    checkForUpdates() {
+        const timestamp = Date.now();
+        fetch(`index.html?cache_check=${timestamp}`, {
+            method: 'HEAD',
+            cache: 'no-cache',
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache'
+            }
+        }).then(response => {
+            const lastModified = response.headers.get('last-modified');
+            if (lastModified && this.lastModified && new Date(lastModified) > new Date(this.lastModified)) {
+                this.notifyUpdate();
+            }
+            this.lastModified = lastModified;
+        }).catch(error => {
+            console.warn('Update check failed:', error);
+        });
+    }
+    
+    notifyUpdate() {
+        if (confirm('A newer version of the website is available. Would you like to refresh to get the latest updates?')) {
+            this.forceRefresh();
+        }
+    }
+    
+    forceRefresh() {
+        // Clear all possible caches before refresh
+        this.clearBrowserCache();
+        
+        // Force reload with cache bypass
+        setTimeout(() => {
+            window.location.reload(true);
+        }, 500);
+    }
+    
+    // Public method to force refresh
+    refresh() {
+        this.forceRefresh();
+    }
+}
+
+// Initialize cache manager
+const cacheManager = new CacheManager();
+
+// Make cache manager globally available
+window.cacheManager = cacheManager;
+
 // Initialize the application on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     init3DRotation();
@@ -889,6 +1019,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.location.hash === '#wifiairtimecalculator') {
         openCalculator();
     }
+    
+    // Additional cache prevention for critical resources
+    const criticalResources = ['style.css', 'script.js'];
+    criticalResources.forEach(resource => {
+        const timestamp = Date.now() + Math.random().toString(36).substr(2, 9);
+        const link = document.querySelector(`link[href*="${resource}"], script[src*="${resource}"]`);
+        if (link && !link.src && !link.href.includes('?v=')) {
+            if (link.tagName === 'LINK') {
+                link.href += `?v=${timestamp}`;
+            } else if (link.tagName === 'SCRIPT') {
+                link.src += `?v=${timestamp}`;
+            }
+        }
+    });
 });
 
 // Handle browser back/forward buttons
