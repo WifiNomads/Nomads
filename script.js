@@ -634,7 +634,7 @@ function calculate() {
     total_inc += preamble_duration;
     total_exc += preamble_duration;
 
-    barLabels.push('MPDU/A-MPDU');
+    barLabels.push('MP==U/A-MPDU');
     barData.push(duration_data);
     total_inc += duration_data;
     total_exc += duration_data;
