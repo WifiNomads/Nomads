@@ -161,6 +161,15 @@ const ofdma_map = {
     }
 };
 
+// ----- SAFETY LIMITS -----
+const MAX_AMPDU_BYTES = 65535;   // IEEE 802.11 A-MPDU max size per standard
+const MAX_MPDU_COUNT = 1000;     // Prevent extreme loops
+const MAX_USERS = 74;            // Max OFDMA RU allocation in your map
+const MAX_BAR_POINTS = 50;       // Chart.js safe render limit
+const MAX_CW = 512;              // Contention window upper bound
+const MAX_SPATIAL_STREAMS = 8;   // 8x8 MIMO max
+const MAX_GI = 3.2;              // HE max GI in µs
+
 function updateMCSOptions(maxMcs, selected) {
     const mcsSelect = document.getElementById('mcs');
     mcsSelect.innerHTML = '';
@@ -196,7 +205,8 @@ function updateUsersOptions() {
         option.text = `${u} (${ofdma_map[bandwidth][u].ru_type})`;
         users.appendChild(option);
     });
-    users.value = options[1] || 1;
+    const defaultIndex = Math.max(0, Math.floor(options.length / 2));
+    users.value = options[defaultIndex] || options[0] || 1;
 }
 
 function updateCWRange() {
@@ -383,6 +393,9 @@ function getMcsParams(mcs) {
         {bits: 10, coding: 0.75},  // mcs10
         {bits: 10, coding: 5/6}    // mcs11
     ];
+    if (typeof mcs !== 'number' || isNaN(mcs)) mcs = 0;
+    if (mcs < 0) mcs = 0;
+    if (mcs >= params.length) mcs = params.length - 1;
     return params[mcs];
 }
 
@@ -397,15 +410,48 @@ function getControlRate(selectedRate) {
         48: {bits: 6, coding: 2/3},    // 64-QAM 2/3
         54: {bits: 6, coding: 0.75}    // 64-QAM 3/4
     };
-    
-    const params = controlRateMap[selectedRate];
-    const bits_per_symbol = 48 * params.bits * params.coding; // 48 subcarriers for legacy
-    const symbol_time = 4; // Legacy OFDM symbol time
-    
+    const params = controlRateMap[selectedRate] || controlRateMap[6]; // fallback to 6 Mbps
+    const bits_per_symbol = 48 * params.bits * params.coding; // legacy: 48 data subcarriers
+    const symbol_time = 4;
     return {bits_per_symbol: bits_per_symbol, symbol_time: symbol_time};
 }
 
+function validateInputs() {
+    const ampduInput = parseInt(document.getElementById('ampdu').value, 10) || 0;
+    const cwInput = parseFloat(document.getElementById('cw').value) || 0;
+    const ssInput = parseInt(document.getElementById('ss').value) || 0;
+    const giInput = parseFloat(document.getElementById('gi').value) || 0;
+    const usersInput = parseInt(document.getElementById('users').value) || 1;
+
+    if (ampduInput < 1 || ampduInput > MAX_AMPDU_BYTES) {
+        alert(`AMPDU size must be between 1 and ${MAX_AMPDU_BYTES} bytes.`);
+        return false;
+    }
+    if (cwInput < 0 || cwInput > MAX_CW) {
+        alert(`CW must be between 0 and ${MAX_CW}.`);
+        return false;
+    }
+    if (ssInput < 1 || ssInput > MAX_SPATIAL_STREAMS) {
+        alert(`Spatial streams must be between 1 and ${MAX_SPATIAL_STREAMS}.`);
+        return false;
+    }
+    if (giInput < 0.4 || giInput > MAX_GI) {
+        alert(`GI must be between 0.4 and ${MAX_GI} µs.`);
+        return false;
+    }
+    if (usersInput < 1 || usersInput > MAX_USERS) {
+        alert(`Number of users must be between 1 and ${MAX_USERS}.`);
+        return false;
+    }
+
+    return true; // All good
+}
+
 function calculate() {
+    if (!validateInputs()) {
+        return; // Stop if invalid
+    }
+    
     const scenario = document.getElementById('scenario').value;
     const band = document.getElementById('band').value;
     const ac_type = document.getElementById('ac').value;
@@ -436,6 +482,10 @@ function calculate() {
     } else {
         const mcs = parseInt(document.getElementById('mcs').value);
         const mcsParams = getMcsParams(mcs);
+        if (!mcsParams) {
+            alert('Invalid MCS selected — please choose a valid MCS.');
+            return;
+        }
         bits_pr_sub = mcsParams.bits;
         coding = mcsParams.coding;
     }
@@ -555,7 +605,41 @@ function calculate() {
         data_bits_per_symbol = data_sub * bits_pr_sub * coding * ss;
     }
     
-    databits_data = 16 + ampdu * 8 + 6; // SERVICE(16) + DATA + TAIL(6)
+    if (!data_bits_per_symbol || data_bits_per_symbol <= 0) {
+        alert('Invalid PHY configuration: data bits per symbol = 0. Check bandwidth, RU and spatial streams.');
+        return;
+    }
+    
+    // --- START: Improved DATA payload + MPDU overhead calculation ---
+    const MAC_HEADER_BYTES = 30;    // typical MAC header + LLC/QoS (approx)
+    const FCS_BYTES = 4;
+    const MPDU_DELIMITER_BYTES = 4; // A-MPDU delimiter (if multiple MPDUs)
+    const SERVICE_BITS = 16;
+    const TAIL_BITS = 6;
+
+    // ampdu (from UI) is treated as total application payload bytes
+    const ampduBytesTotal = (typeof ampdu !== 'undefined' && !isNaN(ampdu)) ? ampdu : 0;
+
+    // Heuristic: split total payload into MPDUs of assumed size (expose as 'Advanced' input later if needed)
+    const assumedMpduPayload = 1500; // bytes per MPDU (default)
+    let mpduCount = Math.max(1, Math.ceil(ampduBytesTotal / assumedMpduPayload));
+    let remainingPayload = ampduBytesTotal;
+    let totalDataBytes = 0;
+
+    if (mpduCount > MAX_MPDU_COUNT) {
+        alert(`Too many MPDUs (${mpduCount}). Please use a smaller AMPDU or MPDU size.`);
+        return;
+    }
+    for (let i = 0; i < mpduCount; i++) {
+        const payloadForThis = (i === mpduCount - 1) ? remainingPayload : assumedMpduPayload;
+        remainingPayload -= payloadForThis;
+        const delimiter = (mpduCount > 1) ? MPDU_DELIMITER_BYTES : 0;
+        totalDataBytes += (MAC_HEADER_BYTES + payloadForThis + FCS_BYTES + delimiter);
+    }
+
+    // Convert to bits and add SERVICE + TAIL
+    databits_data = SERVICE_BITS + (totalDataBytes * 8) + TAIL_BITS;
+    // --- END ---
     symbols_data = Math.ceil(databits_data / data_bits_per_symbol);
     duration_data = symbols_data * symbol_time;
 
@@ -683,9 +767,11 @@ function calculate() {
     total_inc += duration_ack;
     total_exc += duration_ack;
 
-    // Throughput calculation
-    const throughput_inc = (ampdu * 8 / (total_inc * 1e-6)) / 1e6;
-    const throughput_exc = (ampdu * 8 / (total_exc * 1e-6)) / 1e6;
+    // throughput in Mbps (explicit steps)
+    // total_inc and total_exc are in microseconds (µs)
+    const bitsTransmitted = ampduBytesTotal * 8; // application payload bits
+    const throughput_inc = (bitsTransmitted / (total_inc * 1e-6)) / 1e6; // bits/sec -> Mbps
+    const throughput_exc = (bitsTransmitted / (total_exc * 1e-6)) / 1e6;
 
     // Output results with dynamic AC labels
     let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (us)</th><th>Throughput (Mbps)</th></tr></thead><tbody>';
@@ -716,6 +802,11 @@ function calculate() {
         // Set canvas size explicitly
         canvas.width = canvas.offsetWidth;
         canvas.height = 400;
+        
+        if (barData.length > MAX_BAR_POINTS) {
+            alert(`Too many chart points (${barData.length}). Please reduce complexity of the scenario.`);
+            return;
+        }
         
         // Create new chart with delay to ensure DOM is ready
         setTimeout(() => {
