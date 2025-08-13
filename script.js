@@ -162,11 +162,11 @@ const ofdma_map = {
 };
 
 // ----- SAFETY LIMITS -----
-const MAX_AMPDU_BYTES = 65535;   // IEEE 802.11 A-MPDU max size per standard
+const MAX_AMPDU_BYTES = 4194303;   // IEEE 802.11 A-MPDU max size per AX standard
 const MAX_MPDU_COUNT = 1000;     // Prevent extreme loops
 const MAX_USERS = 74;            // Max OFDMA RU allocation in your map
 const MAX_BAR_POINTS = 50;       // Chart.js safe render limit
-const MAX_CW = 512;              // Contention window upper bound
+const MAX_CW = 1023;              // Contention window upper bound
 const MAX_SPATIAL_STREAMS = 8;   // 8x8 MIMO max
 const MAX_GI = 3.2;              // HE max GI in µs
 
@@ -621,7 +621,14 @@ function calculate() {
     const ampduBytesTotal = (typeof ampdu !== 'undefined' && !isNaN(ampdu)) ? ampdu : 0;
 
     // Heuristic: split total payload into MPDUs of assumed size (expose as 'Advanced' input later if needed)
-    const assumedMpduPayload = 1500; // bytes per MPDU (default)
+    // Use adaptive MPDU size for larger A-MPDUs to keep MPDU count reasonable
+    let assumedMpduPayload = 1500; // bytes per MPDU (default)
+    
+    // For large A-MPDUs, use larger individual MPDUs to keep count manageable
+    if (ampduBytesTotal > 100000) { // > 100KB
+        assumedMpduPayload = Math.min(11454, Math.ceil(ampduBytesTotal / 500)); // Max MPDU size ~11.5KB, target ~500 MPDUs
+    }
+    
     let mpduCount = Math.max(1, Math.ceil(ampduBytesTotal / assumedMpduPayload));
     let remainingPayload = ampduBytesTotal;
     let totalDataBytes = 0;
