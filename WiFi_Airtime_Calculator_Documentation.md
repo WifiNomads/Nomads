@@ -1,4 +1,4 @@
-# Wi‑Fi Airtime Calculator — Final Guide (v3)
+# Wi‑Fi Airtime Calculator
 ---
 
 ## 1) What is Airtime?
