@@ -195,7 +195,7 @@
                     <div id="inputs" class="calculator-inputs">
                         <div class="form-group">
                             <label class="form-label">Channel Bandwidth (MHz):</label>
-                            <select id="bandwidth" class="form-select" onchange="updateUsersOptions()" title="Select channel bandwidth. Higher bandwidth provides more subcarriers and higher data rates. 2.4 GHz supports up to 40 MHz, 5 GHz supports up to 160 MHz">
+                            <select id="bandwidth" class="form-select" onchange="updateUsersOptions(true)" title="Select channel bandwidth. Higher bandwidth provides more subcarriers and higher data rates. 2.4 GHz supports up to 40 MHz, 5 GHz supports up to 160 MHz">
                                 <option value="20">20</option>
                                 <option value="40">40</option>
                                 <option value="80">80</option>
@@ -274,7 +274,7 @@
                         
                         <div class="form-group">
                             <label class="form-label">Acknowledgment Type:</label>
-                            <select id="ackType" class="form-select" onchange="updateForm()" title="Select acknowledgment type. ACK (14 bytes) for single frames, Block ACK (32 bytes) for aggregated frames. Block ACK is more efficient for A-MPDU transmissions">
+                            <select id="ackType" class="form-select" title="Select acknowledgment type. ACK (14 bytes) for single frames, Block ACK (32 bytes) for aggregated frames. Block ACK is more efficient for A-MPDU transmissions">
                                 <option value="blockack" selected>Block ACK (32 bytes)</option>
                                 <option value="ack">ACK (14 bytes)</option>
                             </select>

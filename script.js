@@ -194,9 +194,13 @@ function updateLegacyOptions(selected) {
     });
 }
 
-function updateUsersOptions() {
+function updateUsersOptions(preserveSelection = true) {
     const bandwidth = document.getElementById('bandwidth').value;
     const users = document.getElementById('users');
+    
+    // Store current selection to preserve it
+    const currentValue = preserveSelection ? users.value : null;
+    
     users.innerHTML = '';
     const options = Object.keys(ofdma_map[bandwidth]).sort((a,b) => a-b);
     options.forEach(u => {
@@ -205,8 +209,14 @@ function updateUsersOptions() {
         option.text = `${u} (${ofdma_map[bandwidth][u].ru_type})`;
         users.appendChild(option);
     });
-    const defaultIndex = Math.max(0, Math.floor(options.length / 2));
-    users.value = options[defaultIndex] || options[0] || 1;
+    
+    // Try to preserve the previous selection if valid, otherwise use default
+    if (preserveSelection && currentValue && options.includes(currentValue)) {
+        users.value = currentValue;
+    } else {
+        const defaultIndex = Math.max(0, Math.floor(options.length / 2));
+        users.value = options[defaultIndex] || options[0] || 1;
+    }
 }
 
 function updateCWRange() {
@@ -390,7 +400,7 @@ function updateForm() {
     }
     let defaultMcs = Math.min(7, maxMcs);
     if (scenario !== '1') updateMCSOptions(maxMcs, defaultMcs);
-    if (scenario === '4') updateUsersOptions();
+    // Only update users options when scenario changes, not on other parameter changes
 }
 
 function getMcsParams(mcs) {
