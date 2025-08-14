@@ -177,6 +177,34 @@ body {
     width: 100%;
 }
 
+.nav-linkedin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+    text-decoration: none;
+}
+
+.nav-linkedin:hover {
+    background-color: var(--bg-accent-hover);
+    transform: translateY(-1px);
+}
+
+.nav-linkedin-icon {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    transition: var(--transition);
+    opacity: 0.8;
+}
+
+.nav-linkedin:hover .nav-linkedin-icon {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 .nav-cta {
     display: none;
 }
@@ -969,6 +997,20 @@ body {
 
     .nav-menu.active {
         left: 0;
+    }
+    
+    .nav-linkedin {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    .nav-linkedin:last-child {
+        border-bottom: none;
+    }
+    
+    .nav-linkedin-icon {
+        width: 20px;
+        height: 20px;
     }
 
     .hero-container {

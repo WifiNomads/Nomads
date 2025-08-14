@@ -246,11 +246,15 @@ function updateForm() {
         users.style.display = 'block';
         usersLabel.parentElement.style.display = 'flex';
         updateUsersOptions();
-        gi.value = 0.8;
-        gi.min = 0.8;
-        gi.max = 3.2;
-        gi.step = 0.8;
+        
+        // Scenario 4: OFDMA - show only 0.8, 1.6, 3.2 (same as HE)
+        gi.innerHTML = `
+            <option value="0.8" selected>0.8 μs (HE GI)</option>
+            <option value="1.6">1.6 μs (HE GI)</option>
+            <option value="3.2">3.2 μs (HE Long GI)</option>
+        `;
         gi.disabled = false;
+        
         ss.disabled = false;
         bandwidth.disabled = false;
         
@@ -267,11 +271,15 @@ function updateForm() {
         usersLabel.style.display = 'none';
         users.style.display = 'none';
         usersLabel.parentElement.style.display = 'none';
-        gi.value = 0.8;
-        gi.min = 0.8;
-        gi.max = 3.2;
-        gi.step = 0.8;
+        
+        // Scenario 3: HE - show only 0.8, 1.6, 3.2
+        gi.innerHTML = `
+            <option value="0.8" selected>0.8 μs (HE GI)</option>
+            <option value="1.6">1.6 μs (HE GI)</option>
+            <option value="3.2">3.2 μs (HE Long GI)</option>
+        `;
         gi.disabled = false;
+        
         ss.disabled = false;
         bandwidth.disabled = false;
         
@@ -288,8 +296,11 @@ function updateForm() {
         usersLabel.style.display = 'none';
         users.style.display = 'none';
         usersLabel.parentElement.style.display = 'none';
-        gi.value = 0.8;
+        // Legacy scenario: Fix GI to 0.8 and disable
+        gi.innerHTML = '<option value="0.8" selected>0.8 μs (Legacy)</option>';
+        gi.value = '0.8';
         gi.disabled = true;
+        
         ss.value = 1;
         ss.disabled = true;
         bandwidth.value = 20;
@@ -313,10 +324,14 @@ function updateForm() {
         usersLabel.style.display = 'none';
         users.style.display = 'none';
         usersLabel.parentElement.style.display = 'none';
-        gi.min = 0.4;
-        gi.max = 0.8;
-        gi.step = 0.4;
+        
+        // Scenario 2: HT/VHT - show only 0.4 and 0.8
+        gi.innerHTML = `
+            <option value="0.4">0.4 μs (Short GI)</option>
+            <option value="0.8" selected>0.8 μs (Long GI)</option>
+        `;
         gi.disabled = false;
+        
         ss.disabled = false;
         bandwidth.disabled = false;
         
