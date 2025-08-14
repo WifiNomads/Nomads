@@ -188,21 +188,19 @@ body {
 }
 
 .nav-linkedin:hover {
-    background-color: var(--bg-accent-hover);
+    background-color: rgba(0, 119, 181, 0.1);
     transform: translateY(-1px);
 }
 
 .nav-linkedin-icon {
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
     transition: var(--transition);
-    opacity: 0.8;
 }
 
 .nav-linkedin:hover .nav-linkedin-icon {
-    opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .nav-cta {
