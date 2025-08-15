@@ -21,12 +21,42 @@
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <!-- Self-contained QR Code implementation -->
+  <!-- Multiple QR scanning libraries for maximum compatibility -->
   <script>
-    // QR Code generation will be implemented directly in speedtest.js
+    // Load multiple QR scanning libraries
     window.qrLibrariesLoaded = true;
     window.qrCodeReady = true;
-    window.qrScannerReady = false; // Scanner will be optional
+    window.qrScannerReady = false;
+    window.jsQRLoaded = false;
+    window.qrScannerLibLoaded = false;
+    
+    // Load jsQR library
+    const jsQRScript = document.createElement('script');
+    jsQRScript.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+    jsQRScript.onload = () => {
+      window.jsQRLoaded = true;
+      window.qrScannerReady = true;
+      console.log('jsQR library loaded successfully');
+    };
+    jsQRScript.onerror = () => {
+      console.error('jsQR library failed to load');
+      window.jsQRLoaded = false;
+    };
+    document.head.appendChild(jsQRScript);
+    
+    // Backup QR scanner library
+    const qrScannerScript = document.createElement('script');
+    qrScannerScript.src = 'https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js';
+    qrScannerScript.onload = () => {
+      window.qrScannerLibLoaded = true;
+      if (!window.qrScannerReady) window.qrScannerReady = true;
+      console.log('QR-Scanner library loaded successfully');
+    };
+    qrScannerScript.onerror = () => {
+      console.error('QR-Scanner library failed to load');
+      window.qrScannerLibLoaded = false;
+    };
+    document.head.appendChild(qrScannerScript);
   </script>
   
   <style>

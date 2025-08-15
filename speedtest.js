@@ -376,114 +376,292 @@ class WebRTCLANSpeedTest {
   }
   
   startQRDetection(videoElement, onQRDetected) {
-    // Store the detection function for cleanup
+    this.log('🔍 Starting QR detection loop...', 'status-warn');
+    
+    // Simple, reliable scanning with setInterval
     this.qrDetectionInterval = setInterval(() => {
       try {
-        // Create canvas to capture video frame
+        // Create canvas for frame capture
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
+        // Set canvas size to match video
+        canvas.width = videoElement.videoWidth || 640;
+        canvas.height = videoElement.videoHeight || 480;
         
-        if (canvas.width && canvas.height) {
-          // Draw current video frame to canvas
+        if (canvas.width > 0 && canvas.height > 0) {
+          // Draw current video frame
           ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
           
           // Get image data
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           
-          // Try to detect QR code in the image
-          const qrCode = this.detectQRCodeInImageData(imageData);
+          // Debug: Log detection attempt
+          console.log('Trying QR detection...', {
+            width: canvas.width,
+            height: canvas.height,
+            jsQRLoaded: window.jsQRLoaded,
+            jsQRAvailable: typeof jsQR !== 'undefined'
+          });
+          
+          // Try QR detection
+          const qrCode = this.detectQRCodeSimple(imageData);
           
           if (qrCode) {
+            this.log('🎯 QR Code detected!', 'status-ok');
             clearInterval(this.qrDetectionInterval);
             this.qrDetectionInterval = null;
             onQRDetected(qrCode);
+            return;
           }
+        } else {
+          console.log('Video not ready:', { width: canvas.width, height: canvas.height });
         }
       } catch (error) {
-        // Ignore detection errors, keep trying
+        console.error('QR detection error:', error);
       }
-    }, 200); // Check every 200ms for good performance
+    }, 300); // Check every 300ms for reliability
+  }
+  
+  detectQRCodeSimple(imageData) {
+    // Simple, working QR detection
+    this.log('🔍 Attempting QR detection...', 'status-warn');
+    
+    // Check if jsQR is available
+    if (typeof jsQR === 'undefined') {
+      console.error('jsQR library not loaded');
+      this.log('❌ jsQR library not available', 'status-err');
+      return null;
+    }
+    
+    try {
+      // Try basic jsQR detection
+      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      
+      if (code && code.data) {
+        this.log(`✅ QR detected: ${code.data.substring(0, 30)}...`, 'status-ok');
+        console.log('QR Code detected:', code.data);
+        return code.data;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('jsQR detection error:', error);
+      return null;
+    }
   }
   
   detectQRCodeInImageData(imageData) {
-    // Simple QR code detection - look for finder patterns
-    const { width, height, data } = imageData;
-    const threshold = 128;
+    // Super advanced QR detection with multiple methods
+    let result = null;
     
-    // Convert to binary image
-    const binary = new Array(width * height);
-    for (let i = 0; i < data.length; i += 4) {
-      const grayscale = (data[i] + data[i + 1] + data[i + 2]) / 3;
-      binary[i / 4] = grayscale < threshold ? 1 : 0;
+    // Method 1: Try jsQR library with multiple configurations
+    if (typeof jsQR !== 'undefined' && window.jsQRLoaded) {
+      try {
+        // Try with different inversion attempts for better detection
+        const configs = [
+          { inversionAttempts: "dontInvert" },
+          { inversionAttempts: "onlyInvert" },
+          { inversionAttempts: "attemptBoth" }
+        ];
+        
+        for (const config of configs) {
+          const code = jsQR(imageData.data, imageData.width, imageData.height, config);
+          if (code && code.data) {
+            this.log(`🎯 jsQR detected QR: ${code.data.substring(0, 50)}...`, 'status-ok');
+            return code.data;
+          }
+        }
+      } catch (error) {
+        this.log(`jsQR error: ${error.message}`, 'status-warn');
+      }
     }
     
-    // Look for finder pattern (simplified detection)
-    const finderPatterns = this.findFinderPatterns(binary, width, height);
-    
-    if (finderPatterns.length >= 3) {
-      // Try to decode the QR code data
+    // Method 2: Try QR-Scanner library as backup
+    if (typeof QrScanner !== 'undefined' && window.qrScannerLibLoaded) {
       try {
-        const qrData = this.decodeQRFromFinderPatterns(binary, width, height, finderPatterns);
-        return qrData;
+        // QR-Scanner library method
+        result = this.tryQRScannerLib(imageData);
+        if (result) {
+          this.log(`🎯 QR-Scanner detected: ${result.substring(0, 50)}...`, 'status-ok');
+          return result;
+        }
       } catch (error) {
-        // QR detection failed, return null
-        return null;
+        this.log(`QR-Scanner error: ${error.message}`, 'status-warn');
       }
+    }
+    
+    // Method 3: Enhanced image processing for difficult QR codes
+    result = this.tryEnhancedDetection(imageData);
+    if (result) {
+      this.log(`🎯 Enhanced detection: ${result.substring(0, 50)}...`, 'status-ok');
+      return result;
+    }
+    
+    // Method 4: Pattern-based detection for simple QR codes
+    result = this.tryPatternDetection(imageData);
+    if (result) {
+      this.log(`🎯 Pattern detection: ${result.substring(0, 50)}...`, 'status-ok');
+      return result;
     }
     
     return null;
   }
   
-  findFinderPatterns(binary, width, height) {
-    const patterns = [];
-    const minSize = 7; // Minimum finder pattern size
+  tryQRScannerLib(imageData) {
+    // Placeholder for QR-Scanner library integration
+    // This would need proper integration with the QR-Scanner library
+    return null;
+  }
+  
+  tryEnhancedDetection(imageData) {
+    // Enhanced detection with image preprocessing
+    try {
+      if (typeof jsQR === 'undefined') return null;
+      
+      const { width, height, data } = imageData;
+      const processedData = new Uint8ClampedArray(data.length);
+      
+      // Apply image enhancements for better QR detection
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const a = data[i + 3];
+        
+        // Convert to grayscale with enhanced contrast
+        let gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+        
+        // Apply contrast enhancement
+        gray = Math.min(255, Math.max(0, (gray - 128) * 1.5 + 128));
+        
+        // Apply threshold for better black/white separation
+        gray = gray > 128 ? 255 : 0;
+        
+        processedData[i] = gray;
+        processedData[i + 1] = gray;
+        processedData[i + 2] = gray;
+        processedData[i + 3] = a;
+      }
+      
+      // Try detection with processed image
+      const processedImageData = new ImageData(processedData, width, height);
+      const code = jsQR(processedImageData.data, width, height, {
+        inversionAttempts: "attemptBoth"
+      });
+      
+      if (code && code.data) {
+        return code.data;
+      }
+    } catch (error) {
+      // Enhanced detection failed, continue
+    }
     
-    for (let y = 0; y < height - minSize; y++) {
-      for (let x = 0; x < width - minSize; x++) {
-        if (this.isFinderPatternAt(binary, width, x, y, minSize)) {
-          patterns.push({ x, y, size: minSize });
+    return null;
+  }
+  
+  tryPatternDetection(imageData) {
+    // Simple pattern-based detection for our specific QR codes
+    try {
+      const { width, height, data } = imageData;
+      
+      // Look for our base64 encoded connection strings in the QR pattern
+      // This is a simplified approach that looks for specific patterns
+      // that match our connection codes
+      
+      // Convert to binary for pattern analysis
+      const binary = new Array(width * height);
+      for (let i = 0; i < data.length; i += 4) {
+        const grayscale = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        binary[i / 4] = grayscale < 128 ? 1 : 0;
+      }
+      
+      // Look for finder patterns (3 corner squares)
+      const corners = this.findQRCorners(binary, width, height);
+      
+      if (corners.length >= 3) {
+        // Found QR-like structure, try to extract data
+        const extractedData = this.extractQRData(binary, width, height, corners);
+        if (extractedData && this.isValidConnectionCode(extractedData)) {
+          return extractedData;
+        }
+      }
+    } catch (error) {
+      // Pattern detection failed
+    }
+    
+    return null;
+  }
+  
+  findQRCorners(binary, width, height) {
+    const corners = [];
+    const minSize = 7;
+    
+    // Look for 7x7 finder patterns in corners
+    const regions = [
+      { x: 0, y: 0 }, // Top-left
+      { x: width - minSize, y: 0 }, // Top-right
+      { x: 0, y: height - minSize } // Bottom-left
+    ];
+    
+    for (const region of regions) {
+      if (this.isFinderPattern(binary, width, region.x, region.y, minSize)) {
+        corners.push(region);
+      }
+    }
+    
+    return corners;
+  }
+  
+  isFinderPattern(binary, width, x, y, size) {
+    // Check for 7x7 finder pattern
+    if (x + size >= width || y + size >= width) return false;
+    
+    // Check the specific pattern of a QR finder
+    const center = Math.floor(size / 2);
+    
+    // Check if center area is dark
+    for (let dy = 1; dy < size - 1; dy++) {
+      for (let dx = 1; dx < size - 1; dx++) {
+        if (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4) {
+          // Inner square should be dark
+          if (!binary[(y + dy) * width + (x + dx)]) return false;
         }
       }
     }
     
-    return patterns;
+    return true;
   }
   
-  isFinderPatternAt(binary, width, x, y, size) {
-    // Check if there's a finder pattern at this position
-    // This is a simplified check - real QR detection is much more complex
+  extractQRData(binary, width, height, corners) {
+    // Simplified data extraction - look for our base64 patterns
+    // This is a basic implementation that tries to find base64-like strings
     
-    // Check corners are dark
-    if (!binary[y * width + x] || !binary[y * width + (x + size - 1)] ||
-        !binary[(y + size - 1) * width + x] || !binary[(y + size - 1) * width + (x + size - 1)]) {
+    try {
+      // Convert binary pattern back to potential text
+      // This is a simplified approach that assumes our QR codes
+      // contain readable base64 data
+      
+      // For now, return null as this would require full QR decoding
+      // The main detection should work with jsQR library
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+  
+  isValidConnectionCode(data) {
+    // Check if the detected data looks like our connection codes
+    if (!data || typeof data !== 'string') return false;
+    
+    // Our codes are base64 encoded JSON
+    try {
+      const decoded = atob(data);
+      const parsed = JSON.parse(decoded);
+      return parsed && (parsed.type === 'offer' || parsed.type === 'answer' || parsed.sdp);
+    } catch (error) {
       return false;
     }
-    
-    // Check center has dark square
-    const centerX = x + Math.floor(size / 2);
-    const centerY = y + Math.floor(size / 2);
-    
-    return binary[centerY * width + centerX] === 1;
-  }
-  
-  decodeQRFromFinderPatterns(binary, width, height, patterns) {
-    // This is a very simplified QR decoder
-    // In a real implementation, you'd need full Reed-Solomon error correction
-    // For now, we'll try to extract text if the patterns look right
-    
-    // For our use case, we can try to extract the base64 encoded data
-    // by looking for our specific pattern in the binary data
-    
-    // Since we're generating simple QR codes, let's try a different approach
-    // We'll look for text patterns that match our connection codes
-    
-    // This is a placeholder - real QR decoding is extremely complex
-    // For a working implementation, we'd need a full QR decoding library
-    
-    return null; // Return null for now - fallback to manual input
   }
   
   stopOfferScanning() {
