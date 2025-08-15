@@ -1,490 +1,750 @@
-// Local LAN Speed Test Implementation - Fixed WebRTC Version
-// Wi-Fi Nomads - Browser-based iperf replacement
+// WebRTC LAN Speed Test Implementation
+// Wi-Fi Nomads - Pure WebRTC, no servers required
+// Following comprehensive specifications for local network testing
 
-// --- Minimal helper: log -------------------------------------------------
-const logEl = document.getElementById('log');
-function log(msg, cls) {
-  const t = new Date().toLocaleTimeString();
-  const line = document.createElement('div');
-  if (cls) line.className = cls;
-  line.textContent = `[${t}] ${msg}`;
-  logEl.appendChild(line);
-  logEl.scrollTop = logEl.scrollHeight;
-  console.log(msg);
-}
-
-// --- Basic UI handles ----------------------------------------------------
-const ui = {
-  // host side
-  btnHostCreate: document.getElementById('btnHostCreate'),
-  hostOffer: document.getElementById('hostOffer'),
-  copyOffer: document.getElementById('copyOffer'),
-  clientAnswer: document.getElementById('clientAnswer'),
-  btnHostAccept: document.getElementById('btnHostAccept'),
-  hostStatus: document.getElementById('hostStatus'),
-
-  // client side
-  hostCode: document.getElementById('hostCode'),
-  btnClientRespond: document.getElementById('btnClientRespond'),
-  clientCode: document.getElementById('clientCode'),
-  copyAnswer: document.getElementById('copyAnswer'),
-  clientStatus: document.getElementById('clientStatus'),
-
-  // test
-  duration: document.getElementById('duration'),
-  direction: document.getElementById('direction'),
-  reliability: document.getElementById('reliability'),
-  btnStart: document.getElementById('btnStart'),
-
-  // kpis
-  kStatus: document.getElementById('kpiStatus'),
-  kThr: document.getElementById('kpiThroughput'),
-  kLat: document.getElementById('kpiLatency'),
-  kLoss: document.getElementById('kpiLoss'),
-};
-
-// --- WebRTC state --------------------------------------------------------
-let isHost = false;
-let pc, dc; // RTCPeerConnection + DataChannel
-let connected = false;
-
-function pcConfig() {
-  return {
-    iceServers: [
-      { urls: 'stun:stun.l.google.com:19302' },
-      { urls: 'stun:stun1.l.google.com:19302' }
-    ]
-  };
-}
-
-function createPC() {
-  pc = new RTCPeerConnection(pcConfig());
+class WebRTCLANSpeedTest {
+  constructor() {
+    // WebRTC components
+    this.pc = null;
+    this.dataChannel = null;
+    this.isHost = false;
+    this.connected = false;
+    
+    // QR Scanner instances
+    this.offerScanner = null;
+    this.answerScanner = null;
+    
+    // Test state
+    this.testRunning = false;
+    this.testStartTime = 0;
+    this.testData = {
+      bytesSent: 0,
+      bytesReceived: 0,
+      packetsSent: 0,
+      packetsReceived: 0,
+      latencies: []
+    };
+    
+    // UI elements
+    this.ui = {
+      // Security
+      securityWarning: document.getElementById('securityWarning'),
+      
+      // Step indicator
+      stepIndicator: document.getElementById('stepIndicator'),
+      
+      // Host elements
+      btnCreateOffer: document.getElementById('btnCreateOffer'),
+      offerSection: document.getElementById('offerSection'),
+      qrCanvas: document.getElementById('qrCanvas'),
+      btnCopyOffer: document.getElementById('btnCopyOffer'),
+      btnShowOfferText: document.getElementById('btnShowOfferText'),
+      offerTextSection: document.getElementById('offerTextSection'),
+      offerText: document.getElementById('offerText'),
+      answerInput: document.getElementById('answerInput'),
+      btnAcceptAnswer: document.getElementById('btnAcceptAnswer'),
+      btnScanAnswer: document.getElementById('btnScanAnswer'),
+      answerScanSection: document.getElementById('answerScanSection'),
+      answerVideo: document.getElementById('answerVideo'),
+      btnStopAnswerScan: document.getElementById('btnStopAnswerScan'),
+      hostStatus: document.getElementById('hostStatus'),
+      
+      // Client elements
+      btnScanOffer: document.getElementById('btnScanOffer'),
+      btnManualOffer: document.getElementById('btnManualOffer'),
+      offerScanSection: document.getElementById('offerScanSection'),
+      offerVideo: document.getElementById('offerVideo'),
+      btnStopOfferScan: document.getElementById('btnStopOfferScan'),
+      manualOfferSection: document.getElementById('manualOfferSection'),
+      offerInput: document.getElementById('offerInput'),
+      btnProcessOffer: document.getElementById('btnProcessOffer'),
+      responseSection: document.getElementById('responseSection'),
+      responseQR: document.getElementById('responseQR'),
+      btnCopyResponse: document.getElementById('btnCopyResponse'),
+      btnShowResponseText: document.getElementById('btnShowResponseText'),
+      responseTextSection: document.getElementById('responseTextSection'),
+      responseText: document.getElementById('responseText'),
+      clientStatus: document.getElementById('clientStatus'),
+      
+      // Test configuration
+      testConfigCard: document.getElementById('testConfigCard'),
+      testDuration: document.getElementById('testDuration'),
+      testDirection: document.getElementById('testDirection'),
+      transportMode: document.getElementById('transportMode'),
+      btnStartTest: document.getElementById('btnStartTest'),
+      
+      // Test progress and results
+      testProgress: document.getElementById('testProgress'),
+      progressFill: document.getElementById('progressFill'),
+      progressText: document.getElementById('progressText'),
+      throughputResult: document.getElementById('throughputResult'),
+      latencyResult: document.getElementById('latencyResult'),
+      dataResult: document.getElementById('dataResult'),
+      statusResult: document.getElementById('statusResult'),
+      
+      // Debug log
+      debugLog: document.getElementById('debugLog')
+    };
+    
+    this.initializeEventListeners();
+    this.checkSecureContext();
+    this.log('✅ WebRTC LAN Speed Test initialized');
+    this.log('📋 Requirements: Both devices on same Wi-Fi/LAN network');
+  }
   
-  pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      log('ICE candidate: ' + e.candidate.candidate);
+  initializeEventListeners() {
+    // Host controls
+    this.ui.btnCreateOffer.addEventListener('click', () => this.createOffer());
+    this.ui.btnCopyOffer.addEventListener('click', () => this.copyToClipboard(this.ui.offerText.value));
+    this.ui.btnShowOfferText.addEventListener('click', () => this.toggleElement(this.ui.offerTextSection));
+    this.ui.btnAcceptAnswer.addEventListener('click', () => this.acceptAnswer());
+    this.ui.btnScanAnswer.addEventListener('click', () => this.startAnswerScanning());
+    this.ui.btnStopAnswerScan.addEventListener('click', () => this.stopAnswerScanning());
+    
+    // Client controls
+    this.ui.btnScanOffer.addEventListener('click', () => this.startOfferScanning());
+    this.ui.btnManualOffer.addEventListener('click', () => this.showManualOfferInput());
+    this.ui.btnStopOfferScan.addEventListener('click', () => this.stopOfferScanning());
+    this.ui.btnProcessOffer.addEventListener('click', () => this.processOffer());
+    this.ui.btnCopyResponse.addEventListener('click', () => this.copyToClipboard(this.ui.responseText.value));
+    this.ui.btnShowResponseText.addEventListener('click', () => this.toggleElement(this.ui.responseTextSection));
+    
+    // Test controls
+    this.ui.btnStartTest.addEventListener('click', () => this.startSpeedTest());
+  }
+  
+  checkSecureContext() {
+    if (!window.isSecureContext) {
+      this.ui.securityWarning.style.display = 'block';
+      this.log('❌ Insecure context detected', 'status-err');
+      this.log('💡 Serve from HTTPS or localhost for WebRTC access', 'status-warn');
+      return false;
     }
-  };
-  
-  pc.onicegatheringstatechange = () => {
-    log('ICE gathering state: ' + pc.iceGatheringState);
-  };
-  
-  pc.onconnectionstatechange = () => {
-    log('WebRTC connection state: ' + pc.connectionState);
-    if (pc.connectionState === 'connected') {
-      onConnected();
-    } else if (pc.connectionState === 'failed') {
-      log('WebRTC connection failed', 'status-err');
-      ui.kStatus.textContent = 'Connection Failed';
-    } else if (pc.connectionState === 'disconnected') {
-      log('WebRTC connection disconnected', 'status-warn');
-      connected = false;
-      ui.btnStart.disabled = true;
-      ui.kStatus.textContent = 'Disconnected';
+    
+    if (!window.RTCPeerConnection) {
+      this.log('❌ WebRTC not supported in this browser', 'status-err');
+      this.log('💡 Please use Chrome 24+, Firefox 22+, Safari 11+, or Edge', 'status-warn');
+      return false;
     }
-  };
+    
+    return true;
+  }
   
-  pc.oniceconnectionstatechange = () => {
-    log('ICE connection state: ' + pc.iceConnectionState);
-  };
+  log(message, className = '') {
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${message}`;
+    
+    const logElement = document.createElement('div');
+    if (className) logElement.className = className;
+    logElement.textContent = logEntry;
+    
+    this.ui.debugLog.appendChild(logElement);
+    this.ui.debugLog.scrollTop = this.ui.debugLog.scrollHeight;
+    
+    console.log(logEntry);
+  }
   
-  pc.ondatachannel = (ev) => {
-    log('Received data channel from host', 'status-ok');
-    dc = ev.channel;
-    setupDC();
-  };
-}
-
-function setupDC() {
-  dc.onopen = () => {
-    log('Data channel opened', 'status-ok');
-    connected = true;
-    ui.btnStart.disabled = false;
-    ui.kStatus.textContent = 'Connected';
-    log('🚀 Ready to start speed test!', 'status-ok');
-  };
+  updateStatus(element, message, className = '') {
+    element.textContent = message;
+    element.className = `speedtest-muted ${className}`;
+  }
   
-  dc.onclose = () => {
-    log('Data channel closed', 'status-warn');
-    connected = false;
-    ui.btnStart.disabled = true;
-    ui.kStatus.textContent = 'Disconnected';
-  };
+  toggleElement(element) {
+    element.style.display = element.style.display === 'none' ? 'block' : 'none';
+  }
   
-  dc.onerror = (e) => {
-    log('Data channel error: ' + e, 'status-err');
-  };
+  async copyToClipboard(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      this.log('📋 Code copied to clipboard', 'status-ok');
+    } catch (error) {
+      this.log('❌ Failed to copy to clipboard', 'status-err');
+      // Fallback: select text for manual copy
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.body.removeChild(textArea);
+    }
+  }
   
-  dc.onmessage = onData;
-  
-  // Backpressure management - critical for high-speed testing
-  dc.bufferedAmountLowThreshold = 1 << 20; // 1MB threshold
-  
-  dc.addEventListener('bufferedamountlow', () => {
-    log('Buffer cleared, ready for more data');
-  });
-}
-
-function reliableOpts() {
-  const rel = ui.reliability.value === 'reliable';
-  return rel ? { ordered: true } : { ordered: false, maxRetransmits: 0 };
-}
-
-async function waitIceComplete(conn) {
-  if (conn.iceGatheringState === 'complete') return;
-  
-  log('Waiting for ICE candidate gathering...');
-  
-  await new Promise(resolve => {
-    const checkComplete = () => {
-      if (conn.iceGatheringState === 'complete') {
-        conn.removeEventListener('icegatheringstatechange', checkComplete);
-        resolve();
+  createPeerConnection() {
+    // Pure LAN configuration - no STUN/TURN servers needed
+    const config = { iceServers: [] };
+    
+    this.pc = new RTCPeerConnection(config);
+    
+    // Connection state monitoring
+    this.pc.onconnectionstatechange = () => {
+      this.log(`🔗 WebRTC connection state: ${this.pc.connectionState}`);
+      
+      if (this.pc.connectionState === 'connected') {
+        this.onConnectionEstablished();
+      } else if (this.pc.connectionState === 'failed') {
+        this.log('❌ WebRTC connection failed', 'status-err');
+        this.log('💡 Check if both devices are on the same network', 'status-warn');
+        this.ui.statusResult.textContent = 'Connection Failed';
+      } else if (this.pc.connectionState === 'disconnected') {
+        this.log('⚠️ WebRTC connection disconnected', 'status-warn');
+        this.connected = false;
+        this.ui.btnStartTest.disabled = true;
+        this.ui.statusResult.textContent = 'Disconnected';
       }
     };
-    conn.addEventListener('icegatheringstatechange', checkComplete);
     
-    // Safety timeout - don't wait forever
-    setTimeout(() => {
-      log('ICE gathering timeout, proceeding anyway', 'status-warn');
-      resolve();
-    }, 5000);
-  });
-  
-  log('ICE candidate gathering complete');
-}
-
-// --- Pairing flow (copy/paste codes) ------------------------------------
-ui.btnHostCreate.onclick = async () => {
-  try {
-    log('Creating host connection...', 'status-ok');
-    isHost = true;
-    createPC();
+    this.pc.oniceconnectionstatechange = () => {
+      this.log(`🧊 ICE connection state: ${this.pc.iceConnectionState}`);
+    };
     
-    // Host creates data channel proactively
-    dc = pc.createDataChannel('speedtest', reliableOpts());
-    setupDC();
+    this.pc.onicegatheringstatechange = () => {
+      this.log(`🔍 ICE gathering state: ${this.pc.iceGatheringState}`);
+    };
     
-    // Create offer
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    
-    // Wait for ICE gathering to complete
-    await waitIceComplete(pc);
-    
-    // Encode offer as base64 for easy copy/paste
-    const offerCode = btoa(JSON.stringify(pc.localDescription));
-    ui.hostOffer.value = offerCode;
-    ui.copyOffer.disabled = false;
-    ui.btnHostAccept.disabled = false;
-    
-    ui.hostStatus.textContent = 'Send Host Code to Client and wait for response code.';
-    ui.hostStatus.className = 'speedtest-muted status-warn';
-    
-    log('Host code created successfully', 'status-ok');
-    log('Share the Host Code with the client device', 'status-warn');
-  } catch (error) {
-    log('Failed to create host code: ' + error.message, 'status-err');
-    ui.hostStatus.textContent = 'Failed to create host code';
-    ui.hostStatus.className = 'speedtest-muted status-err';
-  }
-};
-
-ui.copyOffer.onclick = () => {
-  navigator.clipboard.writeText(ui.hostOffer.value).then(() => {
-    log('Host code copied to clipboard', 'status-ok');
-  }).catch(() => {
-    log('Failed to copy to clipboard', 'status-err');
-  });
-};
-
-ui.btnHostAccept.onclick = async () => {
-  const responseCode = ui.clientAnswer.value.trim();
-  if (!responseCode) {
-    ui.hostStatus.textContent = 'Please paste the Client Response Code first';
-    ui.hostStatus.className = 'speedtest-muted status-err';
-    return;
-  }
-  
-  try {
-    log('Processing client response...', 'status-warn');
-    const answer = JSON.parse(atob(responseCode));
-    await pc.setRemoteDescription(answer);
-    
-    ui.hostStatus.textContent = 'Client response accepted - establishing connection...';
-    ui.hostStatus.className = 'speedtest-muted status-ok';
-    
-    log('Client response accepted, waiting for connection...', 'status-ok');
-  } catch (error) {
-    log('Invalid Client Response Code: ' + error.message, 'status-err');
-    ui.hostStatus.textContent = 'Invalid Client Response Code';
-    ui.hostStatus.className = 'speedtest-muted status-err';
-  }
-};
-
-ui.btnClientRespond.onclick = async () => {
-  const hostCode = ui.hostCode.value.trim();
-  if (!hostCode) {
-    ui.clientStatus.textContent = 'Please paste Host Code first';
-    ui.clientStatus.className = 'speedtest-muted status-err';
-    return;
-  }
-  
-  try {
-    log('Processing host code...', 'status-warn');
-    isHost = false;
-    createPC();
-    
-    // Decode and process host offer
-    const offer = JSON.parse(atob(hostCode));
-    await pc.setRemoteDescription(offer);
-    
-    // Create answer
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    
-    // Wait for ICE gathering
-    await waitIceComplete(pc);
-    
-    // Encode answer for host
-    const answerCode = btoa(JSON.stringify(pc.localDescription));
-    ui.clientCode.value = answerCode;
-    ui.copyAnswer.disabled = false;
-    
-    ui.clientStatus.textContent = 'Send Client Response Code back to Host';
-    ui.clientStatus.className = 'speedtest-muted status-warn';
-    
-    log('Client response created successfully', 'status-ok');
-    log('Send the Client Response Code back to the host', 'status-warn');
-  } catch (error) {
-    log('Invalid Host Code: ' + error.message, 'status-err');
-    ui.clientStatus.textContent = 'Invalid Host Code';
-    ui.clientStatus.className = 'speedtest-muted status-err';
-  }
-};
-
-ui.copyAnswer.onclick = () => {
-  navigator.clipboard.writeText(ui.clientCode.value).then(() => {
-    log('Client response code copied to clipboard', 'status-ok');
-  }).catch(() => {
-    log('Failed to copy to clipboard', 'status-err');
-  });
-};
-
-function onConnected() {
-  connected = true;
-  ui.btnStart.disabled = false;
-  ui.kStatus.textContent = 'Connected';
-  
-  if (isHost) {
-    ui.hostStatus.textContent = 'Connected to client - Ready to test!';
-    ui.hostStatus.className = 'speedtest-muted status-ok';
-  } else {
-    ui.clientStatus.textContent = 'Connected to host - Ready to test!';
-    ui.clientStatus.className = 'speedtest-muted status-ok';
-  }
-  
-  log('🎉 Devices connected successfully!', 'status-ok');
-  log('Configure test settings and click "Start Test"', 'status-warn');
-}
-
-// --- Test logic ----------------------------------------------------------
-const test = {
-  running: false,
-  start: 0,
-  durMs: 0,
-  sentBytes: 0,
-  recvBytes: 0,
-  sentPkts: 0,
-  recvPkts: 0,
-  rtts: [],
-};
-
-function resetKpis() {
-  ui.kThr.textContent = '–';
-  ui.kLat.textContent = '–';
-  ui.kLoss.textContent = '–';
-}
-
-ui.btnStart.onclick = () => {
-  if (!connected || !dc || dc.readyState !== 'open') {
-    log('Cannot start test - not connected', 'status-err');
-    return;
-  }
-  
-  log('Starting speed test...', 'status-ok');
-  resetKpis();
-  
-  test.running = true;
-  test.start = performance.now();
-  test.durMs = (+ui.duration.value || 10) * 1000;
-  test.sentBytes = test.recvBytes = test.sentPkts = test.recvPkts = 0;
-  test.rtts.length = 0;
-  
-  ui.kStatus.textContent = 'Testing…';
-  ui.btnStart.disabled = true;
-  
-  const dir = ui.direction.value;
-  const transportMode = ui.reliability.value;
-  
-  log(`Test config: ${dir}, ${transportMode}, ${ui.duration.value}s`, 'status-warn');
-  
-  if (dir === 'host-to-client') {
-    runRole(isHost ? 'sender' : 'receiver');
-  } else if (dir === 'client-to-host') {
-    runRole(isHost ? 'receiver' : 'sender');
-  } else {
-    // bidirectional
-    runRole('sender');
-  }
-};
-
-function pktHeader(ts, seq, payloadLen) {
-  // 16 bytes header: [seq:uint32][ts:float64][len:uint32]
-  const buf = new ArrayBuffer(16 + payloadLen);
-  const view = new DataView(buf);
-  view.setUint32(0, seq, true);
-  view.setFloat64(4, ts, true);
-  view.setUint32(12, payloadLen, true);
-  return { buf, view, off: 16 };
-}
-
-function makePayload(len) {
-  const buf = new Uint8Array(len);
-  // Simple test pattern
-  for (let i = 0; i < len; i += 4) {
-    buf[i] = i & 255;
-    buf[i + 1] = (i >> 8) & 255;
-    buf[i + 2] = (i >> 16) & 255;
-    buf[i + 3] = (i >> 24) & 255;
-  }
-  return buf;
-}
-
-let seqTx = 0;
-
-async function runRole(role) {
-  if (role === 'sender') {
-    log('Running as sender...', 'status-ok');
-    const chunkSize = 16384; // 16 KB chunks for good performance
-    const chunk = makePayload(chunkSize);
-    const endAt = test.start + test.durMs;
-    
-    seqTx = 0;
-    
-    while (performance.now() < endAt && test.running) {
-      // Critical: Check buffer status to prevent overflow
-      while (dc.bufferedAmount > dc.bufferedAmountLowThreshold) {
-        await new Promise(resolve => {
-          dc.addEventListener('bufferedamountlow', resolve, { once: true });
-        });
+    this.pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        this.log(`🎯 ICE candidate: ${event.candidate.candidate}`);
+      } else {
+        this.log('✅ ICE candidate gathering complete');
       }
-      
-      const now = performance.now();
-      const { buf, off } = pktHeader(now, seqTx++, chunk.byteLength);
-      new Uint8Array(buf, off).set(chunk);
-      
-      try {
-        dc.send(buf);
-        test.sentPkts++;
-        test.sentBytes += buf.byteLength;
-      } catch (e) {
-        log('Send error: ' + e, 'status-err');
-        break;
-      }
-      
-      // Yield to event loop periodically
-      if (seqTx % 64 === 0) {
-        await new Promise(r => setTimeout(r, 0));
-      }
-      
-      updateKpis();
+    };
+    
+    // Data channel handling for client
+    this.pc.ondatachannel = (event) => {
+      this.log('📨 Received data channel from host', 'status-ok');
+      this.dataChannel = event.channel;
+      this.setupDataChannel();
+    };
+  }
+  
+  async waitForICEGathering() {
+    if (this.pc.iceGatheringState === 'complete') {
+      return;
     }
     
-    log('Sender finished', 'status-ok');
-    finish();
-  } else {
-    log('Running as receiver...', 'status-ok');
+    this.log('⏳ Waiting for ICE candidate gathering...');
+    
+    return new Promise((resolve) => {
+      const checkGathering = () => {
+        if (this.pc.iceGatheringState === 'complete') {
+          this.pc.removeEventListener('icegatheringstatechange', checkGathering);
+          resolve();
+        }
+      };
+      
+      this.pc.addEventListener('icegatheringstatechange', checkGathering);
+      
+      // Safety timeout
+      setTimeout(() => {
+        this.log('⏰ ICE gathering timeout, proceeding anyway', 'status-warn');
+        resolve();
+      }, 5000);
+    });
+  }
+  
+  async createOffer() {
+    try {
+      this.log('🏗️ Creating connection offer...', 'status-warn');
+      this.isHost = true;
+      
+      this.createPeerConnection();
+      
+      // Host creates data channel proactively
+      const transportReliable = this.ui.transportMode.value === 'reliable';
+      const channelOptions = transportReliable ? 
+        { ordered: true } : 
+        { ordered: false, maxRetransmits: 0 };
+      
+      this.dataChannel = this.pc.createDataChannel('speedtest', channelOptions);
+      this.dataChannel.binaryType = 'arraybuffer';
+      this.setupDataChannel();
+      
+      // Create offer
+      const offer = await this.pc.createOffer();
+      await this.pc.setLocalDescription(offer);
+      
+      // Wait for ICE gathering to complete
+      await this.waitForICEGathering();
+      
+      // Create shareable code
+      const offerCode = this.encodeSDPCode(this.pc.localDescription);
+      this.ui.offerText.value = offerCode;
+      
+      // Generate QR code
+      await this.generateQRCode(this.ui.qrCanvas, offerCode);
+      
+      // Show offer section
+      this.ui.offerSection.style.display = 'block';
+      this.ui.btnCreateOffer.disabled = true;
+      
+      this.updateStatus(this.ui.hostStatus, 'Share QR code or text with client device', 'status-warn');
+      this.ui.stepIndicator.textContent = 'Step 1: Share offer with client device';
+      
+      this.log('✅ Connection offer created successfully', 'status-ok');
+      this.log('📤 Share the QR code or text with the client device');
+      
+    } catch (error) {
+      this.log(`❌ Failed to create offer: ${error.message}`, 'status-err');
+      this.updateStatus(this.ui.hostStatus, 'Failed to create offer', 'status-err');
+    }
+  }
+  
+  async acceptAnswer() {
+    const answerCode = this.ui.answerInput.value.trim();
+    if (!answerCode) {
+      this.updateStatus(this.ui.hostStatus, 'Please paste client response code', 'status-err');
+      return;
+    }
+    
+    try {
+      this.log('🔄 Processing client response...', 'status-warn');
+      
+      const answerSDP = this.decodeSDPCode(answerCode);
+      await this.pc.setRemoteDescription(new RTCSessionDescription(answerSDP));
+      
+      this.updateStatus(this.ui.hostStatus, 'Client response accepted - establishing connection...', 'status-ok');
+      this.log('✅ Client response processed successfully', 'status-ok');
+      
+    } catch (error) {
+      this.log(`❌ Invalid client response: ${error.message}`, 'status-err');
+      this.updateStatus(this.ui.hostStatus, 'Invalid client response code', 'status-err');
+    }
+  }
+  
+  startOfferScanning() {
+    this.ui.offerScanSection.style.display = 'block';
+    this.ui.manualOfferSection.style.display = 'none';
+    
+    QrScanner.createQrEngine().then(qrEngine => {
+      this.offerScanner = new QrScanner(
+        this.ui.offerVideo,
+        result => {
+          this.log('📷 QR code scanned successfully', 'status-ok');
+          this.processScannedOffer(result.data);
+          this.stopOfferScanning();
+        },
+        {
+          returnDetailedScanResult: true,
+          highlightScanRegion: true
+        }
+      );
+      
+      this.offerScanner.start().catch(error => {
+        this.log(`❌ Camera access failed: ${error.message}`, 'status-err');
+        this.showManualOfferInput();
+      });
+    });
+  }
+  
+  stopOfferScanning() {
+    if (this.offerScanner) {
+      this.offerScanner.stop();
+      this.offerScanner = null;
+    }
+    this.ui.offerScanSection.style.display = 'none';
+  }
+  
+  showManualOfferInput() {
+    this.ui.manualOfferSection.style.display = 'block';
+    this.ui.offerScanSection.style.display = 'none';
+    this.stopOfferScanning();
+  }
+  
+  async processOffer() {
+    const offerCode = this.ui.offerInput.value.trim();
+    if (!offerCode) {
+      this.updateStatus(this.ui.clientStatus, 'Please paste host connection code', 'status-err');
+      return;
+    }
+    
+    await this.processScannedOffer(offerCode);
+  }
+  
+  async processScannedOffer(offerCode) {
+    try {
+      this.log('🔄 Processing host offer...', 'status-warn');
+      this.isHost = false;
+      
+      this.createPeerConnection();
+      
+      // Decode and set remote description
+      const offerSDP = this.decodeSDPCode(offerCode);
+      await this.pc.setRemoteDescription(new RTCSessionDescription(offerSDP));
+      
+      // Create answer
+      const answer = await this.pc.createAnswer();
+      await this.pc.setLocalDescription(answer);
+      
+      // Wait for ICE gathering
+      await this.waitForICEGathering();
+      
+      // Create response code
+      const responseCode = this.encodeSDPCode(this.pc.localDescription);
+      this.ui.responseText.value = responseCode;
+      
+      // Generate response QR code
+      await this.generateQRCode(this.ui.responseQR, responseCode);
+      
+      // Show response section
+      this.ui.responseSection.style.display = 'block';
+      this.ui.manualOfferSection.style.display = 'none';
+      
+      this.updateStatus(this.ui.clientStatus, 'Share response code with host device', 'status-warn');
+      this.log('✅ Response created - share with host device', 'status-ok');
+      
+    } catch (error) {
+      this.log(`❌ Failed to process offer: ${error.message}`, 'status-err');
+      this.updateStatus(this.ui.clientStatus, 'Invalid host connection code', 'status-err');
+    }
+  }
+  
+  startAnswerScanning() {
+    this.ui.answerScanSection.style.display = 'block';
+    
+    QrScanner.createQrEngine().then(qrEngine => {
+      this.answerScanner = new QrScanner(
+        this.ui.answerVideo,
+        result => {
+          this.log('📷 Response QR code scanned', 'status-ok');
+          this.ui.answerInput.value = result.data;
+          this.acceptAnswer();
+          this.stopAnswerScanning();
+        },
+        {
+          returnDetailedScanResult: true,
+          highlightScanRegion: true
+        }
+      );
+      
+      this.answerScanner.start().catch(error => {
+        this.log(`❌ Camera access failed: ${error.message}`, 'status-err');
+        this.stopAnswerScanning();
+      });
+    });
+  }
+  
+  stopAnswerScanning() {
+    if (this.answerScanner) {
+      this.answerScanner.stop();
+      this.answerScanner = null;
+    }
+    this.ui.answerScanSection.style.display = 'none';
+  }
+  
+  setupDataChannel() {
+    this.dataChannel.onopen = () => {
+      this.log('🚀 Data channel opened successfully!', 'status-ok');
+      this.onConnectionEstablished();
+    };
+    
+    this.dataChannel.onclose = () => {
+      this.log('🔌 Data channel closed', 'status-warn');
+      this.connected = false;
+      this.ui.btnStartTest.disabled = true;
+      this.ui.statusResult.textContent = 'Disconnected';
+    };
+    
+    this.dataChannel.onerror = (error) => {
+      this.log(`❌ Data channel error: ${error}`, 'status-err');
+    };
+    
+    this.dataChannel.onmessage = (event) => {
+      this.handleIncomingData(event.data);
+    };
+    
+    // Critical: Set buffer management for high-speed testing
+    this.dataChannel.bufferedAmountLowThreshold = 32 * 1024; // 32KB threshold
+    
+    this.dataChannel.addEventListener('bufferedamountlow', () => {
+      // Buffer is cleared, ready for more data
+      if (this.testRunning) {
+        this.continueDataTransmission();
+      }
+    });
+  }
+  
+  onConnectionEstablished() {
+    this.connected = true;
+    this.ui.btnStartTest.disabled = false;
+    this.ui.statusResult.textContent = 'Connected';
+    
+    // Show test configuration
+    this.ui.testConfigCard.style.display = 'block';
+    this.ui.stepIndicator.textContent = 'Step 2: Devices connected successfully!';
+    
+    if (this.isHost) {
+      this.updateStatus(this.ui.hostStatus, 'Connected to client - Ready to test!', 'status-ok');
+    } else {
+      this.updateStatus(this.ui.clientStatus, 'Connected to host - Ready to test!', 'status-ok');
+    }
+    
+    this.log('🎉 Peer-to-peer connection established!', 'status-ok');
+    this.log('⚡ Ready to start speed test');
+  }
+  
+  async generateQRCode(canvas, data) {
+    try {
+      await QRCode.toCanvas(canvas, data, {
+        width: 200,
+        margin: 1,
+        color: {
+          dark: '#1e3a8a',
+          light: '#ffffff'
+        }
+      });
+    } catch (error) {
+      this.log(`❌ QR code generation failed: ${error.message}`, 'status-err');
+    }
+  }
+  
+  encodeSDPCode(sdp) {
+    // Create compact, shareable code
+    return btoa(JSON.stringify(sdp));
+  }
+  
+  decodeSDPCode(code) {
+    try {
+      return JSON.parse(atob(code));
+    } catch (error) {
+      throw new Error('Invalid connection code format');
+    }
+  }
+  
+  async startSpeedTest() {
+    if (!this.connected || !this.dataChannel || this.dataChannel.readyState !== 'open') {
+      this.log('❌ Cannot start test - not connected', 'status-err');
+      return;
+    }
+    
+    this.testRunning = true;
+    this.ui.btnStartTest.disabled = true;
+    this.ui.testProgress.style.display = 'block';
+    
+    // Reset test data
+    this.testData = {
+      bytesSent: 0,
+      bytesReceived: 0,
+      packetsSent: 0,
+      packetsReceived: 0,
+      latencies: []
+    };
+    
+    const duration = parseInt(this.ui.testDuration.value) * 1000;
+    const direction = this.ui.testDirection.value;
+    const transport = this.ui.transportMode.value;
+    
+    this.log(`🚀 Starting speed test...`, 'status-ok');
+    this.log(`📊 Config: ${direction}, ${transport}, ${duration/1000}s`);
+    
+    this.testStartTime = performance.now();
+    
+    // Start appropriate test based on direction
+    if (direction === 'host-to-client') {
+      this.runSpeedTest(this.isHost ? 'sender' : 'receiver', duration);
+    } else if (direction === 'client-to-host') {
+      this.runSpeedTest(this.isHost ? 'receiver' : 'sender', duration);
+    } else {
+      // Bidirectional - both devices send
+      this.runSpeedTest('sender', duration);
+    }
+  }
+  
+  async runSpeedTest(role, duration) {
+    if (role === 'sender') {
+      await this.runSenderTest(duration);
+    } else {
+      await this.runReceiverTest(duration);
+    }
+  }
+  
+  async runSenderTest(duration) {
+    this.log('📤 Running as sender...', 'status-ok');
+    
+    const totalBytes = 10 * 1024 * 1024; // 10MB test
+    const chunkSize = 64 * 1024; // 64KB chunks (WebRTC message size limit)
+    let bytesSent = 0;
+    
+    const endTime = this.testStartTime + duration;
+    
+    const sendChunks = async () => {
+      while (bytesSent < totalBytes && performance.now() < endTime && this.testRunning) {
+        // Buffer management - wait if buffer is full
+        if (this.dataChannel.bufferedAmount >= this.dataChannel.bufferedAmountLowThreshold) {
+          await new Promise(resolve => {
+            this.dataChannel.addEventListener('bufferedamountlow', resolve, { once: true });
+          });
+        }
+        
+        // Create test packet with header
+        const packet = this.createTestPacket(chunkSize, this.testData.packetsSent);
+        
+        try {
+          this.dataChannel.send(packet);
+          this.testData.packetsSent++;
+          this.testData.bytesSent += packet.byteLength;
+          bytesSent += packet.byteLength;
+          
+          // Update progress
+          this.updateTestProgress();
+          
+        } catch (error) {
+          this.log(`❌ Send error: ${error.message}`, 'status-err');
+          break;
+        }
+      }
+      
+      // Send completion signal
+      this.dataChannel.send('TEST_COMPLETE');
+      this.log('📤 Sender test completed', 'status-ok');
+    };
+    
+    await sendChunks();
+    
+    // Auto-finish after duration
+    setTimeout(() => {
+      if (this.testRunning) {
+        this.finishSpeedTest();
+      }
+    }, duration + 1000);
+  }
+  
+  async runReceiverTest(duration) {
+    this.log('📥 Running as receiver...', 'status-ok');
+    
     // Receiver just waits and measures incoming data
     setTimeout(() => {
-      if (test.running) finish();
-    }, test.durMs + 200); // Safety stop
-  }
-}
-
-function onData(ev) {
-  const data = ev.data;
-  if (!(data instanceof ArrayBuffer)) return; // ignore non-binary data
-  
-  const view = new DataView(data);
-  const seq = view.getUint32(0, true);
-  const ts = view.getFloat64(4, true);
-  const len = view.getUint32(12, true);
-  
-  test.recvPkts++;
-  test.recvBytes += data.byteLength;
-  
-  // Calculate round-trip time
-  const rtt = performance.now() - ts;
-  if (rtt > 0 && rtt < 20000) { // reasonable RTT range
-    test.rtts.push(rtt);
+      if (this.testRunning) {
+        this.finishSpeedTest();
+      }
+    }, duration + 2000); // Extra time for completion
   }
   
-  updateKpis();
-}
-
-function updateKpis() {
-  const elapsed = (performance.now() - test.start) / 1000;
-  if (elapsed <= 0) return;
-  
-  // Calculate throughput in Mbps
-  const bits = 8 * Math.max(test.recvBytes, test.sentBytes);
-  const mbps = bits / elapsed / 1e6;
-  ui.kThr.textContent = mbps.toFixed(2) + ' Mbps';
-  
-  // Calculate average latency
-  if (test.rtts.length) {
-    const avg = test.rtts.reduce((a, b) => a + b, 0) / test.rtts.length;
-    ui.kLat.textContent = avg.toFixed(1) + ' ms';
+  createTestPacket(payloadSize, sequenceNumber) {
+    // Create packet with header: [seq:4bytes][timestamp:8bytes][size:4bytes][payload]
+    const headerSize = 16;
+    const totalSize = headerSize + payloadSize;
+    const buffer = new ArrayBuffer(totalSize);
+    const view = new DataView(buffer);
+    
+    // Write header
+    view.setUint32(0, sequenceNumber, true); // Sequence number
+    view.setFloat64(4, performance.now(), true); // Timestamp
+    view.setUint32(12, payloadSize, true); // Payload size
+    
+    // Fill payload with test pattern
+    const payload = new Uint8Array(buffer, headerSize);
+    for (let i = 0; i < payloadSize; i += 4) {
+      payload[i] = i & 0xFF;
+      payload[i + 1] = (i >> 8) & 0xFF;
+      payload[i + 2] = (i >> 16) & 0xFF;
+      payload[i + 3] = (i >> 24) & 0xFF;
+    }
+    
+    return buffer;
   }
   
-  // Calculate packet loss for unreliable mode
-  if (ui.reliability.value === 'unreliable' && test.sentPkts) {
-    const loss = (1 - (test.recvPkts / test.sentPkts)) * 100;
-    ui.kLoss.textContent = loss < 0 ? '0%' : loss.toFixed(2) + '%';
-  } else {
-    ui.kLoss.textContent = 'N/A';
+  handleIncomingData(data) {
+    if (typeof data === 'string' && data === 'TEST_COMPLETE') {
+      this.log('📥 Received test completion signal', 'status-ok');
+      this.finishSpeedTest();
+      return;
+    }
+    
+    if (!(data instanceof ArrayBuffer)) return;
+    
+    this.testData.packetsReceived++;
+    this.testData.bytesReceived += data.byteLength;
+    
+    // Parse packet header for latency calculation
+    if (data.byteLength >= 16) {
+      const view = new DataView(data);
+      const sequenceNumber = view.getUint32(0, true);
+      const timestamp = view.getFloat64(4, true);
+      const payloadSize = view.getUint32(12, true);
+      
+      // Calculate round-trip time
+      const now = performance.now();
+      const rtt = now - timestamp;
+      
+      if (rtt > 0 && rtt < 10000) { // Reasonable RTT range
+        this.testData.latencies.push(rtt);
+      }
+    }
+    
+    this.updateTestProgress();
   }
-}
-
-function finish() {
-  if (!test.running) return;
-  test.running = false;
-  ui.btnStart.disabled = false;
-  ui.kStatus.textContent = 'Complete';
   
-  updateKpis();
+  updateTestProgress() {
+    if (!this.testRunning) return;
+    
+    const elapsed = (performance.now() - this.testStartTime) / 1000;
+    const duration = parseInt(this.ui.testDuration.value);
+    
+    // Update progress bar
+    const progress = Math.min((elapsed / duration) * 100, 100);
+    this.ui.progressFill.style.width = `${progress}%`;
+    
+    // Calculate current throughput
+    const totalBytes = Math.max(this.testData.bytesSent, this.testData.bytesReceived);
+    const totalMB = totalBytes / (1024 * 1024);
+    const throughputMbps = elapsed > 0 ? (totalBytes * 8) / (elapsed * 1000000) : 0;
+    
+    // Update UI
+    this.ui.progressText.textContent = `${elapsed.toFixed(1)}s - ${throughputMbps.toFixed(2)} Mbps - ${totalMB.toFixed(2)} MB transferred`;
+    this.ui.throughputResult.textContent = `${throughputMbps.toFixed(2)} Mbps`;
+    this.ui.dataResult.textContent = `${totalMB.toFixed(2)} MB`;
+    
+    // Update latency if available
+    if (this.testData.latencies.length > 0) {
+      const avgLatency = this.testData.latencies.reduce((a, b) => a + b) / this.testData.latencies.length;
+      this.ui.latencyResult.textContent = `${avgLatency.toFixed(1)} ms`;
+    }
+  }
   
-  const finalThroughput = ui.kThr.textContent;
-  const finalLatency = ui.kLat.textContent;
-  const finalLoss = ui.kLoss.textContent;
+  finishSpeedTest() {
+    if (!this.testRunning) return;
+    
+    this.testRunning = false;
+    this.ui.btnStartTest.disabled = false;
+    this.ui.testProgress.style.display = 'none';
+    
+    const elapsed = (performance.now() - this.testStartTime) / 1000;
+    const totalBytes = Math.max(this.testData.bytesSent, this.testData.bytesReceived);
+    const totalMB = totalBytes / (1024 * 1024);
+    const finalThroughput = (totalBytes * 8) / (elapsed * 1000000);
+    
+    // Final results
+    this.ui.throughputResult.textContent = `${finalThroughput.toFixed(2)} Mbps`;
+    this.ui.dataResult.textContent = `${totalMB.toFixed(2)} MB`;
+    this.ui.statusResult.textContent = 'Test Complete';
+    
+    // Calculate latency statistics
+    if (this.testData.latencies.length > 0) {
+      const avgLatency = this.testData.latencies.reduce((a, b) => a + b) / this.testData.latencies.length;
+      const minLatency = Math.min(...this.testData.latencies);
+      const maxLatency = Math.max(...this.testData.latencies);
+      
+      this.ui.latencyResult.textContent = `${avgLatency.toFixed(1)} ms`;
+      
+      this.log(`📊 Latency stats - Min: ${minLatency.toFixed(1)}ms, Avg: ${avgLatency.toFixed(1)}ms, Max: ${maxLatency.toFixed(1)}ms`, 'status-ok');
+    }
+    
+    // Complete test summary
+    this.log('═══════════════════════════════════', 'status-ok');
+    this.log(`🏁 Speed test completed: ${finalThroughput.toFixed(2)} Mbps`, 'status-ok');
+    this.log(`📊 Data transferred: ${totalMB.toFixed(2)} MB in ${elapsed.toFixed(1)}s`, 'status-ok');
+    this.log(`📦 Packets sent: ${this.testData.packetsSent}, received: ${this.testData.packetsReceived}`, 'status-ok');
+    
+    if (this.testData.packetsSent > 0 && this.ui.transportMode.value === 'unreliable') {
+      const packetLoss = ((this.testData.packetsSent - this.testData.packetsReceived) / this.testData.packetsSent) * 100;
+      this.log(`📉 Packet loss: ${Math.max(0, packetLoss).toFixed(2)}%`, packetLoss > 1 ? 'status-warn' : 'status-ok');
+    }
+    
+    this.log('═══════════════════════════════════', 'status-ok');
+  }
   
-  log('═══════════════════════════════════', 'status-ok');
-  log(`🏁 Test completed: ${finalThroughput}`, 'status-ok');
-  log(`📊 Latency: ${finalLatency}`, 'status-ok');
-  log(`📉 Loss: ${finalLoss}`, 'status-ok');
-  log(`📦 Sent: ${(test.sentBytes / 1e6).toFixed(2)} MB`, 'status-ok');
-  log(`📥 Received: ${(test.recvBytes / 1e6).toFixed(2)} MB`, 'status-ok');
-  log(`📨 Packets sent: ${test.sentPkts.toLocaleString()}`, 'status-ok');
-  log(`📬 Packets received: ${test.recvPkts.toLocaleString()}`, 'status-ok');
-  log('═══════════════════════════════════', 'status-ok');
-  
-  if (test.rtts.length > 5) {
-    const minRtt = Math.min(...test.rtts);
-    const maxRtt = Math.max(...test.rtts);
-    const avgRtt = test.rtts.reduce((a, b) => a + b, 0) / test.rtts.length;
-    log(`RTT - Min: ${minRtt.toFixed(1)}ms, Avg: ${avgRtt.toFixed(1)}ms, Max: ${maxRtt.toFixed(1)}ms`, 'status-ok');
+  continueDataTransmission() {
+    // This method is called when buffer is ready for more data
+    // Implementation would depend on the specific test running
   }
 }
 
@@ -519,22 +779,26 @@ function initMobileMenu() {
 document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   
-  // Check for WebRTC support
+  // Check for required APIs
   if (!window.RTCPeerConnection) {
-    log('❌ WebRTC not supported in this browser', 'status-err');
-    log('Please use Chrome, Firefox, Safari, or Edge', 'status-err');
+    document.getElementById('debugLog').innerHTML = 
+      '<div class="status-err">❌ WebRTC not supported in this browser</div>' +
+      '<div class="status-warn">💡 Please use Chrome 24+, Firefox 22+, Safari 11+, or Edge</div>';
     return;
   }
   
-  if (!navigator.clipboard) {
-    log('⚠️  Clipboard API not available - manual copy required', 'status-warn');
+  if (!window.isSecureContext) {
+    document.getElementById('debugLog').innerHTML = 
+      '<div class="status-err">❌ Secure context required for WebRTC</div>' +
+      '<div class="status-warn">💡 Please serve from HTTPS or localhost</div>';
+    return;
   }
   
-  log('✅ WebRTC LAN Speed Test ready', 'status-ok');
-  log('👆 Create Host Code or paste Host Code to begin', 'status-warn');
+  // Initialize the speed test
+  window.speedTest = new WebRTCLANSpeedTest();
 });
 
 // Export for testing
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = { log, ui, test };
+  module.exports = WebRTCLANSpeedTest;
 }
