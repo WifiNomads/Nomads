@@ -1188,6 +1188,11 @@ function openSSIDCalculator() {
     
     // Update URL to show SSID calculator section
     history.pushState(null, null, '#ssidoverheadcalculator');
+    
+    // Initialize beacon data rates based on default preamble selection
+    setTimeout(() => {
+        updateSSIDBeaconRates();
+    }, 100);
 }
 
 function closeSSIDCalculator() {
@@ -1199,6 +1204,53 @@ function closeSSIDCalculator() {
     history.pushState(null, null, '#tools');
 }
 
+function updateSSIDBeaconRates() {
+    const preambleType = parseInt(document.getElementById('ssid-preambleType').value);
+    const beaconDataRate = document.getElementById('ssid-beaconDataRate');
+    
+    // Clear existing options
+    beaconDataRate.innerHTML = '';
+    
+    if (preambleType === 20) {
+        // 802.11a/g OFDM rates: 6, 9, 12, 18, 24, 36, 48, 54 Mbps (default: 6)
+        const ofdmRates = [
+            {value: 6, text: '6 Mbps'},
+            {value: 9, text: '9 Mbps'},
+            {value: 12, text: '12 Mbps'},
+            {value: 18, text: '18 Mbps'},
+            {value: 24, text: '24 Mbps'},
+            {value: 36, text: '36 Mbps'},
+            {value: 48, text: '48 Mbps'},
+            {value: 54, text: '54 Mbps'}
+        ];
+        
+        ofdmRates.forEach((rate, index) => {
+            const option = document.createElement('option');
+            option.value = rate.value;
+            option.text = rate.text;
+            if (rate.value === 6) option.selected = true; // Default to 6 Mbps
+            beaconDataRate.appendChild(option);
+        });
+        
+    } else if (preambleType === 96 || preambleType === 192) {
+        // 802.11b DSSS rates: 1, 2, 5.5, 11 Mbps (default: 1)
+        const dsssRates = [
+            {value: 1, text: '1 Mbps'},
+            {value: 2, text: '2 Mbps'},
+            {value: 5.5, text: '5.5 Mbps'},
+            {value: 11, text: '11 Mbps'}
+        ];
+        
+        dsssRates.forEach((rate, index) => {
+            const option = document.createElement('option');
+            option.value = rate.value;
+            option.text = rate.text;
+            if (rate.value === 1) option.selected = true; // Default to 1 Mbps
+            beaconDataRate.appendChild(option);
+        });
+    }
+}
+
 function validateSSIDInputs() {
     const numAPs = parseInt(document.getElementById('ssid-numAPs').value) || 0;
     const numSSIDs = parseInt(document.getElementById('ssid-numSSIDs').value) || 0;
@@ -1207,20 +1259,20 @@ function validateSSIDInputs() {
     const beaconDataRate = parseFloat(document.getElementById('ssid-beaconDataRate').value) || 0;
     const preambleType = parseInt(document.getElementById('ssid-preambleType').value) || 0;
 
-    if (numAPs < 1 || numAPs > 100) {
-        showSSIDError('Number of APs must be between 1 and 100.');
+    if (numAPs < 1 || numAPs > 1000) {
+        showSSIDError('Number of APs must be between 1 and 1000.');
         return false;
     }
-    if (numSSIDs < 1 || numSSIDs > 50) {
-        showSSIDError('SSIDs per AP must be between 1 and 50.');
+    if (numSSIDs < 1 || numSSIDs > 1000) {
+        showSSIDError('SSIDs per AP must be between 1 and 1000.');
         return false;
     }
-    if (beaconInterval < 20 || beaconInterval > 1000) {
-        showSSIDError('Beacon interval must be between 20 and 1000 ms.');
+    if (beaconInterval < 1 || beaconInterval > 10000) {
+        showSSIDError('Beacon interval must be between 1 and 10000 ms.');
         return false;
     }
-    if (beaconFrameSize < 100 || beaconFrameSize > 1024) {
-        showSSIDError('Beacon frame size must be between 100 and 1024 bytes.');
+    if (beaconFrameSize < 1 || beaconFrameSize > 10000) {
+        showSSIDError('Beacon frame size must be between 1 and 10000 bytes.');
         return false;
     }
     if (beaconDataRate <= 0) {

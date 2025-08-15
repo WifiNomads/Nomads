@@ -342,38 +342,41 @@
                     <div class="calculator-inputs">
                         <div class="form-group">
                             <label class="form-label">Number of APs on Channel:</label>
-                            <input type="number" id="ssid-numAPs" class="form-control" value="1" min="1" max="100" title="Number of access points transmitting on the same channel">
+                            <input type="number" id="ssid-numAPs" class="form-control" value="1" min="1" max="1000" title="Number of access points transmitting on the same channel">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">SSIDs per AP:</label>
-                            <input type="number" id="ssid-numSSIDs" class="form-control" value="2" min="1" max="50" title="Number of SSIDs (virtual APs) per access point">
+                            <input type="number" id="ssid-numSSIDs" class="form-control" value="2" min="1" max="1000" title="Number of SSIDs (virtual APs) per access point">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Beacon Interval (ms):</label>
-                            <input type="number" id="ssid-beaconInterval" class="form-control" value="100" min="20" max="1000" title="Time interval between beacon transmissions (typically 100ms)">
+                            <input type="number" id="ssid-beaconInterval" class="form-control" value="100" min="1" max="10000" title="Time interval between beacon transmissions (typically 100ms)">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Beacon Frame Size (bytes):</label>
-                            <input type="number" id="ssid-beaconFrameSize" class="form-control" value="300" min="100" max="1024" title="Size of beacon frame including management overhead">
+                            <input type="number" id="ssid-beaconFrameSize" class="form-control" value="300" min="1" max="10000" title="Size of beacon frame including management overhead">
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Beacon Data Rate (Mbps):</label>
                             <select id="ssid-beaconDataRate" class="form-select" title="Data rate used for beacon transmission">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="5.5">5.5</option>
                                 <option value="6" selected>6</option>
+                                <option value="9">9</option>
                                 <option value="12">12</option>
+                                <option value="18">18</option>
+                                <option value="24">24</option>
+                                <option value="36">36</option>
+                                <option value="48">48</option>
+                                <option value="54">54</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Preamble Type:</label>
-                            <select id="ssid-preambleType" class="form-select" title="Preamble type used for beacon transmission">
+                            <select id="ssid-preambleType" class="form-select" onchange="updateSSIDBeaconRates()" title="Preamble type used for beacon transmission">
                                 <option value="20" selected>802.11a/g (Non-HT OFDM) - 20μs</option>
                                 <option value="96">802.11b (DSSS) Short PLCP - 96μs</option>
                                 <option value="192">802.11b (DSSS) Long PLCP - 192μs</option>
