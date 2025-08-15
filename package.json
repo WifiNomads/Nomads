@@ -1,0 +1,37 @@
+{
+  "name": "wifinomads-speedtest-signaling-server",
+  "version": "1.0.0",
+  "description": "WebRTC signaling server for Wi-Fi Nomads LAN Speed Test tool",
+  "main": "signaling-server.js",
+  "scripts": {
+    "start": "node signaling-server.js",
+    "dev": "node --watch signaling-server.js",
+    "test": "echo 'No tests yet' && exit 0"
+  },
+  "keywords": [
+    "webrtc",
+    "signaling",
+    "speed-test",
+    "wifi",
+    "lan",
+    "peer-to-peer",
+    "networking"
+  ],
+  "author": "Wi-Fi Nomads",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.14.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WifiNomads/Nomads"
+  },
+  "homepage": "https://wifinomads.net",
+  "bugs": {
+    "url": "https://github.com/WifiNomads/Nomads/issues"
+  }
+}

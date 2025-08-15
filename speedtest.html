@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Wi-Fi Nomads – LAN Speed Test (WebRTC)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Free WebRTC-based LAN speed test tool. No iperf3 needed. Test Wi-Fi speeds between devices on the same network using peer-to-peer connections.">
+  <meta name="keywords" content="LAN speed test, WebRTC speed test, wifi speed test, network throughput test, peer-to-peer speed test, wireless speed test">
+  <meta name="author" content="Wi-Fi Nomads">
+  
+  <!-- Dynamic versioned CSS -->
+  <script>
+    const cacheVersion = Date.now() + Math.random().toString(36).substr(2, 9);
+    document.write('<link rel="stylesheet" href="style.css?v=' + cacheVersion + '">');
+  </script>
+  <noscript>
+    <link rel="stylesheet" href="style.css">
+  </noscript>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Speed test specific styles that blend with your site */
+    .speedtest-container { 
+      max-width: 1000px; 
+      margin: 100px auto 40px; 
+      padding: 24px; 
+    }
+    
+    .speedtest-card { 
+      background: var(--white);
+      margin: 24px 0; 
+      padding: 2rem; 
+      border: 1px solid var(--border-light); 
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .speedtest-row { 
+      display: flex; 
+      gap: 1.5rem; 
+      flex-wrap: wrap; 
+      align-items: center; 
+      margin-bottom: 1rem;
+    }
+    
+    .speedtest-col { 
+      flex: 1 1 280px; 
+    }
+    
+    .speedtest-muted { 
+      color: var(--text-muted); 
+      font-size: 0.9rem; 
+    }
+    
+    .speedtest-log { 
+      background: #0b1020; 
+      color: #d7efff; 
+      padding: 1rem; 
+      border-radius: var(--radius-md); 
+      overflow: auto; 
+      max-height: 300px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    
+    .speedtest-input {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-light);
+      width: 100%;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    
+    .speedtest-input:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+    
+    .speedtest-btn {
+      background: var(--gradient-primary);
+      color: var(--white);
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.9rem;
+    }
+    
+    .speedtest-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .speedtest-btn:disabled {
+      background: var(--gray);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    
+    .speedtest-select {
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--border-light);
+      background: var(--white);
+      font-size: 0.9rem;
+      width: 100%;
+      transition: var(--transition);
+    }
+    
+    .speedtest-select:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+    
+    .speedtest-status {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+    
+    .status-ok { color: var(--wifi-green); }
+    .status-warn { color: var(--accent-orange); }
+    .status-err { color: #dc2626; }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .result-item {
+      background: var(--bg-accent);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-accent);
+    }
+    
+    .result-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+    }
+    
+    .result-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .speedtest-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .speedtest-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .speedtest-container {
+        margin: 80px auto 20px;
+        padding: 1rem;
+      }
+      
+      .speedtest-row {
+        flex-direction: column;
+        gap: 1rem;
+      }
+      
+      .speedtest-col {
+        flex: 1 1 100%;
+      }
+      
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo" onclick="window.location.href='index.html'">
+        <img src="Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
+        <h2>Wi-Fi Nomads</h2>
+      </div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="index.html#tools">Tools</a></li>
+        <li><a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer" class="nav-linkedin" title="Follow us on LinkedIn">
+          <img src="linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
+        </a></li>
+      </ul>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="speedtest-container">
+    <div class="speedtest-header">
+      <h1 class="speedtest-title">LAN Speed Test</h1>
+      <p class="speedtest-muted">WebRTC peer-to-peer network performance testing. No iperf3 installation required.</p>
+    </div>
+
+    <div class="speedtest-card">
+      <h2>Network Information</h2>
+      <div class="speedtest-row">
+        <div class="speedtest-col">
+          <label class="form-label">📍 Your Local IP Address:</label>
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <input id="localIP" class="speedtest-input" readonly style="background: #f8f9fa; cursor: default;" placeholder="Detecting..." />
+            <button id="refreshIP" class="speedtest-btn" style="padding: 0.75rem; min-width: auto;" title="Refresh IP detection">🔄</button>
+          </div>
+          <p class="speedtest-muted" style="margin-top: 0.5rem;">Auto-detected local network IP address</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="speedtest-card">
+      <h2>Connection Setup</h2>
+      <p class="speedtest-muted">Choose Server mode to host the test, or Client mode to connect to another device's server.</p>
+
+      <div class="speedtest-row">
+        <div class="speedtest-col">
+          <h3>🖥️ Server Mode</h3>
+          <div class="speedtest-row">
+            <input id="serverPort" class="speedtest-input" placeholder="Port (default: 8080)" value="8080" type="number" min="1024" max="65535" />
+            <button id="btnStartServer" class="speedtest-btn">Start Server</button>
+          </div>
+          <p id="serverStatus" class="speedtest-status speedtest-muted">Ready to start local server</p>
+        </div>
+        <div class="speedtest-col">
+          <h3>🔗 Client Mode</h3>
+          <div class="speedtest-row" style="flex-direction: column; gap: 0.75rem;">
+            <input id="clientServerIP" class="speedtest-input" placeholder="Server IP address" />
+            <input id="clientServerPort" class="speedtest-input" placeholder="Server port" value="8080" type="number" min="1024" max="65535" />
+            <button id="btnConnect" class="speedtest-btn">Connect to Server</button>
+          </div>
+          <p id="clientStatus" class="speedtest-status speedtest-muted">Ready to connect to server</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="speedtest-card">
+      <h2>Test Configuration</h2>
+      <div class="speedtest-row">
+        <div class="speedtest-col">
+          <label class="form-label">Test Duration (seconds)</label>
+          <input id="duration" class="speedtest-input" type="number" min="1" max="60" value="10" />
+        </div>
+        <div class="speedtest-col">
+          <label class="form-label">Direction</label>
+          <select id="direction" class="speedtest-select">
+            <option value="host-to-join">Host ➜ Join (Download)</option>
+            <option value="join-to-host">Join ➜ Host (Upload)</option>
+            <option value="bi">Bidirectional (Full Duplex)</option>
+          </select>
+        </div>
+        <div class="speedtest-col">
+          <label class="form-label">Transport Mode</label>
+          <select id="mode" class="speedtest-select">
+            <option value="reliable">Reliable (TCP-like)</option>
+            <option value="unreliable">Unreliable (UDP-like)</option>
+          </select>
+        </div>
+        <div class="speedtest-col">
+          <button id="btnStart" class="speedtest-btn" disabled>Start Speed Test</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="speedtest-card">
+      <h2>Results</h2>
+      <div class="results-grid">
+        <div class="result-item">
+          <div class="result-label">Throughput</div>
+          <div class="result-value" id="throughput">–</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Latency (RTT)</div>
+          <div class="result-value" id="latency">–</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Packet Loss</div>
+          <div class="result-value" id="loss">–</div>
+        </div>
+        <div class="result-item">
+          <div class="result-label">Test Status</div>
+          <div class="result-value" id="testStatus">Ready</div>
+        </div>
+      </div>
+      <p class="speedtest-muted">💡 <strong>Tip:</strong> Test both directions as Wi-Fi uplink/downlink can differ due to MCS rates, spatial streams, and network contention.</p>
+    </div>
+
+    <div class="speedtest-card">
+      <h2>Connection Log</h2>
+      <pre id="log" class="speedtest-log">Ready to start speed test...\nWaiting for connection setup...</pre>
+    </div>
+  </div>
+
+  <script>
+    // Dynamic versioning for JavaScript file
+    const jsVersion = Date.now() + Math.random().toString(36).substr(2, 9);
+    document.write('<script src="speedtest.js?v=' + jsVersion + '"><\/script>');
+  </script>
+  <noscript>
+    <script src="speedtest.js"></script>
+  </noscript>
+</body>
+</html>
