@@ -310,29 +310,47 @@ class WebRTCLANSpeedTest {
     }
   }
   
-  startOfferScanning() {
-    this.ui.offerScanSection.style.display = 'block';
-    this.ui.manualOfferSection.style.display = 'none';
+  async startOfferScanning() {
+    this.log('📷 Starting QR code scanner...', 'status-warn');
     
-    QrScanner.createQrEngine().then(qrEngine => {
+    try {
+      // Check if QR scanner library is available
+      await this.waitForQRLibraries();
+      
+      if (!window.QrScanner || !window.qrScannerReady) {
+        throw new Error('QR Scanner library not available');
+      }
+      
+      this.ui.offerScanSection.style.display = 'block';
+      this.ui.manualOfferSection.style.display = 'none';
+      
+      // Request camera permissions first
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      this.ui.offerVideo.srcObject = stream;
+      
       this.offerScanner = new QrScanner(
         this.ui.offerVideo,
         result => {
           this.log('📷 QR code scanned successfully', 'status-ok');
-          this.processScannedOffer(result.data);
+          const data = typeof result === 'string' ? result : result.data;
+          this.processScannedOffer(data);
           this.stopOfferScanning();
         },
         {
-          returnDetailedScanResult: true,
-          highlightScanRegion: true
+          returnDetailedScanResult: false,
+          highlightScanRegion: true,
+          highlightCodeOutline: true
         }
       );
       
-      this.offerScanner.start().catch(error => {
-        this.log(`❌ Camera access failed: ${error.message}`, 'status-err');
-        this.showManualOfferInput();
-      });
-    });
+      await this.offerScanner.start();
+      this.log('✅ QR scanner started successfully', 'status-ok');
+      
+    } catch (error) {
+      this.log(`❌ QR scanner failed: ${error.message}`, 'status-err');
+      this.log('💡 Falling back to manual input', 'status-warn');
+      this.showManualOfferInput();
+    }
   }
   
   stopOfferScanning() {
@@ -483,17 +501,77 @@ class WebRTCLANSpeedTest {
   
   async generateQRCode(canvas, data) {
     try {
-      await QRCode.toCanvas(canvas, data, {
-        width: 200,
-        margin: 1,
-        color: {
-          dark: '#1e3a8a',
-          light: '#ffffff'
-        }
-      });
+      // Wait for library to load if needed
+      await this.waitForQRLibraries();
+      
+      if (window.QRCode && window.qrCodeReady) {
+        this.log('📱 Generating QR code...', 'status-warn');
+        await QRCode.toCanvas(canvas, data, {
+          width: 200,
+          margin: 1,
+          color: {
+            dark: '#1e3a8a',
+            light: '#ffffff'
+          }
+        });
+        this.log('✅ QR code generated successfully', 'status-ok');
+      } else {
+        throw new Error('QRCode library not available');
+      }
     } catch (error) {
       this.log(`❌ QR code generation failed: ${error.message}`, 'status-err');
+      this.showQRFallback(canvas, data);
     }
+  }
+  
+  async waitForQRLibraries() {
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds
+    
+    while (attempts < maxAttempts) {
+      if (window.qrCodeReady && window.qrScannerReady) {
+        return;
+      }
+      await new Promise(resolve => setTimeout(resolve, 100));
+      attempts++;
+    }
+    
+    if (!window.qrCodeReady) {
+      this.log('⚠️ QR code generation library not loaded', 'status-warn');
+    }
+    if (!window.qrScannerReady) {
+      this.log('⚠️ QR scanner library not loaded', 'status-warn');
+    }
+  }
+  
+  showQRFallback(canvas, data) {
+    // Set canvas dimensions if not set
+    if (!canvas.width || !canvas.height) {
+      canvas.width = 200;
+      canvas.height = 200;
+    }
+    
+    // Show fallback message and text code
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#f8f9fa';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = '#666';
+    ctx.font = '14px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('QR Code', canvas.width/2, canvas.height/2 - 10);
+    ctx.fillText('Generation Failed', canvas.width/2, canvas.height/2 + 10);
+    
+    this.log('💡 Use "Show Text" button to copy connection code manually', 'status-warn');
+    
+    // Auto-show text section as fallback
+    setTimeout(() => {
+      if (canvas.id === 'qrCanvas') {
+        this.ui.offerTextSection.style.display = 'block';
+      } else if (canvas.id === 'responseQR') {
+        this.ui.responseTextSection.style.display = 'block';
+      }
+    }, 1000);
   }
   
   encodeSDPCode(sdp) {
