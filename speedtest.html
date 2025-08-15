@@ -42,7 +42,7 @@
       display: flex; 
       gap: 1.5rem; 
       flex-wrap: wrap; 
-      align-items: center; 
+      align-items: stretch; 
       margin-bottom: 1rem;
     }
     
@@ -74,12 +74,25 @@
       width: 100%;
       font-size: 0.9rem;
       transition: var(--transition);
+      background: var(--white);
     }
     
     .speedtest-input:focus {
       outline: none;
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+    }
+    
+    .speedtest-input:read-only {
+      background: #f8f9fa;
+      cursor: default;
+    }
+    
+    .speedtest-textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
     }
     
     .speedtest-btn {
@@ -92,6 +105,7 @@
       cursor: pointer;
       transition: var(--transition);
       font-size: 0.9rem;
+      width: 100%;
     }
     
     .speedtest-btn:hover:not(:disabled) {
@@ -103,6 +117,18 @@
       background: var(--gray);
       cursor: not-allowed;
       opacity: 0.6;
+    }
+    
+    .speedtest-btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border-light);
+      color: var(--text-primary);
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      width: auto;
     }
     
     .speedtest-select {
@@ -120,16 +146,6 @@
       border-color: var(--primary-blue);
       box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
     }
-    
-    .speedtest-status {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-    
-    .status-ok { color: var(--wifi-green); }
-    .status-warn { color: var(--accent-orange); }
-    .status-err { color: #dc2626; }
     
     .results-grid {
       display: grid;
@@ -172,6 +188,35 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       margin-bottom: 1rem;
+    }
+    
+    .copy-container {
+      position: relative;
+    }
+    
+    .form-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .status-ok { color: var(--wifi-green); }
+    .status-warn { color: var(--accent-orange); }
+    .status-err { color: #dc2626; }
+    
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+    
+    .pair-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
     
     @media (max-width: 768px) {
@@ -221,102 +266,114 @@
   <div class="speedtest-container">
     <div class="speedtest-header">
       <h1 class="speedtest-title">LAN Speed Test</h1>
-      <p class="speedtest-muted">WebRTC peer-to-peer network performance testing. No iperf3 installation required.</p>
+      <p class="speedtest-muted">Peer-to-peer speed test using WebRTC DataChannels — no iperf, no install. Works on the same Wi-Fi/LAN.</p>
     </div>
 
+    <!-- Pairing / signaling -->
     <div class="speedtest-card">
-      <h2>Network Information</h2>
+      <h2 class="section-title">1) Pair the devices</h2>
+      <p class="speedtest-muted">No IPs or ports. Just exchange the short codes below. Host generates a code; Client pastes it and returns a response code.</p>
+      
       <div class="speedtest-row">
         <div class="speedtest-col">
-          <label class="form-label">📍 Your Local IP Address:</label>
-          <div style="display: flex; align-items: center; gap: 0.5rem;">
-            <input id="localIP" class="speedtest-input" readonly style="background: #f8f9fa; cursor: default;" placeholder="Detecting..." />
-            <button id="refreshIP" class="speedtest-btn" style="padding: 0.75rem; min-width: auto;" title="Refresh IP detection">🔄</button>
+          <h3><strong>📡 Host</strong></h3>
+          <div class="pair-container">
+            <button id="btnHostCreate" class="speedtest-btn">Create Host Code</button>
+            
+            <div class="copy-container">
+              <label class="form-label">Host Code (send to Client)</label>
+              <textarea id="hostOffer" class="speedtest-input speedtest-textarea" readonly placeholder="Click 'Create Host Code'"></textarea>
+              <button id="copyOffer" class="speedtest-btn speedtest-btn-secondary" title="Copy" disabled>Copy</button>
+            </div>
+            
+            <div>
+              <label class="form-label">Paste Client Response Code here</label>
+              <textarea id="clientAnswer" class="speedtest-input speedtest-textarea" placeholder="Paste response from Client"></textarea>
+              <button id="btnHostAccept" class="speedtest-btn" disabled>Accept Response</button>
+            </div>
+            
+            <p id="hostStatus" class="speedtest-muted">Idle</p>
           </div>
-          <p class="speedtest-muted" style="margin-top: 0.5rem;">Auto-detected local network IP address</p>
+        </div>
+        
+        <div class="speedtest-col">
+          <h3><strong>🔗 Client</strong></h3>
+          <div class="pair-container">
+            <div>
+              <label class="form-label">Paste Host Code</label>
+              <textarea id="hostCode" class="speedtest-input speedtest-textarea" placeholder="Paste Host Code here"></textarea>
+              <button id="btnClientRespond" class="speedtest-btn">Create Response Code</button>
+            </div>
+            
+            <div class="copy-container">
+              <label class="form-label">Client Response Code (send back to Host)</label>
+              <textarea id="clientCode" class="speedtest-input speedtest-textarea" readonly placeholder="Will appear after 'Create Response Code'"></textarea>
+              <button id="copyAnswer" class="speedtest-btn speedtest-btn-secondary" title="Copy" disabled>Copy</button>
+            </div>
+            
+            <p id="clientStatus" class="speedtest-muted">Idle</p>
+          </div>
         </div>
       </div>
     </div>
 
+    <!-- Test config -->
     <div class="speedtest-card">
-      <h2>Connection Setup</h2>
-      <p class="speedtest-muted">Choose Server mode to host the test, or Client mode to connect to another device's server.</p>
-
+      <h2 class="section-title">2) Test settings</h2>
       <div class="speedtest-row">
         <div class="speedtest-col">
-          <h3>🖥️ Server Mode</h3>
-          <div class="speedtest-row">
-            <input id="serverPort" class="speedtest-input" placeholder="Port (default: 8080)" value="8080" type="number" min="1024" max="65535" />
-            <button id="btnStartServer" class="speedtest-btn">Start Server</button>
-          </div>
-          <p id="serverStatus" class="speedtest-status speedtest-muted">Ready to start local server</p>
-        </div>
-        <div class="speedtest-col">
-          <h3>🔗 Client Mode</h3>
-          <div class="speedtest-row" style="flex-direction: column; gap: 0.75rem;">
-            <input id="clientServerIP" class="speedtest-input" placeholder="Server IP address" />
-            <input id="clientServerPort" class="speedtest-input" placeholder="Server port" value="8080" type="number" min="1024" max="65535" />
-            <button id="btnConnect" class="speedtest-btn">Connect to Server</button>
-          </div>
-          <p id="clientStatus" class="speedtest-status speedtest-muted">Ready to connect to server</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="speedtest-card">
-      <h2>Test Configuration</h2>
-      <div class="speedtest-row">
-        <div class="speedtest-col">
-          <label class="form-label">Test Duration (seconds)</label>
+          <label class="form-label">Duration (seconds)</label>
           <input id="duration" class="speedtest-input" type="number" min="1" max="60" value="10" />
         </div>
         <div class="speedtest-col">
           <label class="form-label">Direction</label>
           <select id="direction" class="speedtest-select">
-            <option value="host-to-join">Host ➜ Join (Download)</option>
-            <option value="join-to-host">Join ➜ Host (Upload)</option>
-            <option value="bi">Bidirectional (Full Duplex)</option>
+            <option value="host-to-client">Host ➜ Client (Client download)</option>
+            <option value="client-to-host">Client ➜ Host (Client upload)</option>
+            <option value="bi">Bidirectional</option>
           </select>
         </div>
         <div class="speedtest-col">
-          <label class="form-label">Transport Mode</label>
-          <select id="mode" class="speedtest-select">
+          <label class="form-label">Transport</label>
+          <select id="reliability" class="speedtest-select">
             <option value="reliable">Reliable (TCP-like)</option>
             <option value="unreliable">Unreliable (UDP-like)</option>
           </select>
         </div>
         <div class="speedtest-col">
-          <button id="btnStart" class="speedtest-btn" disabled>Start Speed Test</button>
+          <button id="btnStart" class="speedtest-btn" disabled>Start Test</button>
         </div>
       </div>
     </div>
 
+    <!-- Results -->
     <div class="speedtest-card">
-      <h2>Results</h2>
+      <h2 class="section-title">Results</h2>
       <div class="results-grid">
         <div class="result-item">
           <div class="result-label">Throughput</div>
-          <div class="result-value" id="throughput">–</div>
+          <div class="result-value" id="kpiThroughput">–</div>
         </div>
         <div class="result-item">
-          <div class="result-label">Latency (RTT)</div>
-          <div class="result-value" id="latency">–</div>
+          <div class="result-label">Latency (avg RTT)</div>
+          <div class="result-value" id="kpiLatency">–</div>
         </div>
         <div class="result-item">
           <div class="result-label">Packet Loss</div>
-          <div class="result-value" id="loss">–</div>
+          <div class="result-value" id="kpiLoss">–</div>
         </div>
         <div class="result-item">
-          <div class="result-label">Test Status</div>
-          <div class="result-value" id="testStatus">Ready</div>
+          <div class="result-label">Status</div>
+          <div class="result-value" id="kpiStatus">Idle</div>
         </div>
       </div>
       <p class="speedtest-muted">💡 <strong>Tip:</strong> Test both directions as Wi-Fi uplink/downlink can differ due to MCS rates, spatial streams, and network contention.</p>
     </div>
 
+    <!-- Log -->
     <div class="speedtest-card">
-      <h2>Connection Log</h2>
-      <pre id="log" class="speedtest-log">Ready to start speed test...\nWaiting for connection setup...</pre>
+      <h2 class="section-title">Connection Log</h2>
+      <pre id="log" class="speedtest-log">Ready to start speed test...\nWaiting for device pairing...</pre>
     </div>
   </div>
 
