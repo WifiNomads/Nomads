@@ -550,6 +550,8 @@ function calculate() {
 
     // Preamble calculations
     let preamble_duration;
+    let he_su_preamble_duration; // Declare in broader scope for control frames
+    
     if (scenario === '1') {
         preamble_duration = lp; // Legacy only
     } else if (scenario === '2') {
@@ -589,7 +591,7 @@ function calculate() {
         const he_ltf = n_he_ltf * single_he_ltf_duration;
         
         // STEP 1: Calculate the simpler HE SU preamble duration separately (it has no HE-SIG-B)
-        const he_su_preamble_duration = lp + rl_sig + he_sig_a + he_stf + he_ltf;
+        he_su_preamble_duration = lp + rl_sig + he_sig_a + he_stf + he_ltf;
         
         let he_sig_b = 0;
         if (scenario === '4') {
