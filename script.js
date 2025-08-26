@@ -571,8 +571,7 @@ function calculate() {
         // HE preamble calculation
         const rl_sig = 4; // RL-SIG
         const he_sig_a = 8; // HE-SIG-A (2 symbols)
-        let he_sig_b = 0;
-        const he_stf = 4; // Corrected: For non-TB PPDUs
+        const he_stf = 4; // For non-TB PPDUs
         
         // Read the new HE-LTF Size input
         const heLtfSize = parseInt(document.getElementById('heLtfSize').value);
@@ -589,6 +588,10 @@ function calculate() {
         const single_he_ltf_duration = 3.2 + gi;
         const he_ltf = n_he_ltf * single_he_ltf_duration;
         
+        // STEP 1: Calculate the simpler HE SU preamble duration separately (it has no HE-SIG-B)
+        const he_su_preamble_duration = lp + rl_sig + he_sig_a + he_stf + he_ltf;
+        
+        let he_sig_b = 0;
         if (scenario === '4') {
             // HE-SIG-B calculation for OFDMA
             const common_bits = 8 * (bandwidth / 20);
@@ -600,7 +603,8 @@ function calculate() {
             he_sig_b = symbols_sigb * (12.8 + gi);
         }
         
-        preamble_duration = lp + rl_sig + he_sig_a + he_sig_b + he_stf + he_ltf;
+        // The main data preamble still includes the HE-SIG-B
+        preamble_duration = he_su_preamble_duration + he_sig_b;
     }
 
     // Control frames
@@ -614,13 +618,17 @@ function calculate() {
         let control_bits_per_symbol_he = mu_rts_subcarriers * 1 * 0.5; // MCS0
         let symbols_mu_rts = Math.ceil(databits_mu_rts / control_bits_per_symbol_he);
         duration_rts = symbols_mu_rts * (12.8 + gi);
-        rts_preamble_duration = preamble_duration;
+        
+        // STEP 2: Assign the CORRECT (HE SU) preamble duration
+        rts_preamble_duration = he_su_preamble_duration;
         
         const cts_length = 14;
         let databits_cts = cts_length * 8 + 16 + 6;
         let symbols_cts = Math.ceil(databits_cts / control_bits_per_symbol_he);
         duration_cts = symbols_cts * (12.8 + gi);
-        cts_preamble_duration = preamble_duration;
+        
+        // STEP 2: Assign the CORRECT (HE SU) preamble duration
+        cts_preamble_duration = he_su_preamble_duration;
     } else {
         // Legacy RTS/CTS
         const rts_length = 20;
