@@ -130,34 +130,34 @@ const legacyOptions = [
 // Corrected OFDMA Resource Units per IEEE 802.11ax
 const ofdma_map = {
     20: {
-        1: {data_sub:242, ru_type:'RU242'},
-        2: {data_sub:106, ru_type:'RU106'},
-        4: {data_sub:52, ru_type:'RU52'},
-        9: {data_sub:26, ru_type:'RU26'}
+        1: {data_sub:234, ru_type:'RU242'},
+        2: {data_sub:102, ru_type:'RU106'},
+        4: {data_sub:48, ru_type:'RU52'},
+        9: {data_sub:24, ru_type:'RU26'}
     },
     40: {
-        1: {data_sub:484, ru_type:'RU484'},
-        2: {data_sub:242, ru_type:'RU242'},
-        4: {data_sub:106, ru_type:'RU106'},
-        8: {data_sub:52, ru_type:'RU52'},
-        18: {data_sub:26, ru_type:'RU26'}
+        1: {data_sub:468, ru_type:'RU484'},
+        2: {data_sub:234, ru_type:'RU242'},
+        4: {data_sub:102, ru_type:'RU106'},
+        8: {data_sub:48, ru_type:'RU52'},
+        18: {data_sub:24, ru_type:'RU26'}
     },
     80: {
-        1: {data_sub:980, ru_type:'RU980'},
-        2: {data_sub:484, ru_type:'RU484'},
-        4: {data_sub:242, ru_type:'RU242'},
-        8: {data_sub:106, ru_type:'RU106'},
-        16: {data_sub:52, ru_type:'RU52'},
-        37: {data_sub:26, ru_type:'RU26'}
+        1: {data_sub:980, ru_type:'RU996'}, // Note: RU996 contains 980 data subcarriers
+        2: {data_sub:468, ru_type:'RU484'},
+        4: {data_sub:234, ru_type:'RU242'},
+        8: {data_sub:102, ru_type:'RU106'},
+        16: {data_sub:48, ru_type:'RU52'},
+        37: {data_sub:24, ru_type:'RU26'}
     },
     160: {
-        1: {data_sub:1960, ru_type:'RU1960'},
-        2: {data_sub:980, ru_type:'RU980'},
-        4: {data_sub:484, ru_type:'RU484'},
-        8: {data_sub:242, ru_type:'RU242'},
-        16: {data_sub:106, ru_type:'RU106'},
-        32: {data_sub:52, ru_type:'RU52'},
-        74: {data_sub:26, ru_type:'RU26'}
+        1: {data_sub:1960, ru_type:'RU996x2'}, // Two RU996
+        2: {data_sub:980, ru_type:'RU996'},
+        4: {data_sub:468, ru_type:'RU484'},
+        8: {data_sub:234, ru_type:'RU242'},
+        16: {data_sub:102, ru_type:'RU106'},
+        32: {data_sub:48, ru_type:'RU52'},
+        74: {data_sub:24, ru_type:'RU26'}
     }
 };
 
