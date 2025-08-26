@@ -53,6 +53,7 @@
     </noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     
     <!-- JSON-LD Structured Data for SEO -->
     <script type="application/ld+json">
@@ -245,7 +246,7 @@
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Guard Interval (us):</label>
+                            <label class="form-label">Guard Interval (μs):</label>
                             <select id="gi" class="form-select" title="Guard interval between OFDM symbols to prevent interference. Legacy: 0.8μs, HT/VHT: 0.4μs or 0.8μs, HE: 0.8μs, 1.6μs, or 3.2μs. Shorter GI = higher efficiency">
                                 <option value="0.4">0.4 μs (Short GI)</option>
                                 <option value="0.8" selected>0.8 μs (Long GI)</option>

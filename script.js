@@ -541,10 +541,19 @@ function calculate() {
         preamble_duration = lp; // Legacy only
     } else if (scenario === '2') {
         // HT/VHT preamble
-        const ht_sig = 8; // HT-SIG or VHT-SIG-A
-        const ht_stf = 4; // HT-STF
-        const ht_ltf = 4 * ss; // HT-LTF per spatial stream
-        preamble_duration = lp + ht_sig + ht_stf + ht_ltf;
+        const vht_sig_a = 8; 
+        const vht_stf = 4;
+        const vht_ltf = 4 * ss;
+        const vht_sig_b = 4; // VHT-SIG-B field is always 4µs
+
+        // Base preamble is Legacy + VHT-SIG-A + VHT-STF + VHT-LTFs
+        preamble_duration = lp + vht_sig_a + vht_stf + vht_ltf;
+
+        // VHT adds the VHT-SIG-B field. A good proxy for VHT is BW > 40MHz or MCS 8/9.
+        const mcs = parseInt(document.getElementById('mcs').value);
+        if (bandwidth > 40 || mcs > 7) {
+            preamble_duration += vht_sig_b;
+        }
     } else {
         // HE preamble calculation
         const rl_sig = 4; // RL-SIG
@@ -806,7 +815,7 @@ function calculate() {
     const throughput_exc = (bitsTransmitted / (total_exc * 1e-6)) / 1e6;
 
     // Output results with dynamic AC labels
-    let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (us)</th><th>Throughput (Mbps)</th></tr></thead><tbody>';
+    let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (μs)</th><th>Throughput (Mbps)</th></tr></thead><tbody>';
     table += `<tr><td>Duration including IFS ${acLabel} & CW</td><td>${total_inc.toFixed(1)}</td><td>${throughput_inc.toFixed(3)}</td></tr>`;
     table += `<tr><td>Duration excluding IFS ${acLabel} & CW</td><td>${total_exc.toFixed(1)}</td><td>${throughput_exc.toFixed(3)}</td></tr>`;
     table += '</tbody></table>';
@@ -871,6 +880,7 @@ function calculate() {
                         hoverBorderWidth: 3
                     }]
                 },
+                plugins: [ChartDataLabels],
                 options: {
                     indexAxis: 'y',
                     responsive: true,
@@ -910,6 +920,30 @@ function calculate() {
                                     const percentage = ((context.parsed.x / barData.reduce((a, b) => a + b, 0)) * 100).toFixed(1);
                                     return `${percentage}% of total time`;
                                 }
+                            }
+                        },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'right',
+                            offset: 4,
+                            color: '#1e3a8a',
+                            font: {
+                                size: 11,
+                                weight: 'bold',
+                                family: 'Inter'
+                            },
+                            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                            borderColor: '#e2e8f0',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                            padding: {
+                                top: 2,
+                                bottom: 2,
+                                left: 6,
+                                right: 6
+                            },
+                            formatter: function(value, context) {
+                                return value.toFixed(1) + 'μs';
                             }
                         }
                     },
