@@ -249,6 +249,14 @@ function updateForm() {
     const legacyRateLabel = document.getElementById('legacyRateLabel');
     const legacyRate = document.getElementById('legacyRate');
     const ackType = document.getElementById('ackType');
+    const heLtfSize = document.getElementById('heLtfSize');
+
+    // Show/hide HE-LTF Size based on scenario (only for HE scenarios 3 and 4)
+    if (scenario === '3' || scenario === '4') {
+        heLtfSize.parentElement.style.display = 'flex';
+    } else {
+        heLtfSize.parentElement.style.display = 'none';
+    }
 
     // Show/hide elements based on scenario
     if (scenario === '4') {
@@ -351,6 +359,9 @@ function updateForm() {
         // Enable ACK type selection for modern scenarios (Block ACK supported)
         ackType.disabled = false;
         
+        // Set Block ACK as default for modern scenarios
+        ackType.value = 'blockack';
+        
         mcsLabel.style.display = 'block';
         mcs.style.display = 'block';
         mcsLabel.parentElement.style.display = 'flex';
@@ -362,6 +373,8 @@ function updateForm() {
     // Enable ACK type selection for HE scenarios as well
     if (scenario === '3' || scenario === '4') {
         ackType.disabled = false;
+        // Set Block ACK as default for HE scenarios
+        ackType.value = 'blockack';
     }
 
     // Band-specific bandwidth limitations
@@ -559,8 +572,22 @@ function calculate() {
         const rl_sig = 4; // RL-SIG
         const he_sig_a = 8; // HE-SIG-A (2 symbols)
         let he_sig_b = 0;
-        let he_stf = 4; // HE-STF
-        let he_ltf = 6.4 * ss; // HE-LTF per spatial stream
+        const he_stf = 4; // Corrected: For non-TB PPDUs
+        
+        // Read the new HE-LTF Size input
+        const heLtfSize = parseInt(document.getElementById('heLtfSize').value);
+        
+        let n_he_ltf;
+        if (heLtfSize === 2) {
+            n_he_ltf = Math.ceil(ss / 2);
+        } else if (heLtfSize === 4) {
+            n_he_ltf = Math.ceil(ss / 4);
+        } else {
+            n_he_ltf = ss; // Default to 1x
+        }
+        
+        const single_he_ltf_duration = 3.2 + gi;
+        const he_ltf = n_he_ltf * single_he_ltf_duration;
         
         if (scenario === '4') {
             // HE-SIG-B calculation for OFDMA
@@ -815,7 +842,7 @@ function calculate() {
     const throughput_exc = (bitsTransmitted / (total_exc * 1e-6)) / 1e6;
 
     // Output results with dynamic AC labels
-    let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (μs)</th><th>Throughput (Mbps)</th></tr></thead><tbody>';
+    let table = '<table class="table table-striped"><thead><tr><th>Component</th><th>Duration (μs)</th><th>Ideal Throughput (Mbps) <span class="info-icon" onclick="showThroughputFormula()" title="Click to see throughput calculation formula">(i)</span></th></tr></thead><tbody>';
     table += `<tr><td>Duration including IFS ${acLabel} & CW</td><td>${total_inc.toFixed(1)}</td><td>${throughput_inc.toFixed(3)}</td></tr>`;
     table += `<tr><td>Duration excluding IFS ${acLabel} & CW</td><td>${total_exc.toFixed(1)}</td><td>${throughput_exc.toFixed(3)}</td></tr>`;
     table += '</tbody></table>';
@@ -1483,6 +1510,43 @@ function createSSIDChart(overheadPercentage, totalSSIDs, beaconsPerSecond) {
             chartContainer.innerHTML = '<p style="padding: 2rem; text-align: center; color: #64748b;">Chart temporarily unavailable. Results shown in table above.</p>';
         }
     }
+}
+
+// Throughput formula explanation function
+function showThroughputFormula() {
+    const formulaText = `
+**Ideal Throughput Calculation Formula:**
+
+**Throughput (Mbps) = (Application Data Bits) / (Total Duration × 10⁻⁶)**
+
+**Where:**
+• **Application Data Bits** = AMPDU payload × 8 bits
+• **Total Duration** = Sum of all timing components (μs)
+
+**Components Include:**
+• **AIFS/DIFS** - Arbitration Inter Frame Space
+• **Backoff** - Random backoff slots for collision avoidance  
+• **RTS/CTS** - Optional protection frames (if enabled)
+• **Data Preamble** - PHY layer synchronization
+• **MPDU/A-MPDU** - Actual data transmission
+• **SIFS** - Short Inter Frame Space
+• **ACK/Block ACK** - Acknowledgment frames
+
+**Note:** This is the "ideal" throughput as it represents the theoretical maximum based on the PHY layer parameters and doesn't account for real-world factors like:
+- Retry transmissions due to errors
+- Additional MAC layer overhead
+- Channel contention from other devices  
+- Variable channel conditions
+- Processing delays
+
+**Two calculations are shown:**
+1. **Including AIFS & Backoff** - Complete transmission cycle
+2. **Excluding AIFS & Backoff** - Pure data transmission efficiency
+
+This helps analyze both the overall channel efficiency and the raw data transfer capability.
+    `;
+    
+    alert(formulaText);
 }
 
 // Handle browser back/forward buttons
