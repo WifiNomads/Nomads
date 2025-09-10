@@ -652,7 +652,7 @@ function calculate() {
     // Subcarrier counts per standard
     const subcarriers_legacy = {20: 48, 40: 0, 80: 0, 160: 0};
     const subcarriers_ht_vht = {20: 52, 40: 108, 80: 234, 160: 468};
-    const subcarriers_he = {20: 242, 40: 484, 80: 980, 160: 1960};
+    const subcarriers_he = {20: 234, 40: 468, 80: 980, 160: 1960};
 
     if (scenario === '1') {
         data_sub = subcarriers_legacy[bandwidth];
