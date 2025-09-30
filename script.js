@@ -696,18 +696,18 @@ function calculate() {
     let assumedMpduPayload = 1500; // bytes per MPDU (default)
     
     // For large A-MPDUs, use larger individual MPDUs to keep count manageable
-    if (ampduBytesTotal > 100000) { // > 100KB
-        assumedMpduPayload = Math.min(11454, Math.ceil(ampduBytesTotal / 500)); // Max MPDU size ~11.5KB, target ~500 MPDUs
-    }
+    //if (ampduBytesTotal > 100000) { // > 100KB
+    //    assumedMpduPayload = Math.min(11454, Math.ceil(ampduBytesTotal / 500)); // Max MPDU size ~11.5KB, target ~500 MPDUs
+    //}
     
     let mpduCount = Math.max(1, Math.ceil(ampduBytesTotal / assumedMpduPayload));
     let remainingPayload = ampduBytesTotal;
     let totalDataBytes = 0;
 
-    if (mpduCount > MAX_MPDU_COUNT) {
-        alert(`Too many MPDUs (${mpduCount}). Please use a smaller AMPDU or MPDU size.`);
-        return;
-    }
+    //if (mpduCount > MAX_MPDU_COUNT) {
+    //    alert(`Too many MPDUs (${mpduCount}). Please use a smaller AMPDU or MPDU size.`);
+    //    return;
+    //}
     for (let i = 0; i < mpduCount; i++) {
         const payloadForThis = (i === mpduCount - 1) ? remainingPayload : assumedMpduPayload;
         remainingPayload -= payloadForThis;
