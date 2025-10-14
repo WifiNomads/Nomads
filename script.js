@@ -1559,6 +1559,38 @@ This helps analyze both the overall channel efficiency and the raw data transfer
     alert(formulaText);
 }
 
+// Release Notes Toggle Function
+function toggleReleaseNotes() {
+    const content = document.getElementById('releaseNotesContent');
+    const icon = document.getElementById('releaseNotesIcon');
+    
+    if (content.style.display === 'none' || content.style.display === '') {
+        content.style.display = 'block';
+        icon.style.transform = 'rotate(90deg)';
+        icon.textContent = '▼';
+        
+        // Smooth animation
+        content.style.opacity = '0';
+        content.style.maxHeight = '0';
+        content.style.overflow = 'hidden';
+        content.style.transition = 'all 0.3s ease';
+        
+        setTimeout(() => {
+            content.style.opacity = '1';
+            content.style.maxHeight = '200px';
+        }, 10);
+    } else {
+        content.style.opacity = '0';
+        content.style.maxHeight = '0';
+        
+        setTimeout(() => {
+            content.style.display = 'none';
+            icon.style.transform = 'rotate(0deg)';
+            icon.textContent = '▶';
+        }, 300);
+    }
+}
+
 // Handle browser back/forward buttons
 window.addEventListener('popstate', () => {
     if (window.location.hash === '#wifiairtimecalculator') {
