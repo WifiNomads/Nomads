@@ -1,24 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemap location
 Sitemap: https://wifinomads.net/sitemap.xml
-
-# Allow indexing of main pages
-Allow: /index.html
-
-# Disallow any future admin or private directories (if any)
-# Disallow: /admin/
-# Disallow: /private/
-
-# Allow common resource files
-Allow: /style.css
-Allow: /script.js
-Allow: /*.png
-Allow: /*.jpg
-Allow: /*.jpeg
-Allow: /*.gif
-Allow: /*.svg
-
-# Crawl-delay (optional - uncomment if needed)
-# Crawl-delay: 1

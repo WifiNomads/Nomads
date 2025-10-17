@@ -3,144 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi Nomads - Professional Wi-Fi Analysis Tools</title>
+    <title>WiFi Airtime Calculator | Wi-Fi Nomads</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Professional Wi-Fi community with advanced networking tools including WiFi Airtime Calculator and SSID Overhead Calculator for wireless network optimization.">
-    <meta name="keywords" content="wifi nomads, wifi airtime calculator, ssid overhead calculator, wifi analysis tools, wireless network optimization, 802.11 calculator">
+    <meta name="description" content="Calculate WiFi airtime and throughput for 802.11ax, OFDMA, HT/VHT scenarios. Professional wireless analysis tool.">
+    <meta name="keywords" content="wifi airtime calculator, wifi nomads, 802.11 calculator, wireless analysis">
     <meta name="author" content="Wi-Fi Nomads">
     <meta name="robots" content="index, follow">
-    <meta name="language" content="English">
-    <meta name="revisit-after" content="7 days">
     
-    <!-- Open Graph Meta Tags for Social Media -->
-    <meta property="og:title" content="Wi-Fi Nomads - Professional Wi-Fi Knowledge Community">
-    <meta property="og:description" content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Wi-Fi Airtime Calculator - Professional IEEE 802.11 Analysis">
+    <meta property="og:description" content="Calculate Wi-Fi airtime and throughput for 802.11ax, OFDMA, HT/VHT scenarios. Professional tool for network engineers and Wi-Fi experts.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://wifinomads.net/">
+    <meta property="og:url" content="https://wifinomads.net/tools/wifi-airtime-calculator/">
     <meta property="og:image" content="https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png">
-    <meta property="og:site_name" content="Wi-Fi Nomads">
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Wi-Fi Nomads - Professional Wi-Fi Knowledge Community">
-    <meta name="twitter:description" content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
+    <meta name="twitter:title" content="Wi-Fi Airtime Calculator - Professional IEEE 802.11 Analysis">
+    <meta name="twitter:description" content="Calculate Wi-Fi airtime and throughput for 802.11ax, OFDMA, HT/VHT scenarios. Professional tool for network engineers.">
     <meta name="twitter:image" content="https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/images/Wi-Fi Nomads Logo.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="assets/images/Wi-Fi Nomads Logo.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="assets/images/Wi-Fi Nomads Logo.png">
-    <link rel="shortcut icon" href="assets/images/Wi-Fi Nomads Logo.png">
-    
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://wifinomads.net/">
+    <link rel="canonical" href="https://wifinomads.net/tools/wifi-airtime-calculator/">
     
-    <!-- Performance & Caching Optimization -->
-    <meta http-equiv="Cache-Control" content="public, max-age=3600">
-    <meta name="theme-color" content="#1e3a8a">
-    <meta name="msapplication-TileColor" content="#1e3a8a">
-    <meta name="application-name" content="Wi-Fi Nomads">
-    <meta name="apple-mobile-web-app-title" content="Wi-Fi Nomads">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="../../assets/images/Wi-Fi Nomads Logo.png">
+    
+    <!-- Basic JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "WiFi Airtime Calculator",
+        "description": "Calculate WiFi airtime and throughput for wireless networks.",
+        "url": "https://wifinomads.net/tools/wifi-airtime-calculator/"
+    }
+    </script>
     
     <!-- CSS -->
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Simplified JSON-LD Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "name": "Wi-Fi Nomads",
-        "description": "Professional Wi-Fi networking community providing advanced analysis tools.",
-        "url": "https://wifinomads.net/",
-        "logo": {
-            "@type": "ImageObject",
-            "url": "https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png"
-        },
-        "sameAs": [
-            "https://www.linkedin.com/company/wi-fi-nomads/"
-        ]
-    }
-    </script>
-    
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Wi-Fi Nomads",
-        "description": "Professional Wi-Fi analysis tools and networking community.",
-        "url": "https://wifinomads.net/"
-    }
-    </script>
-    
-    <style>
-        /* Fallback styles for Tools section */
-        .tools { padding: 80px 0; background: #f1f5f9; }
-        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #0f172a; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
-        .tool-card { 
-            background: white; 
-            padding: 2.5rem; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
-            cursor: pointer; 
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
-        .tool-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
-            text-decoration: none;
-            color: inherit;
-        }
-        .tool-card:visited {
-            color: inherit;
-        }
-        .tool-icon { width: 64px; height: 64px; background: rgba(30, 58, 138, 0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; }
-        .tool-card:hover .tool-icon { background: linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%); color: white; }
-        .feature-tag { background: rgba(37, 99, 235, 0.1); color: #1e3a8a; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-right: 0.5rem; }
-        
-        /* Info icon styles */
-        .info-icon {
-            color: #1e3a8a;
-            background: rgba(30, 58, 138, 0.1);
-            border-radius: 50%;
-            padding: 2px 6px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-left: 5px;
-            transition: all 0.3s ease;
-            display: inline-block;
-            text-decoration: none;
-        }
-        
-        .info-icon:hover {
-            background: #1e3a8a;
-            color: white;
-            transform: scale(1.1);
-        }
-    </style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 </head>
 <body>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo" onclick="goToHome()">
-                <img src="assets/images/Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
+            <div class="nav-logo" onclick="window.location.href='../../'">
+                <img src="../../assets/images/Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
                 <h2>Wi-Fi Nomads</h2>
             </div>
             <ul class="nav-menu">
-                <li><a href="/">Home</a></li>
-                <li><a href="#tools">Tools</a></li>
+                <li><a href="../../">Home</a></li>
+                <li><a href="../../#tools">Tools</a></li>
                 <li><a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer" class="nav-linkedin" title="Follow us on LinkedIn">
-                    <img src="assets/images/linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
+                    <img src="../../assets/images/linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
                 </a></li>
             </ul>
             <div class="hamburger">
@@ -151,69 +72,14 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">⚡ Professional Wi-Fi Community</div>
-                <h1 class="hero-title">Share, Learn, and <span class="highlight">Innovate Together!</span></h1>
-                <p class="hero-subtitle">A professional community focused on the exchange of Wi-Fi Networking knowledge. Connect with Wi-Fi experts, access exclusive insights, and stay updated with the latest industry trends.</p>
-            </div>
-            <div class="logo-showcase">
-                <div class="logo-container">
-                    <img src="assets/images/wifi.jpg" alt="Wi-Fi Nomads 3D Logo" class="hero-logo" />
-                    <div class="logo-glow"></div>
-                    <div class="logo-particles">
-                        <div class="particle particle-1"></div>
-                        <div class="particle particle-2"></div>
-                        <div class="particle particle-3"></div>
-                        <div class="particle particle-4"></div>
-                        <div class="particle particle-5"></div>
-                        <div class="particle particle-6"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tools Section -->
-    <section id="tools" class="tools">
+    <!-- Tool Content -->
+    <div class="tool-page">
         <div class="container">
-            <h2 class="section-title">Tools</h2>
-            <div class="tools-grid">
-                <a href="/wifiairtimecalculator" class="tool-card">
-                    <div class="tool-icon">📊</div>
-                    <h3>Wi-Fi Airtime Calculator</h3>
-                    <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
-                    <div class="tool-features">
-                        <span class="feature-tag">802.11ax</span>
-                        <span class="feature-tag">OFDMA</span>
-                        <span class="feature-tag">HT/VHT/HE</span>
-                    </div>
-                </a>
-                
-                <a href="/ssidoverheadcalculator" class="tool-card">
-                    <div class="tool-icon">📡</div>
-                    <h3>SSID Overhead Calculator</h3>
-                    <p>Calculate beacon frame overhead and analyze SSID impact on network performance. Optimize beacon intervals and reduce airtime waste.</p>
-                    <div class="tool-features">
-                        <span class="feature-tag">802.11</span>
-                        <span class="feature-tag">Beacon Analysis</span>
-                        <span class="feature-tag">Network Optimization</span>
-                    </div>
-                </a>
+            <div class="tool-header">
+                <h1>WiFi Airtime Calculator</h1>
+                <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
             </div>
-        </div>
-    </section>
-
-
-    <!-- Wi-Fi Airtime Calculator Modal -->
-    <div id="calculatorModal" class="calculator-modal">
-        <div class="calculator-modal-content">
-            <div class="calculator-header">
-                <h2>Wi-Fi Airtime Calculator</h2>
-                <button class="close-btn" onclick="closeCalculator()">&times;</button>
-            </div>
+            
             <div class="calculator-body">
                 <div class="calculator-form">
                     <div class="form-group">
@@ -355,7 +221,7 @@
                     <div class="documentation-link" style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: var(--bg-accent); border-radius: var(--radius-md); border: 1px solid var(--border-accent);">
                         <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
                             To learn more about Airtime Calculator calculations, formulas, and technical details, 
-                            <a href="https://github.com/WifiNomads/Nomads/blob/main/Wi-Fi_Airtime_Calculator_Documentation.md"
+                            <a href="../../docs/Wi-Fi_Airtime_Calculator_Documentation.md"
                                target="_blank" 
                                rel="noopener noreferrer" 
                                style="color: var(--primary-blue); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--primary-blue);">
@@ -389,84 +255,17 @@
         </div>
     </div>
 
-    <!-- SSID Overhead Calculator Modal -->
-    <div id="ssidCalculatorModal" class="calculator-modal">
-        <div class="calculator-modal-content">
-            <div class="calculator-header">
-                <h2>SSID Overhead Calculator</h2>
-                <button class="close-btn" onclick="closeSSIDCalculator()">&times;</button>
-            </div>
-            <div id="errorBanner" style="display:none; background-color:#ffdddd; color:#a00; padding:10px; margin-bottom:10px; border:1px solid #a00; border-radius:5px; font-weight:bold;"></div>
-            <div class="calculator-body">
-                <div class="calculator-form">
-                    <h3>Input Parameters</h3>
-                    <div class="calculator-inputs">
-                        <div class="form-group">
-                            <label class="form-label">Number of APs on Channel:</label>
-                            <input type="number" id="ssid-numAPs" class="form-control" value="1" min="1" max="1000" title="Number of access points transmitting on the same channel">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">SSIDs per AP:</label>
-                            <input type="number" id="ssid-numSSIDs" class="form-control" value="2" min="1" max="1000" title="Number of SSIDs (virtual APs) per access point">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Beacon Interval (ms):</label>
-                            <input type="number" id="ssid-beaconInterval" class="form-control" value="100" min="1" max="10000" title="Time interval between beacon transmissions (typically 100ms)">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Beacon Frame Size (bytes):</label>
-                            <input type="number" id="ssid-beaconFrameSize" class="form-control" value="300" min="1" max="10000" title="Size of beacon frame including management overhead">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Beacon Data Rate (Mbps):</label>
-                            <select id="ssid-beaconDataRate" class="form-select" title="Data rate used for beacon transmission">
-                                <option value="6" selected>6</option>
-                                <option value="9">9</option>
-                                <option value="12">12</option>
-                                <option value="18">18</option>
-                                <option value="24">24</option>
-                                <option value="36">36</option>
-                                <option value="48">48</option>
-                                <option value="54">54</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Preamble Type:</label>
-                            <select id="ssid-preambleType" class="form-select" onchange="updateSSIDBeaconRates()" title="Preamble type used for beacon transmission">
-                                <option value="20" selected>802.11a/g (Non-HT OFDM) - 20μs</option>
-                                <option value="96">802.11b (DSSS) Short PLCP - 96μs</option>
-                                <option value="192">802.11b (DSSS) Long PLCP - 192μs</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <button onclick="calculateSSIDOverhead()" class="btn-calculate">Calculate SSID Overhead</button>
-                    
-                    <div id="ssidOutput" class="calculation-results"></div>
-                </div>
-                
-                <div class="chart-section">
-                    <h3>Overhead Visualization</h3>
-                    <div class="chart-container">
-                        <canvas id="ssidOverheadChart" class="airtime-chart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <script src="assets/js/shared-utilities.js"></script>
-    <script src="assets/js/core-app.js"></script>
-    <script src="assets/js/wifi-calculator.js"></script>
-    <script src="assets/js/ssid-calculator.js"></script>
+    <script src="../../assets/js/shared-utilities.js"></script>
+    <script src="../../assets/js/core-app.js"></script>
+    <script src="../../assets/js/wifi-calculator.js"></script>
     
+    <script>
+        // Initialize calculator on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initMobileMenu();
+            updateForm();
+        });
+    </script>
 </body>
 </html>
