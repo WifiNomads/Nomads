@@ -51,10 +51,10 @@ The calculator supports four key generations of Wi-Fi technology, each with diff
 ### Scenario 2: HT/VHT (802.11n/ac - "High Throughput / Very High Throughput")
 - Introduced major speed enhancements like wider channels (up to 160 MHz) and multiple spatial streams (MIMO), allowing devices to send more data simultaneously.
 
-### Scenario 3: HE SU (802.11ax - "Wi-Fi 6")
+### Scenario 3: HE SU (802.11ax - "High Efficiency / Wi-Fi 6")
 - Focused on efficiency in dense environments. It uses a much longer symbol duration, which makes transmissions more robust and reliable, especially over longer distances.
 
-### Scenario 4: HE DL OFDMA (802.11ax - "Wi-Fi 6 Multi-User")
+### Scenario 4: HE DL OFDMA (802.11ax - "High Efficiency / Wi-Fi 6 Multi-User")
 - The game-changer of Wi-Fi 6. OFDMA allows a single transmission to be subdivided and sent to multiple users at the same time, dramatically reducing overhead and waiting times.
 
 ## Part 4: Guide to Input Parameters
