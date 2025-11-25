@@ -20,7 +20,7 @@ Before a device can transmit, it must wait for the channel to be free. This invo
 - **AIFS/DIFS**: A mandatory waiting period (Inter-Frame Space) to ensure the previous transmission is complete.
 - **Backoff (Contention Window)**: A randomized waiting period to avoid collisions with other devices trying to speak at the same time.
 
-### Protection Frames (Optional)
+### Protection Frames
 In busy environments, devices use a handshake to reserve the channel:
 
 - **RTS (Request to Send)**: A small frame sent by the transmitter to ask for permission to send data.
