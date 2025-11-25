@@ -1,6 +1,6 @@
 # Wi-Fi Airtime Calculator: A Deep Dive
 
-Welcome to the official documentation for the Wi-Fi Airtime Calculator. This guide is designed to provide a clear, comprehensive understanding of how Wi-Fi airtime is calculated, the underlying technologies, and how to interpret the results from this tool.
+Welcome to official documentation for the Wi-Fi Airtime Calculator. This guide is designed to provide a clear, comprehensive understanding of how Wi-Fi airtime is calculated, the underlying technologies, and how to interpret the results from this tool.
 
 ## Part 1: What is Wi-Fi Airtime?
 
