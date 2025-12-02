@@ -723,7 +723,7 @@ function calculate() {
         barLabels.push('SIFS');
         barData.push(sifs);
         total_inc += sifs;
-        total_exc += sifs;
+        // total_exc += sifs;
 
         // CTS Preamble
         if (scenario === '4' && users > 1) {
@@ -745,7 +745,7 @@ function calculate() {
         barLabels.push('SIFS');
         barData.push(sifs);
         total_inc += sifs;
-        total_exc += sifs;
+        // total_exc += sifs;
     }
 
     // Data transmission
@@ -762,7 +762,7 @@ function calculate() {
     barLabels.push('SIFS');
     barData.push(sifs);
     total_inc += sifs;
-    total_exc += sifs;
+    // total_exc += sifs;
 
     // ACK
     let ack_preamble_duration;
