@@ -8,7 +8,7 @@ In the world of wireless networking, **airtime** is the measure of the total tim
 
 Efficiently managing airtime is crucial for a high-performing Wi-Fi network. Too much time spent on transmissions, especially inefficient ones, leads to congestion, slower speeds, and a poor user experience for everyone connected.
 
-This calculator helps you visualize and quantify the airtime consumed by a single Wi-Fi transmission sequence, giving you insight into network efficiency.
+This calculator helps you to visualize and quantify the airtime consumed by a single Wi-Fi transmission sequence, giving you insight into network efficiency.
 
 ## Part 2: The Anatomy of a Wi-Fi Transmission
 
