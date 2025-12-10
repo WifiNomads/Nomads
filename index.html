@@ -1,41 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wi-Fi Nomads - Professional Wi-Fi Analysis Tools</title>
-    
+
     <!-- SEO Meta Tags -->
-    <meta name="description" content="Professional Wi-Fi community with advanced networking tools including WiFi Airtime Calculator and SSID Overhead Calculator for wireless network optimization.">
-    <meta name="keywords" content="wifi nomads, wifi airtime calculator, ssid overhead calculator, wifi analysis tools, wireless network optimization, 802.11 calculator">
+    <meta name="description"
+        content="Professional Wi-Fi community with advanced networking tools including WiFi Airtime Calculator and SSID Overhead Calculator for wireless network optimization.">
+    <meta name="keywords"
+        content="wifi nomads, wifi airtime calculator, ssid overhead calculator, wifi analysis tools, wireless network optimization, 802.11 calculator">
     <meta name="author" content="Wi-Fi Nomads">
     <meta name="robots" content="index, follow">
     <meta name="language" content="English">
     <meta name="revisit-after" content="7 days">
-    
+
     <!-- Open Graph Meta Tags for Social Media -->
     <meta property="og:title" content="Wi-Fi Nomads - Professional Wi-Fi Knowledge Community">
-    <meta property="og:description" content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
+    <meta property="og:description"
+        content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://wifinomads.net/">
     <meta property="og:image" content="https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png">
     <meta property="og:site_name" content="Wi-Fi Nomads">
-    
+
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Wi-Fi Nomads - Professional Wi-Fi Knowledge Community">
-    <meta name="twitter:description" content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
+    <meta name="twitter:description"
+        content="Professional Wi-Fi community with advanced networking tools including airtime calculators and 802.11ax analysis tools.">
     <meta name="twitter:image" content="https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png">
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/Wi-Fi Nomads Logo.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/Wi-Fi Nomads Logo.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/Wi-Fi Nomads Logo.png">
     <link rel="shortcut icon" href="assets/images/Wi-Fi Nomads Logo.png">
-    
+
     <!-- Canonical URL -->
     <link rel="canonical" href="https://wifinomads.net/">
-    
+
     <!-- Performance & Caching Optimization -->
     <meta http-equiv="Cache-Control" content="public, max-age=3600">
     <meta name="theme-color" content="#1e3a8a">
@@ -44,11 +49,12 @@
     <meta name="apple-mobile-web-app-title" content="Wi-Fi Nomads">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    
+
     <!-- CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Simplified JSON-LD Structured Data -->
     <script type="application/ld+json">
     {
@@ -66,7 +72,7 @@
         ]
     }
     </script>
-    
+
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -76,36 +82,76 @@
         "url": "https://wifinomads.net/"
     }
     </script>
-    
+
     <style>
         /* Fallback styles for Tools section */
-        .tools { padding: 80px 0; background: #f1f5f9; }
-        .section-title { font-size: 2.5rem; text-align: center; margin-bottom: 3rem; color: #0f172a; }
-        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2rem; }
-        .tool-card { 
-            background: white; 
-            padding: 2.5rem; 
-            border-radius: 16px; 
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1); 
-            cursor: pointer; 
+        .tools {
+            padding: 80px 0;
+            background: #f1f5f9;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: #0f172a;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .tool-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             color: inherit;
             display: block;
         }
-        .tool-card:hover { 
-            transform: translateY(-8px); 
-            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             text-decoration: none;
             color: inherit;
         }
+
         .tool-card:visited {
             color: inherit;
         }
-        .tool-icon { width: 64px; height: 64px; background: rgba(30, 58, 138, 0.05); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 1.5rem; }
-        .tool-card:hover .tool-icon { background: linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%); color: white; }
-        .feature-tag { background: rgba(37, 99, 235, 0.1); color: #1e3a8a; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; margin-right: 0.5rem; }
-        
+
+        .tool-icon {
+            width: 64px;
+            height: 64px;
+            background: rgba(30, 58, 138, 0.05);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-card:hover .tool-icon {
+            background: linear-gradient(135deg, #1e3a8a 0%, #0891b2 100%);
+            color: white;
+        }
+
+        .feature-tag {
+            background: rgba(37, 99, 235, 0.1);
+            color: #1e3a8a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+        }
+
         /* Info icon styles */
         .info-icon {
             color: #1e3a8a;
@@ -120,7 +166,7 @@
             display: inline-block;
             text-decoration: none;
         }
-        
+
         .info-icon:hover {
             background: #1e3a8a;
             color: white;
@@ -128,6 +174,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -139,9 +186,10 @@
             <ul class="nav-menu">
                 <li><a href="/">Home</a></li>
                 <li><a href="#tools">Tools</a></li>
-                <li><a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer" class="nav-linkedin" title="Follow us on LinkedIn">
-                    <img src="assets/images/linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
-                </a></li>
+                <li><a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer"
+                        class="nav-linkedin" title="Follow us on LinkedIn">
+                        <img src="assets/images/linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
+                    </a></li>
             </ul>
             <div class="hamburger">
                 <span></span>
@@ -157,7 +205,9 @@
             <div class="hero-content">
                 <div class="hero-badge">⚡ Professional Wi-Fi Community</div>
                 <h1 class="hero-title">Share, Learn, and <span class="highlight">Innovate Together!</span></h1>
-                <p class="hero-subtitle">A professional community focused on the exchange of Wi-Fi Networking knowledge. Connect with Wi-Fi experts, access exclusive insights, and stay updated with the latest industry trends.</p>
+                <p class="hero-subtitle">A professional community focused on the exchange of Wi-Fi Networking knowledge.
+                    Connect with Wi-Fi experts, access exclusive insights, and stay updated with the latest industry
+                    trends.</p>
             </div>
             <div class="logo-showcase">
                 <div class="logo-container">
@@ -184,18 +234,20 @@
                 <a href="/wifiairtimecalculator" class="tool-card">
                     <div class="tool-icon">📊</div>
                     <h3>Wi-Fi Airtime Calculator</h3>
-                    <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and OFDMA configurations.</p>
+                    <p>Calculate Wi-Fi airtime and throughput for different scenarios including OFDM, HT/VHT, HE, and
+                        OFDMA configurations.</p>
                     <div class="tool-features">
                         <span class="feature-tag">802.11ax</span>
                         <span class="feature-tag">OFDMA</span>
                         <span class="feature-tag">HT/VHT/HE</span>
                     </div>
                 </a>
-                
+
                 <a href="/ssidoverheadcalculator" class="tool-card">
                     <div class="tool-icon">📡</div>
                     <h3>SSID Overhead Calculator</h3>
-                    <p>Calculate beacon frame overhead and analyze SSID impact on network performance. Optimize beacon intervals and reduce airtime waste.</p>
+                    <p>Calculate beacon frame overhead and analyze SSID impact on network performance. Optimize beacon
+                        intervals and reduce airtime waste.</p>
                     <div class="tool-features">
                         <span class="feature-tag">802.11</span>
                         <span class="feature-tag">Beacon Analysis</span>
@@ -218,36 +270,40 @@
                 <div class="calculator-form">
                     <div class="form-group">
                         <label for="scenario" class="form-label">Scenario:</label>
-                        <select id="scenario" class="form-select" onchange="updateForm()" title="Select WiFi PHY mode: Legacy OFDM (802.11a/g), HT/VHT (802.11n/ac), HE SU (802.11ax), or HE MU-OFDMA (802.11ax multi-user)">
+                        <select id="scenario" class="form-select" onchange="updateForm()"
+                            title="Select WiFi PHY mode: Legacy OFDM (802.11a/g), HT/VHT (802.11n/ac), HE SU (802.11ax), or HE MU-OFDMA (802.11ax multi-user)">
                             <option value="1">Scenario 1: OFDM (non-HT)</option>
                             <option value="2">Scenario 2: HT or VHT</option>
                             <option value="3">Scenario 3: HE (OFDMA disabled)</option>
                             <option value="4">Scenario 4: HE DL OFDMA</option>
                         </select>
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="band" class="form-label">Band:</label>
-                        <select id="band" class="form-select" onchange="updateForm()" title="Select frequency band. 2.4 GHz supports up to 40 MHz bandwidth, 5 GHz supports up to 160 MHz bandwidth">
+                        <select id="band" class="form-select" onchange="updateForm()"
+                            title="Select frequency band. 2.4 GHz supports up to 40 MHz bandwidth, 5 GHz supports up to 160 MHz bandwidth">
                             <option value="5">5 GHz</option>
                             <option value="2.4">2.4 GHz</option>
                         </select>
                     </div>
-                    
+
                     <div id="inputs" class="calculator-inputs">
                         <div class="form-group">
                             <label class="form-label">Channel Bandwidth (MHz):</label>
-                            <select id="bandwidth" class="form-select" onchange="updateUsersOptions(true)" title="Select channel bandwidth. Higher bandwidth provides more subcarriers and higher data rates. 2.4 GHz supports up to 40 MHz, 5 GHz supports up to 160 MHz">
+                            <select id="bandwidth" class="form-select" onchange="updateUsersOptions(true)"
+                                title="Select channel bandwidth. Higher bandwidth provides more subcarriers and higher data rates. 2.4 GHz supports up to 40 MHz, 5 GHz supports up to 160 MHz">
                                 <option value="20">20</option>
                                 <option value="40">40</option>
                                 <option value="80">80</option>
                                 <option value="160">160</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Access Category:</label>
-                            <select id="ac" class="form-select" onchange="updateCWRange()" title="Select traffic priority category. VO (Voice) has highest priority with shortest wait times, BE (Best Effort) is default for data traffic, BK (Background) has lowest priority">
+                            <select id="ac" class="form-select" onchange="updateCWRange()"
+                                title="Select traffic priority category. VO (Voice) has highest priority with shortest wait times, BE (Best Effort) is default for data traffic, BK (Background) has lowest priority">
                                 <option value="DIFS" selected>Default (DIFS)</option>
                                 <option value="BK">BK (AIFSN=7)</option>
                                 <option value="BE">BE (AIFSN=3)</option>
@@ -255,15 +311,17 @@
                                 <option value="VO">VO (AIFSN=2)</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Contention Window (average slots):</label>
-                            <input type="number" id="cw" class="form-control" value="8" min="0" step="0.5" title="Average number of backoff slots before transmission. Lower values = less delay but higher collision probability. Range depends on Access Category (VO: 1.5-3.5, VI: 3.5-7.5, BE/BK: 7.5-511.5)">
+                            <input type="number" id="cw" class="form-control" value="8" min="0" step="0.5"
+                                title="Average number of backoff slots before transmission. Lower values = less delay but higher collision probability. Range depends on Access Category (VO: 1.5-3.5, VI: 3.5-7.5, BE/BK: 7.5-511.5)">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Spatial Streams:</label>
-                            <select type="number" id="ss" class="form-select" onchange="" value="1" min="1" max="8" title="Number of MIMO spatial streams (1-8). More streams = higher data rate. Typical values: 1x1, 2x2, 4x4, 8x8 antenna configurations">
+                            <select type="number" id="ss" class="form-select" onchange="" value="1" min="1" max="8"
+                                title="Number of MIMO spatial streams (1-8). More streams = higher data rate. Typical values: 1x1, 2x2, 4x4, 8x8 antenna configurations">
                                 <option value="1" selected>1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -274,29 +332,32 @@
                                 <option value="8">8</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Guard Interval (μs):</label>
-                            <select id="gi" class="form-select" title="Guard interval between OFDM symbols to prevent interference. Legacy: 0.8μs, HT/VHT: 0.4μs or 0.8μs, HE: 0.8μs, 1.6μs, or 3.2μs. Shorter GI = higher efficiency">
+                            <select id="gi" class="form-select"
+                                title="Guard interval between OFDM symbols to prevent interference. Legacy: 0.8μs, HT/VHT: 0.4μs or 0.8μs, HE: 0.8μs, 1.6μs, or 3.2μs. Shorter GI = higher efficiency">
                                 <option value="0.4">0.4 μs (Short GI)</option>
                                 <option value="0.8" selected>0.8 μs (Long GI)</option>
                                 <option value="1.6">1.6 μs (HE GI)</option>
                                 <option value="3.2">3.2 μs (HE Long GI)</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">HE-LTF Size:</label>
-                            <select id="heLtfSize" class="form-select" title="Select the HE-LTF size. Larger sizes use fewer symbols to map multiple spatial streams, improving efficiency.">
+                            <select id="heLtfSize" class="form-select"
+                                title="Select the HE-LTF size. Larger sizes use fewer symbols to map multiple spatial streams, improving efficiency.">
                                 <option value="1" selected>1x (N_LTF = N_SS)</option>
                                 <option value="2">2x (N_LTF = ceil(N_SS/2))</option>
                                 <option value="4">4x (N_LTF = ceil(N_SS/4))</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Control Frame Rate:</label>
-                            <select id="controlFrameRate" class="form-select" title="Data rate for RTS/CTS/ACK control frames. Lower rates = more reliable but slower. Higher rates = faster but require better signal conditions. Must be from basic rate set">
+                            <select id="controlFrameRate" class="form-select"
+                                title="Data rate for RTS/CTS/ACK control frames. Lower rates = more reliable but slower. Higher rates = faster but require better signal conditions. Must be from basic rate set">
                                 <option value="6">6 Mbps (BPSK 1/2)</option>
                                 <option value="9">9 Mbps (BPSK 3/4)</option>
                                 <option value="12">12 Mbps (QPSK 1/2)</option>
@@ -307,79 +368,93 @@
                                 <option value="54">54 Mbps (64-QAM 3/4)</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label id="mcsLabel" class="form-label">MCS:</label>
-                            <select id="mcs" class="form-select" title="Modulation and Coding Scheme defines data rate. Higher MCS = higher data rate but requires better signal quality. MCS 0-7: Standard rates, MCS 8-9: 256-QAM (VHT/HE), MCS 10-11: 1024-QAM (HE only)"></select>
+                            <select id="mcs" class="form-select"
+                                title="Modulation and Coding Scheme defines data rate. Higher MCS = higher data rate but requires better signal quality. MCS 0-7: Standard rates, MCS 8-9: 256-QAM (VHT/HE), MCS 10-11: 1024-QAM (HE only)"></select>
                         </div>
-                        
+
                         <div class="form-group" style="display:none;">
                             <label id="legacyRateLabel" class="form-label">Legacy Data Rate:</label>
-                            <select id="legacyRate" class="form-select" title="Select data rate for legacy OFDM (802.11a/g). Higher rates require better signal conditions. Common rates: 6 Mbps (most reliable), 24 Mbps (balanced), 54 Mbps (maximum)"></select>
+                            <select id="legacyRate" class="form-select"
+                                title="Select data rate for legacy OFDM (802.11a/g). Higher rates require better signal conditions. Common rates: 6 Mbps (most reliable), 24 Mbps (balanced), 54 Mbps (maximum)"></select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Payload bytes:</label>
-                            <input type="number" id="ampdu" class="form-control" value="1500" min="1" title="Size of Aggregated MAC Protocol Data Unit in bytes. Larger A-MPDU improves efficiency but increases error impact. Typical: 64-65535 bytes. Common values: 1500 (single packet), 4000-8000 (good efficiency)">
+                            <input type="number" id="ampdu" class="form-control" value="1500" min="1"
+                                title="Size of Aggregated MAC Protocol Data Unit in bytes. Larger A-MPDU improves efficiency but increases error impact. Typical: 64-65535 bytes. Common values: 1500 (single packet), 4000-8000 (good efficiency)">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Acknowledgment Type:</label>
-                            <select id="ackType" class="form-select" title="Select acknowledgment type. ACK (14 bytes) for single frames, Block ACK (32 bytes) for aggregated frames. Block ACK is more efficient for A-MPDU transmissions">
+                            <select id="ackType" class="form-select"
+                                title="Select acknowledgment type. ACK (14 bytes) for single frames, Block ACK (32 bytes) for aggregated frames. Block ACK is more efficient for A-MPDU transmissions">
                                 <option value="blockack" selected>Block ACK (32 bytes)</option>
                                 <option value="ack">ACK (14 bytes)</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-check">
-                            <input type="checkbox" id="protection" class="form-check-input" checked title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">
-                            <label class="form-check-label" for="protection" title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">RTS/CTS Protection</label>
+                            <input type="checkbox" id="protection" class="form-check-input" checked
+                                title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">
+                            <label class="form-check-label" for="protection"
+                                title="Enable RTS/CTS handshake to prevent collisions from hidden nodes. Adds overhead but improves reliability in dense environments">RTS/CTS
+                                Protection</label>
                         </div>
-                        
+
                         <div class="form-group" style="display:none;">
                             <label id="usersLabel" class="form-label">Users:</label>
-                            <select id="users" class="form-select" title="Number of users (stations) in MU-OFDMA transmission. More users = better spectrum efficiency but requires coordination overhead. Limited by bandwidth and resource unit allocation"></select>
+                            <select id="users" class="form-select"
+                                title="Number of users (stations) in MU-OFDMA transmission. More users = better spectrum efficiency but requires coordination overhead. Limited by bandwidth and resource unit allocation"></select>
                         </div>
                     </div>
-                    
+
                     <button onclick="calculate()" class="btn-calculate">Calculate Airtime</button>
-                    
+
                     <div id="output" class="calculation-results"></div>
                 </div>
-                
+
                 <div class="chart-section">
                     <h3>Transmission Time Breakdown</h3>
                     <div class="chart-container">
                         <canvas id="barChart" class="airtime-chart"></canvas>
                     </div>
-                    <div class="documentation-link" style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: var(--bg-accent); border-radius: var(--radius-md); border: 1px solid var(--border-accent);">
+                    <div class="documentation-link"
+                        style="text-align: center; margin-top: 1.5rem; padding: 1rem; background: var(--bg-accent); border-radius: var(--radius-md); border: 1px solid var(--border-accent);">
                         <p style="margin: 0; color: var(--text-secondary); font-size: 0.9rem;">
-                            To learn more about Airtime Calculator calculations, formulas, and technical details, 
+                            To learn more about Airtime Calculator calculations, formulas, and technical details,
                             <a href="https://github.com/WifiNomads/Nomads/blob/main/Wi-Fi_Airtime_Calculator_Documentation.md"
-                               target="_blank" 
-                               rel="noopener noreferrer" 
-                               style="color: var(--primary-blue); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--primary-blue);">
-                               click here for complete documentation
+                                target="_blank" rel="noopener noreferrer"
+                                style="color: var(--primary-blue); text-decoration: none; font-weight: 600; border-bottom: 1px solid var(--primary-blue);">
+                                click here for complete documentation
                             </a>
                         </p>
-                        
+
                         <!-- Release Notes Section -->
-                        <div class="release-notes-section" style="margin-top: 1rem; border-top: 1px solid var(--border-light); padding-top: 1rem;">
-                            <div class="release-notes-toggle" 
-                                 onclick="toggleReleaseNotes()" 
-                                 style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; transition: all 0.3s ease;">
+                        <div class="release-notes-section"
+                            style="margin-top: 1rem; border-top: 1px solid var(--border-light); padding-top: 1rem;">
+                            <div class="release-notes-toggle" onclick="toggleReleaseNotes()"
+                                style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; transition: all 0.3s ease;">
                                 <span id="releaseNotesIcon" style="transition: transform 0.3s ease;">▶</span>
                                 <span>Release Notes (v1.0.0)</span>
                             </div>
-                            
-                            <div id="releaseNotesContent" 
-                                 style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: rgba(30, 58, 138, 0.03); border-radius: 6px; border-left: 3px solid var(--primary-blue); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); text-align: left;">
+
+                            <div id="releaseNotesContent"
+                                style="display: none; margin-top: 0.75rem; padding: 0.75rem; background: rgba(30, 58, 138, 0.03); border-radius: 6px; border-left: 3px solid var(--primary-blue); font-size: 0.8rem; line-height: 1.5; color: var(--text-secondary); text-align: left;">
                                 <ul style="margin: 0; padding-left: 1.2rem; list-style-type: disc; text-align: left;">
-                                    <li style="margin-bottom: 0.4rem; text-align: left;">Certain configurations may exceed the maximum allowed PPDU airtime of 5.484 ms.</li>
-                                    <li style="margin-bottom: 0.4rem; text-align: left;">Payload bytes field is treated as the MAC payload; MAC overheads are added separately to the user-provided value.</li>
-                                    <li style="margin-bottom: 0.4rem; text-align: left;">The "Duration excluding IFS, DIFS & CW" field includes SIFS in its calculation.</li>
-                                    <li style="margin-bottom: 0.4rem; text-align: left;">For MU OFDMA, the AMPDU size is defined per user.</li>
-                                    <li style="margin-bottom: 0; text-align: left;">Minor deviations may be observed in HE-SIG-B field calculations.</li>
+                                    <li style="margin-bottom: 0.4rem; text-align: left;">Certain configurations may
+                                        exceed the maximum allowed PPDU airtime of 5.484 ms.</li>
+                                    <li style="margin-bottom: 0.4rem; text-align: left;">Payload bytes field is treated
+                                        as the MAC payload; MAC overheads are added separately to the user-provided
+                                        value.</li>
+                                    <li style="margin-bottom: 0.4rem; text-align: left;">The "Duration excluding IFS,
+                                        DIFS & CW" field includes SIFS in its calculation.</li>
+                                    <li style="margin-bottom: 0.4rem; text-align: left;">For MU OFDMA, the AMPDU size is
+                                        defined per user.</li>
+                                    <li style="margin-bottom: 0; text-align: left;">Minor deviations may be observed in
+                                        HE-SIG-B field calculations.</li>
                                 </ul>
                             </div>
                         </div>
@@ -396,34 +471,42 @@
                 <h2>SSID Overhead Calculator</h2>
                 <button class="close-btn" onclick="closeSSIDCalculator()">&times;</button>
             </div>
-            <div id="errorBanner" style="display:none; background-color:#ffdddd; color:#a00; padding:10px; margin-bottom:10px; border:1px solid #a00; border-radius:5px; font-weight:bold;"></div>
+            <div id="errorBanner"
+                style="display:none; background-color:#ffdddd; color:#a00; padding:10px; margin-bottom:10px; border:1px solid #a00; border-radius:5px; font-weight:bold;">
+            </div>
             <div class="calculator-body">
                 <div class="calculator-form">
                     <h3>Input Parameters</h3>
                     <div class="calculator-inputs">
                         <div class="form-group">
                             <label class="form-label">Number of APs on Channel:</label>
-                            <input type="number" id="ssid-numAPs" class="form-control" value="1" min="1" max="1000" title="Number of access points transmitting on the same channel">
+                            <input type="number" id="ssid-numAPs" class="form-control" value="1" min="1" max="1000"
+                                title="Number of access points transmitting on the same channel">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">SSIDs per AP:</label>
-                            <input type="number" id="ssid-numSSIDs" class="form-control" value="2" min="1" max="1000" title="Number of SSIDs (virtual APs) per access point">
+                            <input type="number" id="ssid-numSSIDs" class="form-control" value="2" min="1" max="1000"
+                                title="Number of SSIDs (virtual APs) per access point">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Beacon Interval (ms):</label>
-                            <input type="number" id="ssid-beaconInterval" class="form-control" value="100" min="1" max="10000" title="Time interval between beacon transmissions (typically 100ms)">
+                            <input type="number" id="ssid-beaconInterval" class="form-control" value="102.4" min="1"
+                                max="10000" step="0.1"
+                                title="Time interval between beacon transmissions (typically 102.4ms = 100 TU)">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Beacon Frame Size (bytes):</label>
-                            <input type="number" id="ssid-beaconFrameSize" class="form-control" value="300" min="1" max="10000" title="Size of beacon frame including management overhead">
+                            <input type="number" id="ssid-beaconFrameSize" class="form-control" value="300" min="1"
+                                max="10000" title="Size of beacon frame including management overhead">
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Beacon Data Rate (Mbps):</label>
-                            <select id="ssid-beaconDataRate" class="form-select" title="Data rate used for beacon transmission">
+                            <select id="ssid-beaconDataRate" class="form-select"
+                                title="Data rate used for beacon transmission">
                                 <option value="6" selected>6</option>
                                 <option value="9">9</option>
                                 <option value="12">12</option>
@@ -434,22 +517,23 @@
                                 <option value="54">54</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label">Preamble Type:</label>
-                            <select id="ssid-preambleType" class="form-select" onchange="updateSSIDBeaconRates()" title="Preamble type used for beacon transmission">
+                            <select id="ssid-preambleType" class="form-select" onchange="updateSSIDBeaconRates()"
+                                title="Preamble type used for beacon transmission">
                                 <option value="20" selected>802.11a/g (Non-HT OFDM) - 20μs</option>
                                 <option value="96">802.11b (DSSS) Short PLCP - 96μs</option>
                                 <option value="192">802.11b (DSSS) Long PLCP - 192μs</option>
                             </select>
                         </div>
                     </div>
-                    
+
                     <button onclick="calculateSSIDOverhead()" class="btn-calculate">Calculate SSID Overhead</button>
-                    
+
                     <div id="ssidOutput" class="calculation-results"></div>
                 </div>
-                
+
                 <div class="chart-section">
                     <h3>Overhead Visualization</h3>
                     <div class="chart-container">
@@ -467,6 +551,7 @@
     <script src="assets/js/core-app.js"></script>
     <script src="assets/js/wifi-calculator.js"></script>
     <script src="assets/js/ssid-calculator.js"></script>
-    
+
 </body>
+
 </html>
