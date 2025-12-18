@@ -1338,7 +1338,7 @@ html {
     max-width: 100%;
     
     /* Set a fixed width to make it look professional (adjust as needed) */
-    width: 600px; /* Adjust this value to your preferred size */
+    width: 400px; /* Adjust this value to your preferred size */
   
     /* Ensure the height scales proportionally to the width */
     height: auto; 
