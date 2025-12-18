@@ -1333,6 +1333,32 @@ html {
     list-style-type: disc;
 }
 
+.blog-section-image {
+    /* Set a maximum width to prevent it from stretching too far */
+    max-width: 100%;
+    
+    /* Set a fixed width to make it look professional (adjust as needed) */
+    width: 600px; /* Adjust this value to your preferred size */
+  
+    /* Ensure the height scales proportionally to the width */
+    height: auto; 
+    
+    /* Center the image within its container (requires display: block) */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    
+    /* Add some vertical space above and below for separation */
+    margin-top: 25px;
+    margin-bottom: 25px;
+  
+    /* Optional: Add rounded corners for a modern look */
+    border-radius: 8px;
+  
+    /* Optional: Add a subtle shadow to make it pop */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
 .blog-conclusion {
     background: var(--bg-accent);
     padding: 2.5rem;
