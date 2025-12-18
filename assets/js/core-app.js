@@ -9,14 +9,14 @@ class PremiumRouter {
         this.currentRoute = null;
         this.basePath = this.getBasePath();
         this.isInitialized = false;
-        
+
         // Define application routes
         this.setupRoutes();
-        
+
         // Initialize router
         this.init();
     }
-    
+
     getBasePath() {
         // For local file system, use the file path without index.html
         if (window.location.protocol === 'file:') {
@@ -24,12 +24,15 @@ class PremiumRouter {
             const dir = path.substring(0, path.lastIndexOf('/') + 1);
             return dir;
         }
-        
-        // For web servers, use the current directory
-        const path = window.location.pathname;
+
+        // For web servers, use the current directory but strip index.html if present
+        let path = window.location.pathname;
+        if (path.endsWith('index.html')) {
+            path = path.substring(0, path.lastIndexOf('index.html'));
+        }
         return path.endsWith('/') ? path : path + '/';
     }
-    
+
     setupRoutes() {
         // Define all application routes
         this.routes.set('/', {
@@ -38,14 +41,14 @@ class PremiumRouter {
             handler: this.showHomePage.bind(this),
             description: 'Professional Wi-Fi networking community and tools'
         });
-        
+
         this.routes.set('/wifiairtimecalculator', {
             name: 'wifi-calculator',
             title: 'Wi-Fi Airtime Calculator - Wi-Fi Nomads',
             handler: this.showWiFiCalculator.bind(this),
             description: 'Professional IEEE 802.11 airtime analysis tool'
         });
-        
+
         this.routes.set('/ssidoverheadcalculator', {
             name: 'ssid-calculator',
             title: 'SSID Overhead Calculator - Wi-Fi Nomads',
@@ -53,45 +56,45 @@ class PremiumRouter {
             description: 'Calculate beacon frame overhead and optimize network performance'
         });
     }
-    
+
     init() {
         if (this.isInitialized) return;
-        
+
         // Handle browser navigation
         window.addEventListener('popstate', (event) => {
             this.handleNavigation(event.state?.path || this.getCurrentPath());
         });
-        
+
         // Handle initial page load
         this.handleNavigation(this.getCurrentPath(), true);
-        
+
         // Intercept clicks on internal links
         this.setupLinkInterception();
-        
+
         this.isInitialized = true;
         console.log('Premium Router initialized with path-based routing');
     }
-    
+
     getCurrentPath() {
         if (window.location.protocol === 'file:') {
             const pathname = window.location.pathname;
             const href = window.location.href;
-            
+
             // Enhanced path detection for local files
-            
+
             // Method 1: Check for pseudo path-based routing (index.html/route)
             if (pathname.includes('/')) {
                 const parts = pathname.split('/');
                 const lastPart = parts[parts.length - 1];
                 const secondLastPart = parts[parts.length - 2];
-                
+
                 // Look for pattern: .../index.html/route or .../file.html/route
                 if (secondLastPart && (secondLastPart.endsWith('.html') || secondLastPart === 'index.html')) {
                     if (lastPart && !lastPart.endsWith('.html')) {
                         return '/' + lastPart;
                     }
                 }
-                
+
                 // Look for pattern: .../route where route is after index.html
                 if (lastPart && !lastPart.endsWith('.html')) {
                     const indexOfHtml = pathname.indexOf('index.html');
@@ -103,7 +106,7 @@ class PremiumRouter {
                     }
                 }
             }
-            
+
             // Method 2: Check URL for direct path indicators
             if (href.includes('index.html/')) {
                 const routePart = href.split('index.html/')[1];
@@ -111,7 +114,7 @@ class PremiumRouter {
                     return '/' + routePart.split('/')[0];
                 }
             }
-            
+
             // Method 3: Enhanced hash-based routing detection
             const hash = window.location.hash;
             if (hash.startsWith('#/')) {
@@ -119,63 +122,63 @@ class PremiumRouter {
             } else if (hash.startsWith('#') && hash.length > 1) {
                 return '/' + hash.substring(1);
             }
-            
+
             // Method 4: Check history state
             if (window.history.state && window.history.state.path) {
                 return window.history.state.path;
             }
-            
+
             return '/';
         }
-        
+
         // For web servers, use pathname
         return window.location.pathname.replace(this.basePath, '/') || '/';
     }
-    
+
     setupLinkInterception() {
         document.addEventListener('click', (event) => {
             const link = event.target.closest('a[href]');
             if (!link) return;
-            
+
             const href = link.getAttribute('href');
-            
+
             // Only handle internal navigation links
             if (href.startsWith('/') || href.startsWith('./') || href.startsWith('#/')) {
                 event.preventDefault();
-                
+
                 let path = href;
                 if (href.startsWith('#/')) {
                     path = href.substring(1);
                 } else if (href.startsWith('./')) {
                     path = href.substring(1);
                 }
-                
+
                 this.navigateTo(path);
             }
         });
     }
-    
+
     navigateTo(path, title = null) {
         // Normalize path
         if (!path.startsWith('/')) {
             path = '/' + path;
         }
-        
+
         // Update browser history
         const route = this.routes.get(path);
         const pageTitle = title || (route ? route.title : 'Wi-Fi Nomads');
-        
+
         if (window.location.protocol === 'file:') {
             // Aggressive approach for local files to achieve index.html/route format
             const routeName = path === '/' ? '' : path.substring(1);
-            
+
             if (routeName) {
                 // Get current file path
                 const currentPath = window.location.pathname;
-                
+
                 // Create the desired URL format: path/to/index.html/route
                 const desiredUrl = currentPath + '/' + routeName;
-                
+
                 try {
                     // Method 1: Direct pushState with pseudo-path
                     window.history.pushState({ path, routeName }, pageTitle, desiredUrl);
@@ -199,7 +202,7 @@ class PremiumRouter {
                             console.log('All path-based methods failed, implementing enhanced hash routing...');
                             const customUrl = currentPath + '#/' + routeName;
                             window.history.pushState({ path, routeName, isCustomHash: true }, pageTitle, customUrl);
-                            
+
                             // Custom URL display override (visual only)
                             this.updateAddressBarDisplay(currentPath + '/' + routeName);
                         }
@@ -217,34 +220,34 @@ class PremiumRouter {
                 window.history.pushState({ path }, pageTitle, newPath);
             }
         }
-        
+
         // Update document title
         document.title = pageTitle;
-        
+
         // Handle the navigation
         this.handleNavigation(path);
     }
-    
+
     handleNavigation(path, isInitialLoad = false) {
         // Normalize path
         if (!path.startsWith('/')) {
             path = '/' + path;
         }
-        
+
         // Find matching route
         const route = this.routes.get(path);
-        
+
         if (route) {
             // Update current route
             this.currentRoute = path;
-            
+
             // Update page title and meta
             document.title = route.title;
             this.updateMetaTags(route);
-            
+
             // Execute route handler
             route.handler(isInitialLoad);
-            
+
             // Record navigation for analytics
             if (window.cacheManager) {
                 window.cacheManager.recordPerformance('route_navigation', Date.now());
@@ -255,76 +258,76 @@ class PremiumRouter {
             this.navigateTo('/', 'Wi-Fi Nomads');
         }
     }
-    
+
     updateMetaTags(route) {
         // Update meta description
         const metaDescription = document.querySelector('meta[name="description"]');
         if (metaDescription) {
             metaDescription.setAttribute('content', route.description);
         }
-        
+
         // Update Open Graph tags
         const ogTitle = document.querySelector('meta[property="og:title"]');
         if (ogTitle) {
             ogTitle.setAttribute('content', route.title);
         }
-        
+
         const ogDescription = document.querySelector('meta[property="og:description"]');
         if (ogDescription) {
             ogDescription.setAttribute('content', route.description);
         }
     }
-    
+
     showHomePage(isInitialLoad = false) {
         // Close any open modals
         this.closeAllModals();
-        
+
         // Show home page content
         const homeSection = document.getElementById('home');
         if (homeSection) {
-            homeSection.scrollIntoView({ 
+            homeSection.scrollIntoView({
                 behavior: isInitialLoad ? 'auto' : 'smooth',
                 block: 'start'
             });
         }
-        
+
         console.log('Navigated to: Home');
     }
-    
+
     showWiFiCalculator(isInitialLoad = false) {
         // Close other modals first
         this.closeAllModals();
-        
+
         // Open Wi-Fi calculator
         if (typeof openCalculator === 'function') {
             openCalculator();
         } else {
             console.error('openCalculator function not found');
         }
-        
+
         console.log('Navigated to: Wi-Fi Airtime Calculator');
     }
-    
+
     showSSIDCalculator(isInitialLoad = false) {
         // Close other modals first
         this.closeAllModals();
-        
+
         // Open SSID calculator
         if (typeof openSSIDCalculator === 'function') {
             openSSIDCalculator();
         } else {
             console.error('openSSIDCalculator function not found');
         }
-        
+
         console.log('Navigated to: SSID Overhead Calculator');
     }
-    
+
     closeAllModals() {
         const modals = [
             'calculatorModal',
             'ssidCalculatorModal'
         ];
-        
+
         modals.forEach(modalId => {
             const modal = document.getElementById(modalId);
             if (modal && modal.classList.contains('active')) {
@@ -333,7 +336,7 @@ class PremiumRouter {
             }
         });
     }
-    
+
     // Enhanced URL display management for local files
     updateAddressBarDisplay(desiredUrl) {
         // This is a visual enhancement attempt for browsers that support it
@@ -356,7 +359,7 @@ class PremiumRouter {
                     pointer-events: none;
                 `;
                 document.body.appendChild(urlDisplay);
-                
+
                 // Auto-hide after 3 seconds
                 setTimeout(() => {
                     if (document.getElementById('custom-url-display')) {
@@ -364,7 +367,7 @@ class PremiumRouter {
                     }
                 }, 3000);
             }
-            
+
             const display = document.getElementById('custom-url-display');
             if (display) {
                 display.textContent = `URL: ${desiredUrl.substring(desiredUrl.lastIndexOf('/') + 1)}`;
@@ -373,39 +376,39 @@ class PremiumRouter {
             console.log('Custom URL display not supported');
         }
     }
-    
+
     // Force path-based URL appearance (experimental)
     forcePathBasedUrl(route) {
         if (window.location.protocol === 'file:') {
             const currentPath = window.location.pathname;
             const routeName = route.substring(1); // Remove leading slash
-            
+
             // Try multiple aggressive approaches
             const approaches = [
                 // Approach 1: Direct pathname manipulation
                 () => {
                     const newUrl = currentPath + '/' + routeName;
-                    window.history.replaceState({path: route, forced: true}, '', newUrl);
+                    window.history.replaceState({ path: route, forced: true }, '', newUrl);
                     return newUrl;
                 },
-                
+
                 // Approach 2: URL constructor manipulation
                 () => {
                     const url = new URL(window.location);
                     url.pathname = url.pathname + '/' + routeName;
-                    window.history.replaceState({path: route, forced: true}, '', url.href);
+                    window.history.replaceState({ path: route, forced: true }, '', url.href);
                     return url.href;
                 },
-                
+
                 // Approach 3: Base manipulation
                 () => {
                     const base = window.location.href.split('?')[0].split('#')[0];
                     const newUrl = base + '/' + routeName;
-                    window.history.replaceState({path: route, forced: true}, '', newUrl);
+                    window.history.replaceState({ path: route, forced: true }, '', newUrl);
                     return newUrl;
                 }
             ];
-            
+
             for (let i = 0; i < approaches.length; i++) {
                 try {
                     const result = approaches[i]();
@@ -416,17 +419,17 @@ class PremiumRouter {
                     continue;
                 }
             }
-            
+
             return false;
         }
         return true;
     }
-    
+
     // Public API methods
     getCurrentRoute() {
         return this.currentRoute;
     }
-    
+
     getRoutes() {
         return Array.from(this.routes.entries()).map(([path, route]) => ({
             path,
@@ -461,13 +464,13 @@ function goToSSIDCalculator() {
 function initMobileMenu() {
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');
-    
+
     if (hamburger && navMenu) {
         hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('active');
             navMenu.classList.toggle('active');
         });
-        
+
         // Close mobile menu when clicking on nav links
         document.querySelectorAll('.nav-menu a').forEach(link => {
             link.addEventListener('click', () => {
@@ -475,7 +478,7 @@ function initMobileMenu() {
                 navMenu.classList.remove('active');
             });
         });
-        
+
         // Close mobile menu when clicking outside
         document.addEventListener('click', (event) => {
             if (!hamburger.contains(event.target) && !navMenu.contains(event.target)) {
@@ -483,7 +486,7 @@ function initMobileMenu() {
                 navMenu.classList.remove('active');
             }
         });
-        
+
         // Close mobile menu on escape key
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') {
@@ -548,21 +551,21 @@ class CacheManager {
         this.errorLog = [];
         this.init();
     }
-    
+
     init() {
         // Log environment info for debugging
         console.log(`Wi-Fi Nomads - Running in ${this.isWebServerEnvironment() ? 'web server' : 'local file'} environment`);
-        
+
         // Clear any existing cache on load
         this.clearBrowserCache();
-        
+
         // Set up cache prevention
         this.preventCaching();
-        
+
         // Monitor for updates
         this.setupUpdateDetection();
     }
-    
+
     clearBrowserCache() {
         try {
             // Only attempt cache operations if we're running on a proper web server
@@ -571,7 +574,7 @@ class CacheManager {
                 if ('applicationCache' in window && window.applicationCache.status !== window.applicationCache.UNCACHED) {
                     window.applicationCache.update();
                 }
-                
+
                 // Clear service worker cache if available
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -583,21 +586,21 @@ class CacheManager {
                     });
                 }
             }
-            
+
             // Force reload stylesheets (works in all environments)
             this.reloadStylesheets();
-            
+
         } catch (error) {
             console.warn('Cache clearing encountered an issue:', error);
         }
     }
-    
+
     // Check if we're running in a web server environment vs local file
     isWebServerEnvironment() {
         const protocol = window.location.protocol;
         return protocol === 'http:' || protocol === 'https:';
     }
-    
+
     reloadStylesheets() {
         const links = document.querySelectorAll('link[rel="stylesheet"]');
         links.forEach(link => {
@@ -610,13 +613,13 @@ class CacheManager {
             }
         });
     }
-    
+
     preventCaching() {
         // Only modify fetch behavior if we're in a web server environment
         if (this.isWebServerEnvironment()) {
             // Add no-cache headers to all AJAX requests
             const originalFetch = window.fetch;
-            window.fetch = function(...args) {
+            window.fetch = function (...args) {
                 if (args[1]) {
                     args[1].headers = args[1].headers || {};
                     args[1].headers['Cache-Control'] = 'no-cache, no-store, must-revalidate';
@@ -633,7 +636,7 @@ class CacheManager {
             };
         }
     }
-    
+
     setupUpdateDetection() {
         // Only setup update detection for web server environments
         if (this.isWebServerEnvironment()) {
@@ -643,13 +646,13 @@ class CacheManager {
             }, 300000);
         }
     }
-    
+
     checkForUpdates() {
         // Skip update checks if not in web server environment
         if (!this.isWebServerEnvironment()) {
             return;
         }
-        
+
         const timestamp = Date.now();
         fetch(`index.html?cache_check=${timestamp}`, {
             method: 'HEAD',
@@ -668,28 +671,28 @@ class CacheManager {
             console.warn('Update check failed:', error);
         });
     }
-    
+
     notifyUpdate() {
         if (confirm('A newer version of the website is available. Would you like to refresh to get the latest updates?')) {
             this.forceRefresh();
         }
     }
-    
+
     forceRefresh() {
         // Clear all possible caches before refresh
         this.clearBrowserCache();
-        
+
         // Force reload with cache bypass
         setTimeout(() => {
             window.location.reload(true);
         }, 500);
     }
-    
+
     // Public method to force refresh
     refresh() {
         this.forceRefresh();
     }
-    
+
     // Performance monitoring
     recordPerformance(action, startTime) {
         const duration = Date.now() - startTime;
@@ -699,7 +702,7 @@ class CacheManager {
             success: true
         };
     }
-    
+
     // Error logging
     logError(error, context) {
         const errorEntry = {
@@ -709,24 +712,24 @@ class CacheManager {
             userAgent: navigator.userAgent,
             url: window.location.href
         };
-        
+
         this.errorLog.push(errorEntry);
-        
+
         // Keep only last 50 errors
         if (this.errorLog.length > 50) {
             this.errorLog.shift();
         }
-        
+
         // Report critical errors
         if (context === 'critical') {
             this.reportCriticalError(errorEntry);
         }
     }
-    
+
     // Report critical errors to user
     reportCriticalError(errorEntry) {
         console.error('Critical Error:', errorEntry);
-        
+
         // Show user-friendly error message
         if (window.SharedUtils && window.SharedUtils.showError) {
             window.SharedUtils.showError(
@@ -734,7 +737,7 @@ class CacheManager {
             );
         }
     }
-    
+
     // Get performance report
     getPerformanceReport() {
         return {
@@ -768,22 +771,22 @@ window.addEventListener('unhandledrejection', (event) => {
 // Initialize the application on DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     const startTime = Date.now();
-    
+
     try {
         // Initialize cache manager
         const cacheManager = new CacheManager();
         window.cacheManager = cacheManager;
-        
+
         // Initialize premium router system
         const router = new PremiumRouter();
         window.router = router;
-        
+
         // Initialize 3D rotation
         init3DRotation();
-        
+
         // Initialize mobile menu
         initMobileMenu();
-        
+
         // Additional cache prevention for critical resources
         const criticalResources = ['style.css'];
         criticalResources.forEach(resource => {
@@ -793,14 +796,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href += `?v=${timestamp}`;
             }
         });
-        
+
         // Record initialization performance
         if (window.cacheManager) {
             window.cacheManager.recordPerformance('app_initialization', startTime);
         }
-        
+
         console.log('Wi-Fi Nomads application initialized successfully with premium routing');
-        
+
     } catch (error) {
         console.error('Application initialization failed:', error);
         if (window.cacheManager) {
