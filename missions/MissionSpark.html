@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mission SPARK – Wi-Fi Nomads</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --blue-900: #002d5c;
+      --blue-800: #003f7f;
+      --blue-primary: #004a99;
+      --blue-mid: #0062cc;
+      --blue-light: #e8f0fb;
+      --accent: #f7b731;
+      --white: #ffffff;
+      --off-white: #f5f8ff;
+      --text-dark: #0d1f3c;
+      --text-body: #3a4a62;
+      --text-muted: #6e7f9b;
+      --radius: 14px;
+      --shadow-card: 0 6px 32px rgba(0,74,153,.10);
+      --shadow-hero: 0 20px 80px rgba(0,74,153,.22);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; color: var(--text-dark); background: var(--white); overflow-x: hidden; }
+
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    .section { padding: 96px 0; }
+    .section-alt { background: var(--off-white); }
+
+    .tag {
+      display: inline-block; font-family: 'Sora', sans-serif; font-size: 11px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--blue-primary);
+      background: var(--blue-light); border-radius: 40px; padding: 5px 16px; margin-bottom: 18px;
+    }
+    .section-title {
+      font-family: 'Sora', sans-serif; font-size: clamp(28px, 4vw, 42px); font-weight: 800;
+      color: var(--text-dark); line-height: 1.18; margin-bottom: 18px;
+    }
+    .section-body { font-size: 17px; color: var(--text-body); line-height: 1.78; max-width: 680px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 50px;
+      font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700;
+      text-decoration: none; transition: all .22s ease; cursor: pointer; border: none;
+    }
+    .btn-primary { background: var(--blue-primary); color: var(--white); box-shadow: 0 6px 24px rgba(0,74,153,.35); }
+    .btn-primary:hover { background: var(--blue-mid); transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--blue-primary); border: 2px solid var(--blue-primary); }
+    .btn-outline:hover { background: var(--blue-primary); color: var(--white); transform: translateY(-2px); }
+
+    /* DEV NOTES */
+    .dev-note {
+      background: #fffbea; border-left: 4px solid var(--accent); padding: 10px 16px;
+      font-size: 12px; font-family: monospace; color: #7a5a00;
+      border-radius: 0 6px 6px 0; margin-bottom: 16px;
+    }
+    .dev-note::before { content: "🛠 DEV NOTE: "; font-weight: bold; }
+
+    /* NAVBAR */
+    .navbar {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,.95); backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,74,153,.10); padding: 0 24px;
+    }
+    .navbar-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .navbar-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .navbar-brand-name { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 17px; color: var(--blue-primary); }
+    .navbar-spark-badge {
+      font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
+      color: var(--white); background: var(--accent); color: var(--text-dark);
+      padding: 4px 14px; border-radius: 40px;
+    }
+    .navbar-links { display: flex; align-items: center; gap: 28px; list-style: none; }
+    .navbar-links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--text-body); transition: color .18s; }
+    .navbar-links a:hover { color: var(--blue-primary); }
+
+    /* HERO */
+    .hero {
+      position: relative; min-height: 92vh; display: flex; align-items: center;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 45%, var(--blue-primary) 100%);
+    }
+    .hero::before {
+      content: ''; position: absolute; inset: 0;
+      background-image: radial-gradient(circle at 18% 55%, rgba(247,183,49,.07) 0%, transparent 52%),
+        radial-gradient(circle at 82% 18%, rgba(255,255,255,.05) 0%, transparent 42%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none;
+    }
+    .hero-inner {
+      position: relative; z-index: 2; max-width: 1140px; margin: 0 auto; padding: 0 24px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .hero-initiative { font-family: 'Sora', sans-serif; font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 14px; }
+    .hero-mission-label { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; letter-spacing: .1em; color: rgba(255,255,255,.45); margin-bottom: 4px; text-transform: uppercase; }
+    .hero-title { font-family: 'Sora', sans-serif; font-size: clamp(64px, 10vw, 108px); font-weight: 800; color: var(--white); line-height: 1.0; letter-spacing: -.03em; margin-bottom: 4px; }
+    .hero-title .accent { color: var(--accent); }
+    .hero-sub { font-size: 20px; font-weight: 300; color: rgba(255,255,255,.82); line-height: 1.62; margin-bottom: 10px; font-style: italic; }
+    .hero-note { font-size: 14px; color: rgba(255,255,255,.45); margin-bottom: 44px; }
+    .hero-cta-group { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 48px; }
+    .btn-accent { background: var(--accent); color: var(--text-dark); box-shadow: 0 8px 28px rgba(247,183,49,.4); }
+    .btn-accent:hover { background: #f5a800; transform: translateY(-2px); }
+    .btn-ghost { border: 2px solid rgba(255,255,255,.3); color: var(--white); background: transparent; }
+    .btn-ghost:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.55); }
+    .companies-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .companies-label { font-size: 12px; color: rgba(255,255,255,.38); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
+    .company-pill { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14); border-radius: 30px; padding: 5px 14px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.72); font-family: 'Sora', sans-serif; }
+
+    /* Hero Visual */
+    .hero-visual { position: relative; }
+    .hero-photo-frame {
+      border-radius: 20px; overflow: hidden; position: relative;
+      box-shadow: var(--shadow-hero); aspect-ratio: 4/3;
+      background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+    }
+    .hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-placeholder {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 12px; color: rgba(255,255,255,.3); font-size: 14px; text-align: center; line-height: 1.5;
+    }
+    .photo-placeholder svg { opacity: .35; }
+    .stat-badges { position: absolute; bottom: -18px; left: -18px; display: flex; flex-direction: column; gap: 10px; }
+    .stat-badge {
+      background: var(--white); border-radius: 12px; padding: 11px 16px;
+      box-shadow: 0 8px 28px rgba(0,0,0,.15); display: flex; align-items: center; gap: 10px;
+    }
+    .stat-icon { font-size: 22px; }
+    .stat-text { font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 700; color: var(--blue-primary); }
+    .stat-sub { font-size: 11px; color: var(--text-muted); }
+
+    /* NARRATIVE */
+    .narrative-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: start; }
+    .narrative-lead { display: flex; flex-direction: column; gap: 24px; }
+    .narrative-card {
+      background: var(--white); border-radius: var(--radius);
+      border: 1px solid rgba(0,74,153,.08); padding: 32px; box-shadow: var(--shadow-card);
+    }
+    .narrative-card .card-icon {
+      width: 50px; height: 50px; background: var(--blue-light); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px;
+    }
+    .narrative-card h3 { font-family: 'Sora', sans-serif; font-size: 19px; font-weight: 700; color: var(--text-dark); margin-bottom: 10px; }
+    .narrative-card p { font-size: 15px; color: var(--text-body); line-height: 1.74; }
+
+    /* APPROACH */
+    .approach-header { text-align: center; max-width: 640px; margin: 0 auto 64px; }
+    .approach-accent { font-family: 'Sora', sans-serif; font-size: clamp(18px, 2.5vw, 26px); font-weight: 800; color: var(--blue-primary); margin-bottom: 10px; }
+    .approach-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+    .approach-card {
+      background: var(--white); border-radius: var(--radius); padding: 30px 22px;
+      border: 1px solid rgba(0,74,153,.08); box-shadow: var(--shadow-card);
+      transition: transform .22s, box-shadow .22s;
+    }
+    .approach-card:hover { transform: translateY(-6px); box-shadow: 0 14px 44px rgba(0,74,153,.16); }
+    .step-num { font-family: 'Sora', sans-serif; font-size: 48px; font-weight: 800; color: var(--blue-light); line-height: 1; margin-bottom: 8px; }
+    .approach-card h4 { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--blue-primary); margin-bottom: 8px; }
+    .approach-card p { font-size: 14px; color: var(--text-body); line-height: 1.68; }
+
+    /* GALLERY */
+    .gallery-header { text-align: center; margin-bottom: 48px; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .gallery-item {
+      border-radius: var(--radius); overflow: hidden; aspect-ratio: 4/3;
+      background: var(--blue-light); box-shadow: var(--shadow-card); position: relative;
+    }
+    .gallery-item img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .36s ease; }
+    .gallery-item:hover img { transform: scale(1.04); }
+    .gallery-ph {
+      width: 100%; height: 100%; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 8px; color: var(--blue-primary);
+      font-size: 13px; opacity: .5; text-align: center; line-height: 1.4;
+    }
+    .gallery-item.featured { grid-column: span 2; aspect-ratio: 16/7; }
+
+    /* QUOTE */
+    .quote-section { background: linear-gradient(135deg, var(--blue-900), var(--blue-primary)); padding: 100px 0; }
+    .quote-box { max-width: 860px; margin: 0 auto; text-align: center; padding: 0 24px; }
+    .quote-mark { font-family: 'Sora', sans-serif; font-size: 110px; color: rgba(247,183,49,.18); line-height: .6; margin-bottom: 20px; }
+    .quote-text { font-size: clamp(17px, 2.2vw, 22px); color: rgba(255,255,255,.9); line-height: 1.74; font-style: italic; font-weight: 300; margin-bottom: 32px; }
+    .quote-attr { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+    .quote-companies { font-size: 13px; color: rgba(255,255,255,.45); }
+
+    /* PARTNERSHIP */
+    .partnership-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; }
+    .partner-card {
+      border-radius: var(--radius); border: 1px solid rgba(0,74,153,.12);
+      padding: 36px 28px; text-align: center; box-shadow: var(--shadow-card);
+      background: var(--white); transition: transform .22s, box-shadow .22s;
+    }
+    .partner-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,74,153,.18); }
+    .partner-icon { font-size: 44px; margin-bottom: 14px; }
+    .partner-card h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--blue-primary); margin-bottom: 12px; }
+    .partner-card p { font-size: 15px; color: var(--text-body); line-height: 1.72; }
+
+    /* SCHOOLS */
+    .schools-row { display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; margin-top: 52px; }
+    .school-ph { width: 120px; height: 64px; border-radius: 10px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--blue-primary); font-family: 'Sora', sans-serif; font-weight: 700; text-align: center; }
+
+    /* CTA */
+    .cta-section { background: var(--off-white); padding: 96px 0; text-align: center; }
+    .cta-inner { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+    .cta-inner p { font-size: 17px; color: var(--text-body); line-height: 1.7; margin-bottom: 44px; }
+    .contact-cards { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-bottom: 44px; }
+    .contact-card {
+      background: var(--white); border-radius: 14px; border: 1px solid rgba(0,74,153,.10);
+      padding: 20px 26px; display: flex; align-items: center; gap: 14px;
+      box-shadow: var(--shadow-card); text-decoration: none; transition: transform .2s, box-shadow .2s;
+    }
+    .contact-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(0,74,153,.16); }
+    .cc-icon { width: 44px; height: 44px; background: var(--blue-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .cc-label { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+    .cc-value { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-dark); }
+    .cta-tagline { font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: .10em; text-transform: uppercase; }
+    .cta-tagline span { color: var(--blue-primary); }
+
+    /* FOOTER */
+    .footer { background: var(--blue-900); padding: 40px 24px; }
+    .footer-inner { max-width: 1140px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-brand { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 700; color: rgba(255,255,255,.55); }
+    .footer-brand strong { color: rgba(255,255,255,.9); }
+    .footer-links { display: flex; gap: 24px; list-style: none; }
+    .footer-links a { font-size: 13px; color: rgba(255,255,255,.42); text-decoration: none; transition: color .18s; }
+    .footer-links a:hover { color: rgba(255,255,255,.85); }
+
+    /* ANIMATIONS */
+    .fade-in { opacity: 0; transform: translateY(28px); transition: opacity .6s ease, transform .6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 960px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-visual { display: none; }
+      .narrative-grid { grid-template-columns: 1fr; }
+      .approach-grid { grid-template-columns: repeat(2, 1fr); }
+      .partnership-grid { grid-template-columns: 1fr; max-width: 440px; margin-left: auto; margin-right: auto; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item.featured { grid-column: span 2; }
+      .companies-bar { justify-content: center; }
+    }
+    @media (max-width: 600px) {
+      .section { padding: 64px 0; }
+      .approach-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item.featured { grid-column: span 1; aspect-ratio: 4/3; }
+      .navbar-links { display: none; }
+      .hero-cta-group { justify-content: center; }
+      .contact-cards { flex-direction: column; align-items: center; }
+      .contact-card { width: 100%; max-width: 320px; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ════════════════════════════════════
+    NAVBAR
+    DEV: Swap .navbar-brand-name span with actual <img src="logo.png" alt="Wi-Fi Nomads">
+  ════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="https://wifinomads.net" class="navbar-brand">
+        <!-- DEV: Replace below with logo img tag -->
+        <span class="navbar-brand-name">⚡ Wi-Fi Nomads</span>
+        <span class="navbar-spark-badge">Mission SPARK</span>
+      </a>
+      <ul class="navbar-links">
+        <li><a href="https://wifinomads.net">Home</a></li>
+        <li><a href="#approach">Approach</a></li>
+        <li><a href="#partners">Partners</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li>
+          <a href="#contact" class="btn btn-primary" style="padding:10px 22px; font-size:13px;">
+            Get in Touch
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ════════════════════════════════════
+    HERO SECTION
+  ════════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-inner">
+
+      <div class="hero-content">
+        <div class="hero-initiative">✦ An Initiative by the Wi-Fi Nomads Community</div>
+        <div class="hero-mission-label">Mission</div>
+        <h1 class="hero-title"><span class="accent">SPARK</span></h1>
+        <p class="hero-sub">Industry Wisdom. Grassroot Curiosity.<br/>The Future of Innovation.</p>
+        <p class="hero-note">Where the world's leading engineers meet the classroom.</p>
+        <div class="hero-cta-group">
+          <a href="#contact" class="btn btn-accent">Ignite the Spark ⚡</a>
+          <a href="#narrative" class="btn btn-ghost">Learn More</a>
+        </div>
+        <div class="companies-bar">
+          <span class="companies-label">Experts from</span>
+          <span class="company-pill">Amazon</span>
+          <span class="company-pill">Qualcomm</span>
+          <span class="company-pill">Plume</span>
+          <span class="company-pill">& beyond</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-photo-frame">
+          <!-- DEV: Replace with: <img src="workshop-hero.jpg" alt="Mission SPARK Workshop"> -->
+          <div class="photo-placeholder">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            <div>Workshop Hero Photo<br/><small>Provided by Vishnu</small></div>
+          </div>
+        </div>
+        <div class="stat-badges">
+          <div class="stat-badge">
+            <span class="stat-icon">🏫</span>
+            <div>
+              <div class="stat-text">Schools Reached</div>
+              <div class="stat-sub">Session 1 Complete</div>
+            </div>
+          </div>
+          <div class="stat-badge">
+            <span class="stat-icon">⚡</span>
+            <div>
+              <div class="stat-text">3-Hour Workshops</div>
+              <div class="stat-sub">Hands-on DIY Learning</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    CORE NARRATIVE
+  ════════════════════════════════════ -->
+  <section class="section" id="narrative">
+    <div class="container">
+      <div class="narrative-grid">
+
+        <div class="narrative-lead fade-in">
+          <span class="tag">What is Mission SPARK?</span>
+          <h2 class="section-title">A Bridge Between Industry<br/>and the Classroom</h2>
+          <p class="section-body">
+            Mission SPARK connects the world's leading technology labs directly to schools.
+            We bring industry experts from companies like Amazon, Qualcomm, and Plume to
+            ignite technical curiosity in young minds — creating the moment where students
+            stop just <em>using</em> technology and start wondering <em>how it works.</em>
+          </p>
+          <p class="section-body">
+            The world is changing at 10× speed. Textbooks provide the foundation, but to lead
+            in the era of AI and Robotics, children need a <strong>Spark</strong> — and we are
+            here to create that moment.
+          </p>
+        </div>
+
+        <div class="narrative-lead fade-in">
+          <div class="narrative-card">
+            <div class="card-icon">🌍</div>
+            <h3>Why Mission SPARK?</h3>
+            <p>The textbook shows you how the world works. Mission SPARK shows you how to <em>build</em> it. We close the gap between passive learning and active innovation — giving young minds the tools and mentorship to take their first real step into technology.</p>
+          </div>
+          <div class="narrative-card">
+            <div class="card-icon">🛠️</div>
+            <h3>Why Us? (The Professionals)</h3>
+            <p>We aren't teachers or vendors — we are <strong>practicing engineers</strong>. We spend our days building the devices and networks the world uses. We bring real-world wisdom, industry-grade toolkits, and a mentor-first approach that goes far beyond any standard curriculum.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    APPROACH: BREAK IT AND MAKE IT
+  ════════════════════════════════════ -->
+  <section class="section section-alt" id="approach">
+    <div class="container">
+      <div class="approach-header fade-in">
+        <span class="tag">The Approach</span>
+        <div class="approach-accent">"Break it and Make it"</div>
+        <h2 class="section-title">How We Ignite Curiosity</h2>
+        <p style="font-size:16px; color:var(--text-body); line-height:1.7;">
+          We believe in hands-on discovery. Our 3-hour workshops use DIY projects — like
+          building electromagnets and paper speakers — to identify kids with a natural
+          technical instinct.
+        </p>
+      </div>
+      <div class="approach-grid">
+        <div class="approach-card fade-in">
+          <div class="step-num">01</div>
+          <h4>⚡ Igniting Curiosity</h4>
+          <p>Moving students from "How do I <em>use</em> this?" to "How do I <em>build</em> this?" — that's where real learning begins.</p>
+        </div>
+        <div class="approach-card fade-in">
+          <div class="step-num">02</div>
+          <h4>🌍 Junior Nomads</h4>
+          <p>The journey doesn't end with a workshop. Candidates who show a "Spark" are invited into our Junior Nomads ecosystem — a space designed to keep curiosity alive.</p>
+        </div>
+        <div class="approach-card fade-in">
+          <div class="step-num">03</div>
+          <h4>💬 Virtual Curiosity Hub</h4>
+          <p>A dedicated space where students share questions and receive direct guidance, curated tutorials, and technical roadmaps from our engineer community.</p>
+        </div>
+        <div class="approach-card fade-in">
+          <div class="step-num">04</div>
+          <h4>🏗️ Creative Hubs</h4>
+          <p>Our vision includes establishing physical collaborative spaces in major cities — equipped with the tools young innovators need to grow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    GALLERY
+    DEV: Replace each .gallery-ph div with <img src="photo.jpg" alt="...">
+    Photos from Vishnu — NO stock robot photos.
+  ════════════════════════════════════ -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <div class="gallery-header fade-in">
+        <span class="tag">Visuals & Social Proof</span>
+        <h2 class="section-title">The Spark in Action</h2>
+        <p style="font-size:16px; color:var(--text-body);">Real moments from our first school session — kids discovering, building, and wondering.</p>
+      </div>
+
+      <div class="dev-note">Replace each placeholder div below with real workshop photos from Vishnu. The "featured" slot spans 2 columns — use your most powerful engagement shot here.</div>
+
+      <div class="gallery-grid">
+        <div class="gallery-item featured">
+          <!-- DEV: <img src="workshop-main.jpg" alt="Kids building at Mission SPARK Workshop"> -->
+          <div class="gallery-ph">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <div>Featured Workshop Photo<br/><small>Main hero engagement shot</small></div>
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-ph">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Photo 2
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-ph">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Photo 3
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-ph">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Photo 4
+          </div>
+        </div>
+        <div class="gallery-item">
+          <div class="gallery-ph">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            Photo 5
+          </div>
+        </div>
+      </div>
+
+      <!-- Partner Schools -->
+      <div style="margin-top:72px; text-align:center;" class="fade-in">
+        <span class="tag">Partner Schools</span>
+        <h3 class="section-title" style="font-size:26px; margin-bottom:6px;">Schools We've Visited</h3>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Click logos to visit their websites</p>
+        <div class="dev-note">Replace each .school-ph div with: &lt;a href="school-url"&gt;&lt;img src="school-logo.png" alt="School Name"&gt;&lt;/a&gt;. Add or remove as needed.</div>
+        <div class="schools-row">
+          <div class="school-ph">School<br/>Logo 1</div>
+          <div class="school-ph">School<br/>Logo 2</div>
+          <div class="school-ph">School<br/>Logo 3</div>
+          <div class="school-ph">School<br/>Logo 4</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    PARTNERSHIP & STAKEHOLDERS
+  ════════════════════════════════════ -->
+  <section class="section section-alt" id="partners">
+    <div class="container">
+      <div style="text-align:center;" class="fade-in">
+        <span class="tag">Partnership & Stakeholders</span>
+        <h2 class="section-title">Who Is This For?</h2>
+        <p class="section-body" style="margin: 0 auto;">
+          Mission SPARK brings together three kinds of changemakers — and we need all three to succeed.
+        </p>
+      </div>
+      <div class="partnership-grid">
+        <div class="partner-card fade-in">
+          <div class="partner-icon">🏫</div>
+          <h3>For Schools</h3>
+          <p>Join an elite network of schools recognized for fostering real-world innovation. We work hand-in-hand with you to support your labs and students — enriching your curriculum with industry-grade experience.</p>
+        </div>
+        <div class="partner-card fade-in">
+          <div class="partner-icon">👨‍👩‍👧</div>
+          <h3>For Parents</h3>
+          <p>Give your child the rare opportunity to explore technology alongside engineers from the world's top tech companies. A workshop that opens doors no textbook can.</p>
+        </div>
+        <div class="partner-card fade-in">
+          <div class="partner-icon">👩‍💻</div>
+          <h3>For Professionals</h3>
+          <p>Join a noble initiative to share your wisdom and shape the next generation of thinkers. Your expertise is the most powerful tool in the room — and these kids are ready to learn from you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    COLLECTIVE VISION — QUOTE BOX
+  ════════════════════════════════════ -->
+  <section class="quote-section">
+    <div class="quote-box fade-in">
+      <div class="quote-mark">"</div>
+      <p class="quote-text">
+        As a collective of R&D professionals and engineers, we see how rapidly AI and Robotics
+        are reshaping our world. We feel a shared responsibility to bring this industry wisdom
+        back to the classroom. Mission SPARK is our community's commitment to finding and nurturing
+        the unique curiosity in children — the 'Spark' that textbooks alone cannot reach.
+        Together, we are building a sustainable ecosystem where professional mentorship and
+        grassroots talent meet to create the next generation of world-class innovators.
+      </p>
+      <div class="quote-attr">— The Wi-Fi Nomads Volunteer Team</div>
+      <div class="quote-companies">Representing R&amp;D expertise from Amazon, Qualcomm, Plume, and beyond.</div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    CALL TO ACTION
+    DEV: Replace [Insert Number] with real number and format WhatsApp URL:
+    https://wa.me/[countrycode][number] (no spaces or dashes)
+    Replace [Insert Email] with real email address.
+  ════════════════════════════════════ -->
+  <section class="cta-section" id="contact">
+    <div class="cta-inner fade-in">
+      <span class="tag">Are you ready?</span>
+      <h2 class="section-title">Ignite the Spark</h2>
+      <p>Whether you are a school leader, a parent, or a professional, we'd love to hear from you. Contact us to start the conversation.</p>
+
+      <div class="dev-note">Replace href="https://wa.me/[INSERT]" and href="mailto:[INSERT]" with actual contact details.</div>
+
+      <div class="contact-cards">
+        <a href="https://wa.me/[INSERT_NUMBER]" class="contact-card">
+          <div class="cc-icon">📱</div>
+          <div>
+            <div class="cc-label">Phone / WhatsApp</div>
+            <div class="cc-value">[Insert Number]</div>
+          </div>
+        </a>
+        <a href="mailto:[INSERT_EMAIL]" class="contact-card">
+          <div class="cc-icon">✉️</div>
+          <div>
+            <div class="cc-label">Email</div>
+            <div class="cc-value">[Insert Email]</div>
+          </div>
+        </a>
+      </div>
+
+      <p class="cta-tagline">
+        <span>Quality First.</span> &nbsp;·&nbsp; Stability Always. &nbsp;·&nbsp; <span>One Spark at a Time.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+    FOOTER
+  ════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <strong>Wi-Fi Nomads</strong> — Mission SPARK &nbsp;·&nbsp; © 2025 Wi-Fi Nomads Community
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://wifinomads.net">Home</a></li>
+        <li><a href="https://www.linkedin.com/company/wi-fi-nomads/">LinkedIn</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll fade-in
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // Stagger delays for grid cards
+    document.querySelectorAll('.approach-card').forEach((c, i) => c.style.transitionDelay = `${i * 0.1}s`);
+    document.querySelectorAll('.partner-card').forEach((c, i) => c.style.transitionDelay = `${i * 0.12}s`);
+  </script>
+
+</body>
+</html>

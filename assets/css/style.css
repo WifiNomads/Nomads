@@ -1375,3 +1375,51 @@ html {
 .blog-conclusion p:last-child {
     margin-bottom: 0;
 }
+
+#missions h3 {
+    color: #f8fafc;      /* milky white */
+	font-size: 3rem;
+    font-weight: 700;    /* thick font */
+}
+
+#missions p {
+    color: #f8fafc;      /* soft milky white */
+	font-size: 2.5rem;
+    font-weight: 600;
+}
+
+#missions .spark-date {
+    color: #f8fafc;      /* light milky white */
+	font-size: 1rem;
+    font-weight: 600;
+}
+/* Mission Spark card overlay */
+#missions .blog-card {
+    position: relative;
+}
+
+#missions .mission-image {
+    height: 300px;
+    padding: 0;
+}
+
+#missions .mission-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Move content on top of image */
+#missions .blog-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    background: linear-gradient(
+        to top,
+        rgba(0,0,0,0.75),
+        rgba(0,0,0,0.2),
+        transparent
+    );
+}
