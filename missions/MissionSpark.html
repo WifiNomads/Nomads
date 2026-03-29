@@ -48,7 +48,7 @@
       font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700;
       text-decoration: none; transition: all .22s ease; cursor: pointer; border: none;
     }
-    .btn-primary { background: var(--blue-primary); color: var(--white); box-shadow: 0 6px 24px rgba(0,74,153,.35); }
+    .btn-primary { background: var(--blue-light); color: var(--white); box-shadow: 0 6px 24px rgba(1, 113, 234, 0.965); }
     .btn-primary:hover { background: var(--blue-mid); transform: translateY(-2px); }
     .btn-outline { background: transparent; color: var(--blue-primary); border: 2px solid var(--blue-primary); }
     .btn-outline:hover { background: var(--blue-primary); color: var(--white); transform: translateY(-2px); }
@@ -116,20 +116,41 @@
     .companies-label { font-size: 12px; color: rgba(255,255,255,.38); font-weight: 500; letter-spacing: .05em; text-transform: uppercase; }
     .company-pill { background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.14); border-radius: 30px; padding: 5px 14px; font-size: 13px; font-weight: 600; color: rgba(255,255,255,.72); font-family: 'Sora', sans-serif; }
 
-    /* Hero Visual */
+    /* Hero Slideshow */
     .hero-visual { position: relative; }
-    .hero-photo-frame {
+    .hero-slideshow {
       border-radius: 20px; overflow: hidden; position: relative;
       box-shadow: var(--shadow-hero); aspect-ratio: 4/3;
       background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
     }
-    .hero-photo-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .photo-placeholder {
-      width: 100%; height: 100%; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 12px; color: rgba(255,255,255,.3); font-size: 14px; text-align: center; line-height: 1.5;
+    .hero-slideshow .slides {
+      display: flex; width: 500%; height: 100%;
+      animation: heroSlide 20s ease-in-out infinite;
     }
-    .photo-placeholder svg { opacity: .35; }
-    .stat-badges { position: absolute; bottom: -18px; left: -18px; display: flex; flex-direction: column; gap: 10px; }
+    .hero-slideshow .slide {
+      width: 20%; height: 100%; flex-shrink: 0; position: relative;
+    }
+    .hero-slideshow .slide img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      position: absolute; inset: 0;
+    }
+    .slide-dots {
+      position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 3;
+    }
+    .slide-dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: rgba(255,255,255,.35); transition: background .3s;
+    }
+    .slide-dots span.active { background: var(--accent); }
+    @keyframes heroSlide {
+      0%,16%   { transform: translateX(0); }
+      20%,36%  { transform: translateX(-20%); }
+      40%,56%  { transform: translateX(-40%); }
+      60%,76%  { transform: translateX(-60%); }
+      80%,96%  { transform: translateX(-80%); }
+      100%     { transform: translateX(0); }
+    }
     .stat-badge {
       background: var(--white); border-radius: 12px; padding: 11px 16px;
       box-shadow: 0 8px 28px rgba(0,0,0,.15); display: flex; align-items: center; gap: 10px;
@@ -202,9 +223,36 @@
     .partner-card h3 { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--blue-primary); margin-bottom: 12px; }
     .partner-card p { font-size: 15px; color: var(--text-body); line-height: 1.72; }
 
-    /* SCHOOLS */
-    .schools-row { display: flex; align-items: center; justify-content: center; gap: 28px; flex-wrap: wrap; margin-top: 52px; }
-    .school-ph { width: 120px; height: 64px; border-radius: 10px; background: var(--blue-light); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--blue-primary); font-family: 'Sora', sans-serif; font-weight: 700; text-align: center; }
+    /* SCHOOLS MARQUEE */
+    .schools-marquee-wrap { overflow: hidden; position: relative; margin-top: 28px; }
+    .schools-marquee-wrap.has-marquee::before,
+    .schools-marquee-wrap.has-marquee::after {
+      content: ''; position: absolute; top: 0; bottom: 0; width: 60px; z-index: 2; pointer-events: none;
+    }
+    .schools-marquee-wrap.has-marquee::before { left: 0; background: linear-gradient(to right, var(--off-white), transparent); }
+    .schools-marquee-wrap.has-marquee::after  { right: 0; background: linear-gradient(to left, var(--off-white), transparent); }
+    .schools-marquee {
+      display: flex; gap: 48px; width: max-content;
+      justify-content: center;
+    }
+    .schools-marquee.animate {
+      animation: marqueeScroll 30s linear infinite;
+    }
+    .schools-marquee.animate:hover { animation-play-state: paused; }
+    .school-item {
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      height: 80px; padding: 0 12px; text-decoration: none; transition: opacity .2s;
+    }
+    .school-item:hover { opacity: .7; }
+    .school-item img { height: 64px; width: auto; object-fit: contain; display: block; }
+    /* Centered layout when few schools */
+    .schools-marquee.centered {
+      width: 100%; justify-content: center;
+    }
+    @keyframes marqueeScroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
 
     /* CTA */
     .cta-section { background: var(--off-white); padding: 96px 0; text-align: center; }
@@ -239,7 +287,8 @@
     /* RESPONSIVE */
     @media (max-width: 960px) {
       .hero-inner { grid-template-columns: 1fr; text-align: center; }
-      .hero-visual { display: none; }
+      .hero-visual { margin-top: 32px; max-width: 480px; margin-left: auto; margin-right: auto; }
+      .hero-slideshow { aspect-ratio: 4/3; }
       .narrative-grid { grid-template-columns: 1fr; }
       .approach-grid { grid-template-columns: repeat(2, 1fr); }
       .partnership-grid { grid-template-columns: 1fr; max-width: 440px; margin-left: auto; margin-right: auto; }
@@ -249,6 +298,8 @@
     }
     @media (max-width: 600px) {
       .section { padding: 64px 0; }
+      .hero-visual { max-width: 100%; }
+      .hero-slideshow { aspect-ratio: 4/3; }
       .approach-grid { grid-template-columns: 1fr; }
       .gallery-grid { grid-template-columns: 1fr; }
       .gallery-item.featured { grid-column: span 1; aspect-ratio: 4/3; }
@@ -300,7 +351,7 @@
         <div class="hero-mission-label">Mission</div>
         <h1 class="hero-title"><span class="accent">SPARK</span></h1>
         <p class="hero-sub">Industry Wisdom. Grassroot Curiosity.<br/>The Future of Innovation.</p>
-        <p class="hero-note">Where the world's leading engineers meet the classroom.</p>
+        <p class="hero-note">The classroom where global engineers mentor the next generation.</p>
         <div class="hero-cta-group">
           <a href="#contact" class="btn btn-accent">Ignite the Spark ⚡</a>
           <a href="#narrative" class="btn btn-ghost">Learn More</a>
@@ -315,31 +366,26 @@
       </div>
 
       <div class="hero-visual">
-        <div class="hero-photo-frame">
-          <!-- DEV: Replace with: <img src="workshop-hero.jpg" alt="Mission SPARK Workshop"> -->
-          <div class="photo-placeholder">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-              <rect x="3" y="3" width="18" height="18" rx="2"/>
-              <circle cx="8.5" cy="8.5" r="1.5"/>
-              <path d="M21 15l-5-5L5 21"/>
-            </svg>
-            <div>Workshop Hero Photo<br/><small>Provided by Vishnu</small></div>
-          </div>
-        </div>
-        <div class="stat-badges">
-          <div class="stat-badge">
-            <span class="stat-icon">🏫</span>
-            <div>
-              <div class="stat-text">Schools Reached</div>
-              <div class="stat-sub">Session 1 Complete</div>
+        <div class="hero-slideshow">
+          <div class="slides">
+            <div class="slide">
+              <img src="../assets/images/slide5.png" alt="Mission SPARK Workshop 1" />
+            </div>
+            <div class="slide">
+              <img src="../assets/images/slide4.png" alt="Mission SPARK Workshop 2" />
+            </div>
+            <div class="slide">
+              <img src="../assets/images/slide3.jpeg" alt="Mission SPARK Community" />
+            </div>
+            <div class="slide">
+              <img src="../assets/images/slide2.jpeg" alt="Wi-Fi Workshop" />
+            </div>
+            <div class="slide">
+              <img src="../assets/images/slide1.jpeg" alt="Mission SPARK Workshop" />
             </div>
           </div>
-          <div class="stat-badge">
-            <span class="stat-icon">⚡</span>
-            <div>
-              <div class="stat-text">3-Hour Workshops</div>
-              <div class="stat-sub">Hands-on DIY Learning</div>
-            </div>
+          <div class="slide-dots">
+            <span class="active"></span><span></span><span></span><span></span><span></span>
           </div>
         </div>
       </div>
@@ -477,16 +523,29 @@
       </div>
 
       <!-- Partner Schools -->
+      <!-- Partner Schools Marquee -->
       <div style="margin-top:72px; text-align:center;" class="fade-in">
         <span class="tag">Partner Schools</span>
         <h3 class="section-title" style="font-size:26px; margin-bottom:6px;">Schools We've Visited</h3>
-        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Click logos to visit their websites</p>
-        <div class="dev-note">Replace each .school-ph div with: &lt;a href="school-url"&gt;&lt;img src="school-logo.png" alt="School Name"&gt;&lt;/a&gt;. Add or remove as needed.</div>
-        <div class="schools-row">
-          <div class="school-ph">School<br/>Logo 1</div>
-          <div class="school-ph">School<br/>Logo 2</div>
-          <div class="school-ph">School<br/>Logo 3</div>
-          <div class="school-ph">School<br/>Logo 4</div>
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Click to visit their websites</p>
+        <!--
+          HOW TO ADD SCHOOLS:
+          1. Add school logo image to assets/images/schools/
+          2. Add a new .school-item <a> tag below (inside the first group only)
+          3. The JS will auto-duplicate items and enable marquee scrolling
+             once there are enough logos to overflow the container.
+          Example:
+            <a href="https://school-website.com" target="_blank" class="school-item">
+              <img src="../assets/images/schools/school-logo.png" alt="School Name" />
+            </a>
+        -->
+        <div class="schools-marquee-wrap" id="schoolsMarquee">
+          <div class="schools-marquee centered" id="schoolsTrack">
+            <!-- Add school logos here — marquee auto-activates when list overflows -->
+            <a href="https://www.bhavanbbmpschool.com/" target="_blank" class="school-item">
+              <img src="../assets/images/bvmp.png" alt="Partner School" />
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -608,6 +667,45 @@
     // Stagger delays for grid cards
     document.querySelectorAll('.approach-card').forEach((c, i) => c.style.transitionDelay = `${i * 0.1}s`);
     document.querySelectorAll('.partner-card').forEach((c, i) => c.style.transitionDelay = `${i * 0.12}s`);
+
+    // Hero slideshow dot sync
+    (function() {
+      const dots = document.querySelectorAll('.slide-dots span');
+      if (!dots.length) return;
+      const total = dots.length;
+      const cycleDuration = 20000; // matches 20s animation
+      const interval = cycleDuration / total;
+      let current = 0;
+      function updateDots() {
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+        current = (current + 1) % total;
+      }
+      setInterval(updateDots, interval);
+    })();
+
+    // Schools marquee — auto-enable when logos overflow the container
+    (function() {
+      const wrap = document.getElementById('schoolsMarquee');
+      const track = document.getElementById('schoolsTrack');
+      if (!wrap || !track) return;
+      const items = track.querySelectorAll('.school-item');
+      if (items.length < 2) return; // single logo stays centered
+
+      // Check if content overflows the wrapper
+      function initMarquee() {
+        const contentWidth = track.scrollWidth;
+        const wrapWidth = wrap.offsetWidth;
+        if (contentWidth > wrapWidth) {
+          // Duplicate items for seamless loop
+          items.forEach(item => track.appendChild(item.cloneNode(true)));
+          track.classList.remove('centered');
+          track.classList.add('animate');
+          wrap.classList.add('has-marquee');
+        }
+      }
+      // Run after images load
+      window.addEventListener('load', initMarquee);
+    })();
   </script>
 
 </body>
