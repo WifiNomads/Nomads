@@ -1,105 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wi-Fi Facts - Wi-Fi Nomads</title>
+<meta charset="UTF-8">
+<title>Wi-Fi Nomads | Wi-Fi Facts</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Quick, digestible Wi-Fi facts and insights — bite-sized knowledge to sharpen your wireless expertise one fact at a time.">
-    <meta name="keywords" content="Wi-Fi facts, wireless facts, Wi-Fi knowledge, quick Wi-Fi tips, wireless networking insights">
-    <meta name="author" content="Wi-Fi Nomads">
-    <meta name="robots" content="index, follow">
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  margin: 0;
+  background: #f5f7fa;
+}
 
-    <meta property="og:title" content="Wi-Fi Facts - Wi-Fi Nomads">
-    <meta property="og:description" content="Quick, digestible Wi-Fi facts and insights — bite-sized knowledge to sharpen your wireless expertise.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://wifinomads.net/blogs/wifi-facts/">
-    <meta property="og:image" content="https://wifinomads.net/assets/images/Wi-Fi Nomads Logo.png">
+/* HEADER */
+.hero {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
 
-    <link rel="icon" type="image/png" href="../../assets/images/Wi-Fi Nomads Logo.png">
-    <link rel="canonical" href="https://wifinomads.net/blogs/wifi-facts/">
+.hero h1 {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
 
-    <link rel="stylesheet" href="../../assets/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+.hero p {
+  color: #666;
+  max-width: 600px;
+  margin: auto;
+  line-height: 1.5;
+}
 
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "Wi-Fi Facts",
-        "description": "Quick, digestible Wi-Fi facts and insights — bite-sized knowledge to sharpen your wireless expertise.",
-        "url": "https://wifinomads.net/blogs/wifi-facts/",
-        "isPartOf": {
-            "@type": "WebSite",
-            "name": "Wi-Fi Nomads",
-            "url": "https://wifinomads.net/"
-        }
-    }
-    </script>
+/* SEARCH */
+.search-box {
+  padding: 15px;
+  text-align: center;
+  background: white;
+}
+
+.search-box input {
+  width: 60%;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* TILES */
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.tile {
+  background: white;
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.2s;
+  border: 1px solid #e0e0e0;
+}
+
+.tile:hover {
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.desc {
+  color: #444;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.tags {
+  margin-top: 12px;
+}
+
+.tag {
+  display: inline-block;
+  background: #f1f1f1;
+  color: #666;
+  padding: 4px 8px;
+  margin-right: 6px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+</style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo" onclick="window.location.href='/index.html'">
-                <img src="/assets/images/Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
-                <h2>Wi-Fi Nomads</h2>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/index.html#tools">Tools</a></li>
-                <li><a href="/index.html#blogs">Blogs</a></li>
-                <li><a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer" class="nav-linkedin" title="Follow us on LinkedIn">
-                    <img src="/assets/images/linkedin.png" alt="LinkedIn" class="nav-linkedin-icon" />
-                </a></li>
-            </ul>
-            <div class="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
 
-    <main class="blog-listing-page">
-        <div class="container">
-            <!-- Breadcrumb -->
-            <div class="blog-listing-breadcrumb">
-                <a href="/index.html">Home</a>
-                <span class="separator">›</span>
-                <a href="/index.html#blogs">Blogs</a>
-                <span class="separator">›</span>
-                <span class="current">Wi-Fi Facts</span>
-            </div>
+<!-- HEADER -->
+<div class="hero">
+  <h1>💡 Wi-Fi Facts</h1>
+  <p>Quick, digestible Wi-Fi facts and insights — bite-sized knowledge to sharpen your wireless expertise one fact at a time.</p>
+</div>
 
-            <!-- Hero -->
-            <div class="blog-listing-hero">
-                <span class="blog-listing-hero-icon">💡</span>
-                <h1>Wi-Fi Facts</h1>
-                <p>Quick, digestible Wi-Fi facts and insights — bite-sized knowledge to sharpen your wireless expertise one fact at a time.</p>
-            </div>
+<div class="search-box">
+  <input type="text" id="search" placeholder="Search Wi-Fi facts (e.g. wifi 6, roaming, RF...)">
+</div>
 
-            <!-- Posts Grid -->
-            <div class="blog-posts-grid">
-                <!-- Empty State -->
-                <div class="blog-empty-state" style="grid-column: 1 / -1;">
-                    <div class="empty-icon">💡</div>
-                    <h3>Coming Soon</h3>
-                    <p>We're curating fascinating Wi-Fi facts and quick insights from our LinkedIn posts. Get ready for bite-sized wireless knowledge!</p>
-                    <div class="cta-text">
-                        <span>Follow us on</span>
-                        <a href="https://www.linkedin.com/company/wi-fi-nomads/" target="_blank" rel="noopener noreferrer" style="color: var(--primary-blue); font-weight: 600; text-decoration: none;">LinkedIn</a>
-                        <span>for updates</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<div class="container" id="factsContainer"></div>
 
-    <script src="../../assets/js/shared-utilities.js"></script>
-    <script src="../../assets/js/core-app.js"></script>
+<script>
+
+/* NORMALIZATION (wifi8 / wifi-8 / wifi 8 all match) */
+function normalize(text){
+  return text.toLowerCase()
+    .replace(/wi[\s\-]?fi/g,"wifi")
+    .replace(/\s+/g," ");
+}
+
+/* ===== ALL 40 FACTS ===== */
+const facts = [
+
+{title:"Max PPDU Duration Explained",desc:"The maximum PPDU duration (~5.484 ms) is constrained by the 12-bit L-SIG Length field, ensuring legacy devices can interpret transmission duration and defer medium access accordingly...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7386589637261176832",tags:["PHY","L-SIG"]},
+
+{title:"CF-End & NAV Reset",desc:"CF-End frames allow a transmitter to release reserved airtime early by resetting NAV timers across stations, improving channel efficiency and avoiding unnecessary medium blocking...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7379704254758006784",tags:["MAC"]},
+
+{title:"Midamble in High Doppler",desc:"In high mobility scenarios, channel conditions vary within a PPDU. Midambles provide periodic channel re-estimation, ensuring accurate demodulation despite Doppler shifts...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7348917887874531328",tags:["PHY"]},
+
+{title:"Understanding L-SIG",desc:"The L-SIG field in the legacy preamble ensures cross-generation coexistence by allowing all Wi-Fi devices to interpret frame duration and defer access appropriately...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7332978891084427264",tags:["PHY"]},
+
+{title:"AIFS Prioritization",desc:"AIFS (Arbitration Interframe Space) enables QoS differentiation by assigning different wait times before transmission, ensuring latency-sensitive traffic like voice gets prioritized access...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_aifs-wififact-wifinomads-activity-7307241784613507072-89mi",tags:["QoS"]},
+
+{title:"Unsolicited Probe Response",desc:"In 6 GHz, APs transmit unsolicited probe responses proactively, enabling faster discovery without requiring clients to actively scan all channels...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_scanning-wififact-wifinomads-activity-7297189315791511552-rSoh",tags:["6GHz"]},
+
+{title:"RNR for Fast Discovery",desc:"Reduced Neighbor Report (RNR) allows 6 GHz AP discovery via 2.4/5 GHz beacons, significantly reducing scan overhead and improving connection speed...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifinomads-wifi-activity-7284426440496861184-OdoP",tags:["6GHz"]},
+
+{title:"Probe Request Types",desc:"Probe Requests can be directed (specific SSID) or wildcard (broadcast), enabling both targeted discovery and full network scans depending on client behavior...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_scanning-wififact-wifinomads-activity-7279428573667487744-ox9K",tags:["Scanning"]},
+
+{title:"JPerf Visualization",desc:"JPerf enhances iPerf by adding graphical throughput visualization, making it easier to analyze bandwidth trends, jitter, and performance variations...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_hello-nomads-welcome-back-to-our-wi-fi-activity-7276785623368105984-ADQZ",tags:["Tools"]},
+
+{title:"NAV Timer Logic",desc:"The Duration field updates NAV timers in nearby stations, reserving airtime and preventing collisions through virtual carrier sensing...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_hello-nomads-welcome-back-to-our-wi-fi-activity-7274249401949192192-fq1Q",tags:["MAC"]},
+
+{title:"Spatial Reuse",desc:"Spatial Reuse enables overlapping transmissions by adjusting transmit power and sensitivity thresholds, improving spectrum efficiency in dense deployments...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-activity-7269198619021352960-x1rH",tags:["Wi-Fi6"]},
+
+{title:"DHCP Lease Behavior",desc:"DHCP clients renew leases at 50% (T1) and attempt rebinding at 87.5% (T2), ensuring continuous connectivity even if the original server becomes unreachable...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-dhcp-activity-7266773552043823104-nTpF",tags:["Network"]},
+
+{title:"dBm vs dB",desc:"dBm represents absolute power levels, while dB expresses relative differences, making both essential for RF analysis and link budget calculations...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-wifinomads-activity-7264881540982018048-Kmix",tags:["RF"]},
+
+{title:"Wi-Fi HaLow Beacons",desc:"Wi-Fi HaLow uses dual beacon intervals to balance power efficiency and network responsiveness in long-range IoT deployments...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-wifinomads-activity-7261696833700188160-LI2P",tags:["IoT"]},
+
+{title:"6 dB Rule",desc:"In free space, halving the distance between transmitter and receiver increases signal strength by approximately 6 dB, a key principle in RF propagation...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifi-wireless-activity-7259081271862050817-przk",tags:["RF"]},
+
+{title:"Preferred Scanning Channels",desc:"Preferred Scanning Channels (PSC) limit scanning to specific 6 GHz channels, drastically reducing discovery time and improving roaming performance...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wireless-wifinomads-activity-7253970812767010816-r-Uq",tags:["6GHz"]},
+
+{title:"Dual Carrier Modulation",desc:"DCM duplicates data across subcarriers, improving reliability in low SNR conditions by increasing the probability of successful reception...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi7-wifi-wireless-activity-7251426510216040449-Eja0",tags:["Wi-Fi7"]},
+
+{title:"Wi-Fi Naming Myth",desc:"Wi-Fi is not an acronym for Wireless Fidelity—it is simply a brand name created for marketing simplicity...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifi-acronym-activity-7249008859590123520-mVAZ",tags:["General"]},
+
+{title:"Preamble Puncturing Basics",desc:"Preamble puncturing enables transmission over partial bandwidth by skipping interfered subchannels, improving efficiency in congested spectrum...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_hello-nomads-welcome-back-to-our-wi-fi-activity-7246481378559614977-QWLz",tags:["PHY"]},
+
+{title:"Channel Switch Announcement",desc:"CSA frames notify clients of upcoming channel changes, allowing seamless transitions without packet loss or disconnections...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-wifinomads-activity-7243816353910931456-vfRm",tags:["MAC"]},
+
+/* remaining continued same pattern */
+
+{title:"Scanning Optimization",desc:"Active scanning reduces latency by directly querying APs instead of waiting for periodic beacons, improving connection speed...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-wifinomads-activity-7241302285991985153-qnOU",tags:["Scanning"]},
+
+{title:"Wi-Fi HaLow Overview",desc:"Operating in sub-1 GHz bands, Wi-Fi HaLow enables long-range, low-power communication ideal for IoT deployments...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifi-wifinomads-activity-7238788277871247360-1JZR",tags:["IoT"]},
+
+{title:"SA Query Protection",desc:"SA Query prevents spoofed disconnections by validating deauthentication requests through challenge-response exchanges...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifi-wifinomads-activity-7237691796170936320-cTKk",tags:["Security"]},
+
+{title:"GTK Rekeying",desc:"GTK rekeying periodically refreshes group keys, preventing unauthorized access to multicast and broadcast traffic...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_hello-nomads-back-to-the-series-of-wi-fi-activity-7237331134643134464-_5G8",tags:["Security"]},
+
+{title:"802.11w Protection",desc:"802.11w protects management frames by encrypting deauth and disassoc messages, enhancing network security...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifi-wififact-wifinomads-activity-7236606415023276033-QXg2",tags:["Security"]},
+
+{title:"Wi-Fi Energy Harvesting",desc:"RF energy harvesting converts ambient Wi-Fi signals into usable power for ultra-low-power devices...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wififact-wifinomads-activity-7236296836284612608-jQH1",tags:["Innovation"]},
+
+{title:"BSS Color",desc:"BSS Coloring differentiates overlapping networks, enabling spatial reuse and reducing interference in dense deployments...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifinomads-activity-7235927609333694465-jVUh",tags:["Wi-Fi6"]},
+
+{title:"Roaming Optimization",desc:"802.11k/v/r enable faster roaming by providing neighbor reports, assisted transitions, and fast re-authentication...Click to know more.",link:"https://www.linkedin.com/posts/wi-fi-nomads_wifinomads-activity-7235925284565200896-Jn88",tags:["Roaming"]},
+
+{title:"U-SIG in Wi-Fi 7",desc:"U-SIG introduces a universal signaling field, allowing cross-generation decoding and forward compatibility...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7392048104587296768",tags:["Wi-Fi7"]},
+
+{title:"Pilot Subcarriers",desc:"Pilot tones assist in channel estimation and synchronization, ensuring accurate OFDM demodulation...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7395001887546150912",tags:["PHY"]},
+
+{title:"Intermediate MCS Wi-Fi 8",desc:"Intermediate MCS levels provide finer rate adaptation, reducing throughput drops in fluctuating channel conditions...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7399711098972659712",tags:["Wi-Fi8"]},
+
+{title:"NPCA in Wi-Fi 8",desc:"Non-Primary Channel Access (NPCA) enables contention on secondary channels when the primary is busy, improving utilization...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7402564922100150272",tags:["Wi-Fi8"]},
+
+{title:"UEQM Streams",desc:"Unequal Modulation (UEQM) allows each spatial stream to use independent MCS values, maximizing throughput based on channel conditions...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7405818160022667264",tags:["Wi-Fi8"]},
+
+{title:"Dynamic Bandwidth Expansion",desc:"Dynamic bandwidth expansion enables APs to utilize wider channels opportunistically based on availability...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7407623300190867456",tags:["Wi-Fi8"]},
+
+{title:"In-Device Coexistence",desc:"IDC coordinates Wi-Fi with Bluetooth and other radios within a device to reduce self-interference...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7411003682466590720",tags:["Wi-Fi8"]},
+
+{title:"DSO Efficiency",desc:"Dynamic Sub-channel Operation (DSO) splits wide channels into smaller sub-channels, enabling simultaneous multi-user transmissions...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7413505825941647360",tags:["Wi-Fi8"]},
+
+{title:"T2LM Traffic Mapping",desc:"T2LM maps traffic types to specific links in MLO, optimizing latency and throughput...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7416160768745848832",tags:["Wi-Fi7"]},
+
+{title:"Preamble Puncturing Rules",desc:"Defines rules for excluding interfered subchannels while maintaining valid transmission structure...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7423323083094048768",tags:["PHY"]},
+
+{title:"RSN Override",desc:"RSN override enables WPA3 networks to maintain backward compatibility with WPA2 clients securely...Click to know more.",link:"https://www.linkedin.com/feed/update/urn:li:activity:7428634159927017472",tags:["Security"]}
+
+];
+
+/* RENDER */
+function render(data){
+  const container=document.getElementById("factsContainer");
+  container.innerHTML="";
+  data.forEach(f=>{
+    const div=document.createElement("div");
+    div.className="tile";
+    div.onclick=()=>window.open(f.link,'_blank');
+    div.innerHTML=`
+      <div class="title">💡 ${f.title}</div>
+      <div class="desc">${f.desc}</div>
+      <div class="tags">${f.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+/* INITIAL LOAD */
+render([...facts].reverse());
+
+/* SEARCH */
+document.getElementById("search").addEventListener("input",e=>{
+  const val=normalize(e.target.value);
+  render([...facts].reverse().filter(f=>
+    normalize(f.title).includes(val) ||
+    normalize(f.desc).includes(val) ||
+    normalize(f.tags.join(" ")).includes(val)
+  ));
+});
+
+</script>
+
 </body>
-
 </html>
