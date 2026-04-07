@@ -151,7 +151,7 @@
     <!-- Navigation -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="nav-logo" onclick="window.location.href='../../'">
+            <div class="nav-logo" onclick="window.location.href='../../index.html'">
                 <img src="../../assets/images/Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads Logo" class="nav-logo-img" />
                 <h2>Wi-Fi Nomads</h2>
             </div>
@@ -178,38 +178,6 @@
                 <h1>SSID Overhead Calculator</h1>
                 <p>Professional SSID overhead calculator for beacon frame analysis and wireless network optimization. Calculate beacon overhead impact, analyze SSID airtime consumption, optimize beacon intervals, and improve network efficiency. Essential tool for Wi-Fi engineers managing multiple SSIDs and dense network environments.</p>
                 
-                <!-- Breadcrumb Navigation -->
-                <nav class="breadcrumb" style="margin: 1rem 0; font-size: 0.9rem;">
-                    <a href="../../" style="color: #1e3a8a; text-decoration: none;">Home</a>
-                    <span style="margin: 0 0.5rem; color: #64748b;">›</span>
-                    <a href="../" style="color: #1e3a8a; text-decoration: none;">Tools</a>
-                    <span style="margin: 0 0.5rem; color: #64748b;">›</span>
-                    <span style="color: #64748b;">SSID Overhead Calculator</span>
-                </nav>
-                
-                <!-- Key Features -->
-                <div class="features-highlight" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0; padding: 1.5rem; background: rgba(30, 58, 138, 0.05); border-radius: 12px; border: 1px solid rgba(30, 58, 138, 0.1);">
-                    <div class="feature-item" style="text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📡</div>
-                        <strong>Beacon Analysis</strong>
-                        <div style="font-size: 0.85rem; color: #64748b;">Frame overhead calculation</div>
-                    </div>
-                    <div class="feature-item" style="text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">⚡</div>
-                        <strong>Airtime Optimization</strong>
-                        <div style="font-size: 0.85rem; color: #64748b;">Efficiency improvements</div>
-                    </div>
-                    <div class="feature-item" style="text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🎯</div>
-                        <strong>Multi-AP Support</strong>
-                        <div style="font-size: 0.85rem; color: #64748b;">Dense network analysis</div>
-                    </div>
-                    <div class="feature-item" style="text-align: center;">
-                        <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📊</div>
-                        <strong>Visual Analytics</strong>
-                        <div style="font-size: 0.85rem; color: #64748b;">Real-time charts</div>
-                    </div>
-                </div>
             </div>
             
             <div id="errorBanner" style="display:none; background-color:#ffdddd; color:#a00; padding:10px; margin-bottom:10px; border:1px solid #a00; border-radius:5px; font-weight:bold;"></div>
@@ -273,20 +241,6 @@
                         <canvas id="ssidOverheadChart" class="airtime-chart"></canvas>
                     </div>
                     
-                    <div class="info-section" style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-accent); border-radius: var(--radius-md); border: 1px solid var(--border-accent);">
-                        <h4 style="margin-bottom: 1rem; color: var(--text-primary);">Understanding SSID Overhead</h4>
-                        <div style="color: var(--text-secondary); line-height: 1.6;">
-                            <p><strong>Beacon Frames:</strong> Management frames transmitted periodically by access points to announce the presence of wireless networks (SSIDs).</p>
-                            <p><strong>Overhead Impact:</strong> Multiple SSIDs increase beacon overhead, consuming airtime that could be used for data transmission.</p>
-                            <p><strong>Optimization Tips:</strong></p>
-                            <ul style="margin-left: 1.5rem;">
-                                <li>Minimize the number of broadcasted SSIDs</li>
-                                <li>Consider increasing beacon intervals for guest networks</li>
-                                <li>Use band steering to distribute load across 2.4 GHz and 5 GHz</li>
-                                <li>Disable unused SSIDs and hidden networks when possible</li>
-                            </ul>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
