@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PingPerf — ICMP Throughput Tester for IoT | Wi-Fi Nomads</title>
+    <meta name="description" content="ICMP-based throughput testing tool for IoT devices. Measure throughput, latency, jitter, and packet loss using ping.">
+    <link rel="icon" type="image/png" href="../../assets/images/Wi-Fi Nomads Logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #1e3a8a; --primary-light: #3b82f6; --bg: #f8fafc;
+            --card: #ffffff; --border: #e2e8f0; --text: #0f172a;
+            --text-sec: #64748b; --radius: 12px; --shadow: 0 4px 24px rgba(0,0,0,0.06);
+            --accent: #059669; --danger: #dc2626; --warn: #d97706;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); }
+        .navbar {
+            position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 0 24px;
+        }
+        .nav-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--primary); font-weight: 800; font-size: 16px; }
+        .nav-brand img { height: 32px; }
+        .nav-links { display: flex; gap: 20px; list-style: none; }
+        .nav-links a { text-decoration: none; font-size: 14px; font-weight: 500; color: var(--text-sec); }
+        .nav-links a:hover { color: var(--primary); }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 80px 24px 40px; }
+        .hero-section { text-align: center; margin-bottom: 36px; }
+        .badge { display: inline-block; background: rgba(30,58,138,0.08); color: var(--primary); font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 5px 14px; border-radius: 40px; margin-bottom: 12px; }
+        .hero-section h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 8px; }
+        .hero-section p { color: var(--text-sec); font-size: 1rem; max-width: 600px; margin: 0 auto; }
+
+        /* Tabs */
+        .tabs { display: flex; gap: 4px; background: var(--border); border-radius: 10px; padding: 4px; margin-bottom: 28px; max-width: 400px; margin-left: auto; margin-right: auto; }
+        .tab { flex: 1; padding: 10px 16px; border: none; background: transparent; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-sec); cursor: pointer; transition: all 0.2s; }
+        .tab.active { background: var(--card); color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+        /* Form */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 20px; color: var(--primary); }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.04em; }
+        .form-group input, .form-group select {
+            padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+            font-family: inherit; font-size: 14px; color: var(--text); background: var(--bg);
+            transition: border-color 0.2s;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-light); }
+        .throughput-row { display: flex; gap: 8px; }
+        .throughput-row input { flex: 1; }
+        .throughput-row select { width: 80px; }
+
+        .btn { padding: 12px 28px; border: none; border-radius: 8px; font-family: inherit; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1e40af; transform: translateY(-1px); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: #047857; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-group { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 20px; }
+
+        /* Command output */
+        .cmd-box {
+            background: #1e293b; color: #e2e8f0; border-radius: 10px; padding: 20px;
+            font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7;
+            overflow-x: auto; position: relative; margin-top: 16px; white-space: pre-wrap; word-break: break-all;
+        }
+        .cmd-box .copy-btn {
+            position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2); color: #94a3b8; border-radius: 6px;
+            padding: 4px 12px; font-size: 11px; cursor: pointer; font-family: inherit;
+        }
+        .cmd-box .copy-btn:hover { background: rgba(255,255,255,0.2); color: white; }
+
+        /* Console output (iperf style) */
+        .console-output {
+            background: #0f172a; color: #22d3ee; border-radius: 10px; padding: 20px;
+            font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6;
+            overflow-x: auto; max-height: 400px; overflow-y: auto; white-space: pre; margin-top: 16px;
+        }
+
+        /* Stats grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; }
+        .stat-card { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+        .stat-card .stat-value { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .stat-card .stat-label { font-size: 11px; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 4px; }
+
+        /* Charts */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
+        .chart-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+        .chart-card h4 { font-size: 13px; font-weight: 700; color: var(--text-sec); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed var(--border); border-radius: var(--radius); padding: 40px;
+            text-align: center; cursor: pointer; transition: all 0.2s; margin-top: 16px;
+        }
+        .upload-area:hover { border-color: var(--primary-light); background: rgba(30,58,138,0.02); }
+        .upload-area.dragover { border-color: var(--primary); background: rgba(30,58,138,0.05); }
+        .upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .upload-area p { color: var(--text-sec); font-size: 14px; }
+        .upload-area input { display: none; }
+
+        /* Info box */
+        .info-box { background: rgba(30,58,138,0.04); border: 1px solid rgba(30,58,138,0.12); border-radius: 10px; padding: 16px; margin-top: 16px; font-size: 13px; color: var(--text-sec); line-height: 1.6; }
+        .info-box code { background: rgba(30,58,138,0.08); padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-section h1 { font-size: 1.6rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-inner">
+            <a href="../../index.html" class="nav-brand">
+                <img src="../../assets/images/Wi-Fi Nomads Logo.png" alt="Wi-Fi Nomads" />
+                Wi-Fi Nomads
+            </a>
+            <ul class="nav-links">
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../index.html#tools">Tools</a></li>
+                <li><a href="../../docs/PingPerf_Documentation.md" target="_blank">Docs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="hero-section">
+            <span class="badge">IoT Network Testing</span>
+            <h1>🏓 PingPerf</h1>
+            <p>ICMP-based throughput testing for IoT devices. No iperf3 or console access needed.</p>
+        </div>
+
+        <!-- ===== SECTION 1: COMMAND GENERATOR ===== -->
+        <div class="card">
+            <h3>⚙️ Test Parameters</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Target IP</label>
+                    <input type="text" id="targetIp" placeholder="192.168.1.100" />
+                </div>
+                <div class="form-group">
+                    <label>Target Throughput</label>
+                    <div class="throughput-row">
+                        <input type="number" id="throughput" value="10" min="0.001" step="0.1" />
+                        <select id="throughputUnit">
+                            <option value="K">Kbps</option>
+                            <option value="M" selected>Mbps</option>
+                            <option value="G">Gbps</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Compensation Mode</label>
+                    <select id="compMode">
+                        <option value="interval">Vary Interval (fixed payload)</option>
+                        <option value="payload">Vary Payload (fixed interval)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Test Duration (seconds)</label>
+                    <input type="number" id="duration" value="10" min="1" max="3600" />
+                </div>
+                <div class="form-group">
+                    <label>Test Name</label>
+                    <input type="text" id="testName" value="test" placeholder="test" />
+                </div>
+                <div class="form-group">
+                    <label>Source OS</label>
+                    <select id="sourceOs">
+                        <option value="linux">Linux</option>
+                        <option value="macos">macOS</option>
+                        <option value="windows">Windows</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Max Payload Size (bytes)</label>
+                    <input type="number" id="maxPayload" value="65000" min="8" max="65000" />
+                </div>
+                <div class="form-group">
+                    <label>Output File Path</label>
+                    <input type="text" id="outputPath" placeholder="/tmp/" />
+                </div>
+            </div>
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="generateCommand()">Generate Command</button>
+                <button class="btn btn-outline" onclick="resetForm()">Reset</button>
+            </div>
+        </div>
+
+        <!-- Generated Command -->
+        <div id="cmdResult" class="hidden">
+            <div class="card">
+                <h3>📋 Generated Command</h3>
+                <div id="cmdInfo" class="info-box"></div>
+                <div class="cmd-box" id="cmdOutput">
+                    <button class="copy-btn" onclick="copyCommand()">Copy</button>
+                    <span id="cmdText"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== SECTION 2: ANALYZE OUTPUT ===== -->
+        <div class="card">
+            <h3>📂 Analyze Ping Output</h3>
+            <p style="font-size:13px; color:var(--text-sec); margin-bottom:8px;">Upload the ping output log file. Supports Linux (-D flag), macOS, and Windows ping formats.</p>
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <p>Drag & drop your ping output file here, or click to browse</p>
+                <input type="file" id="fileInput" accept=".log,.txt,.out" />
+            </div>
+        </div>
+
+        <!-- ===== SECTION 3: RESULTS (shared by upload and live) ===== -->
+        <div id="analysisResults" class="hidden">
+            <div class="card">
+                <h3>📊 Test Summary</h3>
+                <div class="stats-grid" id="statsGrid"></div>
+            </div>
+
+            <div class="card">
+                <h3>📈 Time-Series Plots</h3>
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <h4>Throughput (Mbps)</h4>
+                        <canvas id="chartThroughput"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Latency / RTT (ms)</h4>
+                        <canvas id="chartLatency"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Jitter (ms)</h4>
+                        <canvas id="chartJitter"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h4>Packet Loss (%)</h4>
+                        <canvas id="chartLoss"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🖥️ Console Output (iperf-style)</h3>
+                <div class="console-output" id="consoleOutput"></div>
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="downloadResults()">Download Results</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// ===== COMMAND GENERATOR =====
+function generateCommand() {
+    const ip = document.getElementById('targetIp').value.trim();
+    if (!ip) { alert('Please enter a Target IP address.'); return; }
+
+    const throughputVal = parseFloat(document.getElementById('throughput').value);
+    const unit = document.getElementById('throughputUnit').value;
+    const compMode = document.getElementById('compMode').value;
+    const duration = parseInt(document.getElementById('duration').value);
+    const testName = document.getElementById('testName').value.trim() || 'test';
+    const os = document.getElementById('sourceOs').value;
+    const maxPayload = parseInt(document.getElementById('maxPayload').value);
+    const outputPath = document.getElementById('outputPath').value.trim() || '/tmp/';
+
+    // Convert to bps
+    const multipliers = { K: 1e3, M: 1e6, G: 1e9 };
+    const targetBps = throughputVal * multipliers[unit];
+
+    // Ping constraints
+    const MIN_INTERVAL = 0.002; // 2ms
+    const MAX_INTERVAL = 1.0;   // 1 second max
+    const MIN_PAYLOAD = 8;      // minimum useful payload
+    const DEFAULT_PAYLOAD = 1500; // default for "vary interval" mode
+    const MAX_PAYLOAD = Math.min(maxPayload, 65000);
+
+    let payload, interval, numSessions;
+
+    if (compMode === 'interval') {
+        // MODE: Fixed payload (default 1500), vary interval to hit target throughput
+        // Payload defaults to 1500. Interval must stay within [2ms, 1s].
+        // If a single session at max capacity can't meet target, split into concurrent sessions.
+
+        payload = Math.min(DEFAULT_PAYLOAD, MAX_PAYLOAD);
+        numSessions = 1;
+
+        // Step 1: What's the max throughput a single session can produce?
+        // Max = MAX_PAYLOAD * 8 / MIN_INTERVAL
+        const singleSessionMaxBps = (MAX_PAYLOAD * 8) / MIN_INTERVAL;
+
+        if (targetBps > singleSessionMaxBps) {
+            // Need multiple sessions — each running at max capacity
+            numSessions = Math.ceil(targetBps / singleSessionMaxBps);
+            payload = MAX_PAYLOAD;
+            interval = MIN_INTERVAL;
+        } else {
+            // Single session (or few) can handle it — find the right payload/interval combo
+            const perSessionBps = targetBps;
+            interval = (payload * 8) / perSessionBps;
+
+            if (interval > MAX_INTERVAL) {
+                // Interval too high — reduce payload to bring it down to 1s
+                let neededPayload = Math.floor((perSessionBps * MAX_INTERVAL) / 8);
+                neededPayload = Math.max(MIN_PAYLOAD, Math.min(neededPayload, MAX_PAYLOAD));
+                payload = neededPayload;
+                interval = (payload * 8) / perSessionBps;
+                if (interval > MAX_INTERVAL) interval = MAX_INTERVAL;
+            } else if (interval < MIN_INTERVAL) {
+                // Interval too low — first try reducing payload
+                let neededPayload = Math.floor((perSessionBps * MIN_INTERVAL) / 8);
+                neededPayload = Math.min(neededPayload, MAX_PAYLOAD);
+
+                if (neededPayload >= MIN_PAYLOAD) {
+                    payload = neededPayload;
+                    interval = MIN_INTERVAL;
+                } else {
+                    // Even min payload at min interval isn't enough — shouldn't happen
+                    // since we checked singleSessionMaxBps above, but just in case
+                    payload = MAX_PAYLOAD;
+                    interval = MIN_INTERVAL;
+                }
+            }
+            // else: interval is already in valid range, payload stays at 1500
+        }
+
+        // Final safety clamps
+        payload = Math.max(MIN_PAYLOAD, Math.min(payload, MAX_PAYLOAD));
+        interval = Math.max(MIN_INTERVAL, Math.min(MAX_INTERVAL, parseFloat(interval.toFixed(4))));
+
+    } else {
+        // MODE: Fixed interval (MIN_INTERVAL = 2ms), vary payload to hit target throughput
+        // Formula: payload = (targetBps_per_session × interval) / 8
+        // Start with 1 session. If payload > MAX_PAYLOAD, add more sessions.
+
+        interval = MIN_INTERVAL;
+        numSessions = 1;
+
+        // First calculate payload needed for 1 session
+        payload = Math.round((targetBps * interval) / 8);
+
+        if (payload > MAX_PAYLOAD) {
+            // Need multiple sessions — calculate how many
+            numSessions = Math.ceil(payload / MAX_PAYLOAD);
+            payload = Math.round(((targetBps / numSessions) * interval) / 8);
+            // Double-check it fits now
+            while (payload > MAX_PAYLOAD && numSessions < 200) {
+                numSessions++;
+                payload = Math.round(((targetBps / numSessions) * interval) / 8);
+            }
+            payload = Math.min(payload, MAX_PAYLOAD);
+        }
+
+        if (payload < MIN_PAYLOAD) {
+            // Throughput is very low — keep min payload, increase interval
+            payload = MIN_PAYLOAD;
+            interval = (payload * 8) / (targetBps / numSessions);
+            interval = Math.max(MIN_INTERVAL, Math.min(MAX_INTERVAL, parseFloat(interval.toFixed(4))));
+        }
+
+        payload = Math.max(MIN_PAYLOAD, Math.min(payload, MAX_PAYLOAD));
+    }
+
+    const packetCount = Math.max(1, Math.round(duration / interval));
+
+    // Actual throughput per session
+    const actualPerSession = (payload * 8) / interval;
+    const actualTotal = actualPerSession * numSessions;
+    const bidir = actualTotal * 2;
+
+    // Build datetime string
+    const now = new Date();
+    const dt = now.toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const basePath = outputPath.endsWith('/') ? outputPath : outputPath + '/';
+    const logFile = `${basePath}${testName}-${dt}.log`;
+
+    // Build command(s) — with timestamps for per-second analysis
+    let cmds = [];
+    for (let i = 0; i < numSessions; i++) {
+        let cmd;
+        if (os === 'windows') {
+            // Windows: no native timestamp flag; wrap each line with powershell
+            cmd = `ping -l ${payload} -n ${packetCount} ${ip}`;
+        } else if (os === 'linux') {
+            // Linux: -D adds Unix timestamp to each line
+            cmd = `ping -D -s ${payload} -i ${interval} -c ${packetCount} ${ip}`;
+        } else {
+            // macOS: no -D flag; pipe through awk to prepend epoch timestamp
+            cmd = `ping -s ${payload} -i ${interval} -c ${packetCount} ${ip} | while IFS= read -r line; do printf "[%s] %s\\n" "$(date +%s.%N 2>/dev/null || date +%s)" "$line"; done`;
+        }
+        cmds.push(cmd);
+    }
+
+    // Build full script — all sessions output to one file
+    let script;
+    if (numSessions === 1) {
+        if (os === 'windows') {
+            script = `${cmds[0]} > "${logFile}"`;
+        } else {
+            script = `${cmds[0]} | tee "${logFile}"`;
+        }
+    } else {
+        if (os === 'windows') {
+            script = ':: PingPerf: ' + numSessions + ' concurrent sessions\n';
+            cmds.forEach((c, i) => {
+                script += `start /B cmd /c "${c} >> ${logFile}"\n`;
+            });
+        } else {
+            script = '#!/bin/bash\n# PingPerf: ' + numSessions + ' concurrent sessions\n';
+            script += `LOGFILE="${logFile}"\n`;
+            script += `> "$LOGFILE"  # clear/create log file\n`;
+            cmds.forEach((c, i) => {
+                script += `${c} >> "$LOGFILE" 2>&1 &\n`;
+            });
+            script += 'wait\necho "All sessions complete. Output saved to $LOGFILE"';
+        }
+    }
+
+    // Display
+    document.getElementById('cmdText').textContent = script;
+    document.getElementById('cmdInfo').innerHTML =
+        `<strong>Sessions:</strong> ${numSessions} &nbsp;|&nbsp; ` +
+        `<strong>Payload:</strong> ${payload} bytes &nbsp;|&nbsp; ` +
+        `<strong>Interval:</strong> ${interval}s &nbsp;|&nbsp; ` +
+        `<strong>Packets/session:</strong> ${packetCount} &nbsp;|&nbsp; ` +
+        `<strong>Duration:</strong> ~${duration}s<br>` +
+        `<strong>Uplink per session:</strong> ${formatBps(actualPerSession)} &nbsp;|&nbsp; ` +
+        `<strong>Total uplink:</strong> ${formatBps(actualTotal)} &nbsp;|&nbsp; ` +
+        `<strong>Bidirectional load:</strong> ${formatBps(bidir)}`;
+    document.getElementById('cmdResult').classList.remove('hidden');
+}
+
+function formatBps(bps) {
+    if (bps >= 1e9) return (bps / 1e9).toFixed(2) + ' Gbps';
+    if (bps >= 1e6) return (bps / 1e6).toFixed(2) + ' Mbps';
+    if (bps >= 1e3) return (bps / 1e3).toFixed(2) + ' Kbps';
+    return bps.toFixed(0) + ' bps';
+}
+
+function copyCommand() {
+    const text = document.getElementById('cmdText').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+    });
+}
+
+function resetForm() {
+    document.getElementById('targetIp').value = '';
+    document.getElementById('throughput').value = '10';
+    document.getElementById('throughputUnit').value = 'M';
+    document.getElementById('duration').value = '10';
+    document.getElementById('testName').value = 'test';
+    document.getElementById('maxPayload').value = '65000';
+    document.getElementById('outputPath').value = '/tmp/';
+    document.getElementById('cmdResult').classList.add('hidden');
+}
+</script>
+
+<script>
+// ===== FILE UPLOAD =====
+const uploadArea = document.getElementById('uploadArea');
+const fileInput = document.getElementById('fileInput');
+
+uploadArea.addEventListener('click', () => { fileInput.value = ''; fileInput.click(); });
+uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault(); uploadArea.classList.remove('dragover');
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', (e) => { if (e.target.files.length) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+    // Reset previous results
+    document.getElementById('analysisResults').classList.add('hidden');
+    document.getElementById('statsGrid').innerHTML = '';
+    document.getElementById('consoleOutput').textContent = '';
+    if (typeof destroyCharts === 'function') destroyCharts();
+
+    // Show loading state
+    const uploadEl = document.getElementById('uploadArea');
+    uploadEl.innerHTML =
+        '<div class="upload-icon">⏳</div><p>Parsing <strong>' + file.name + '</strong>...</p>';
+
+    // Use setTimeout to let the UI update before heavy parsing
+    setTimeout(() => {
+        try {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    parsePingOutput(e.target.result);
+                } catch (err) {
+                    showParseError('Error parsing file: ' + err.message + '<br><pre style="text-align:left;font-size:11px;margin-top:8px;max-height:200px;overflow:auto;color:#666;">' + err.stack + '</pre>');
+                    console.error('PingPerf parse error:', err);
+                }
+                // Restore upload area
+                restoreUploadArea();
+            };
+            reader.readAsText(file);
+        } catch (err) {
+            showParseError('Error reading file: ' + err.message);
+            restoreUploadArea();
+        }
+    }, 50);
+}
+
+function restoreUploadArea() {
+    const uploadEl = document.getElementById('uploadArea');
+    uploadEl.innerHTML =
+        '<div class="upload-icon">📄</div><p>Drag & drop another file, or click to browse</p><input type="file" id="fileInput" accept=".log,.txt,.out" style="display:none" />';
+    const newInput = document.getElementById('fileInput');
+    newInput.addEventListener('change', (ev) => { if (ev.target.files.length) handleFile(ev.target.files[0]); });
+    // Also re-attach click on upload area
+    uploadEl.onclick = () => newInput.click();
+}
+
+// ===== PING OUTPUT PARSER =====
+function parsePingOutput(raw) {
+    // Normalize: some outputs concatenate lines without newlines
+    // Split on '[' that starts a timestamp to ensure each ping is on its own line
+    raw = raw.replace(/\[(\d+(?:\.\d+)?)\]/g, '\n[$1]');
+    const lines = raw.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    const pings = [];
+
+    // Timestamp patterns:
+    // Linux -D flag: [1711900000.123456] 64 bytes from ... icmp_seq=1 ... time=2.34 ms
+    // macOS wrapper: [1711900000] 64 bytes from ... icmp_seq=1 ... time=2.34 ms
+    // Also handles [epoch] without decimals
+    const tsLinuxRe = /\[(\d+(?:\.\d+)?)\].*icmp_seq=(\d+).*time=([\d.]+)\s*ms/i;
+    // No-timestamp fallback
+    const linuxRe = /icmp_seq=(\d+).*time=([\d.]+)\s*ms/i;
+    const winRe = /Reply from.*bytes=(\d+).*time[=<]([\d.]+)\s*ms/i;
+
+    // Extract payload size
+    let payloadSize = 0;
+    // Linux: PING x.x.x.x (x.x.x.x) 1449(1477) data bytes
+    // Linux with -D: [1234567890.123] PING x.x.x.x (x.x.x.x) 1449(1477) data bytes
+    // macOS wrapper: [1234567890.123] PING x.x.x.x (x.x.x.x): 1449 data bytes
+    const pingHeaderRe = /PING\s+\S+\s*(?:\(\S+\))?\s*:?\s*(\d+)\s*(?:\(\d+\))?\s*data bytes/i;
+    // Windows: Pinging x.x.x.x with 32 bytes of data
+    const winHeaderRe = /Pinging\s+\S+\s+with\s+(\d+)\s+bytes/i;
+    // Fallback: extract from response line "XX bytes from ..." (payload = XX - 8 for ICMP header)
+    const bytesFromRe = /^(?:\[[\d.]+\]\s*)?(\d+)\s+bytes\s+from/i;
+
+    let hasTimestamps = false;
+
+    for (const line of lines) {
+        // Only check header patterns on lines that don't contain ping responses
+        if (!line.match(/icmp_seq=/i) && !line.match(/Reply from/i)) {
+            const hm = line.match(pingHeaderRe) || line.match(winHeaderRe);
+            if (hm) { payloadSize = parseInt(hm[1]); continue; }
+        }
+
+        // Try timestamped format first
+        let m = line.match(tsLinuxRe);
+        if (m) {
+            hasTimestamps = true;
+            pings.push({ ts: parseFloat(m[1]), seq: parseInt(m[2]), rtt: parseFloat(m[3]) });
+            // Fallback payload detection from "XX bytes from" in same line
+            if (!payloadSize) {
+                const bf = line.match(bytesFromRe);
+                if (bf) payloadSize = parseInt(bf[1]) - 8; // subtract ICMP header
+            }
+            continue;
+        }
+
+        // Fallback: no timestamp
+        m = line.match(linuxRe);
+        if (m) {
+            pings.push({ seq: parseInt(m[1]), rtt: parseFloat(m[2]) });
+            if (!payloadSize) {
+                const bf = line.match(bytesFromRe);
+                if (bf) payloadSize = parseInt(bf[1]) - 8;
+            }
+            continue;
+        }
+        m = line.match(winRe);
+        if (m) {
+            pings.push({ seq: pings.length + 1, rtt: parseFloat(m[2]), winBytes: parseInt(m[1]) });
+        }
+    }
+
+    if (!payloadSize && pings.length && pings[0].winBytes) {
+        payloadSize = pings[0].winBytes;
+    }
+
+    // Extract summary stats
+    const summaryRe = /(\d+)\s+packets?\s+transmitted.*?(\d+)\s+received.*?([\d.]+)%\s+packet\s+loss/i;
+    const sm = raw.match(summaryRe);
+    let totalSent = pings.length, totalRecv = pings.length, totalLoss = 0;
+    if (sm) {
+        totalSent = parseInt(sm[1]);
+        totalRecv = parseInt(sm[2]);
+        totalLoss = parseFloat(sm[3]);
+    }
+
+    if (pings.length === 0) {
+        showParseError('Could not parse any ping responses from this file. Make sure it contains standard ping output.');
+        return;
+    }
+
+    // Default payload if not detected: use 56 bytes (default ping payload)
+    if (!payloadSize) {
+        payloadSize = 56;
+    }
+
+    if (!hasTimestamps) {
+        // No timestamps — estimate timing from the known interval in the command generator
+        // Use the interval from the form if available, otherwise estimate from packet count and summary
+        let estInterval = 0.002; // default 2ms
+        const formInterval = document.getElementById('duration');
+        const formDuration = formInterval ? parseInt(formInterval.value) : 10;
+        if (totalSent > 0 && formDuration > 0) {
+            estInterval = formDuration / totalSent;
+            if (estInterval < 0.001) estInterval = 0.002;
+            if (estInterval > 1) estInterval = 1;
+        }
+        // Assign synthetic timestamps based on sequence order and interval
+        pings.forEach((p, i) => {
+            p.ts = (i * estInterval) + (p.rtt / 1000);
+        });
+    }
+
+    analyzeResults(pings, payloadSize, totalSent, totalRecv, totalLoss);
+}
+
+function showParseError(msg) {
+    // Show error in the analysis results area
+    const el = document.getElementById('analysisResults');
+    el.classList.remove('hidden');
+    document.getElementById('statsGrid').innerHTML =
+        '<div style="grid-column:1/-1;padding:20px;text-align:center;color:var(--danger);font-weight:600;">' + msg + '</div>';
+}
+
+function analyzeResults(pings, payloadSize, totalSent, totalRecv, totalLoss) {
+    console.log('PingPerf: parsed', pings.length, 'pings, payload:', payloadSize, 'bytes, sent:', totalSent, 'recv:', totalRecv);
+
+    // Bucket pings into 1-second windows based on timestamps
+    const firstTs = pings[0].ts;
+    const lastTs = pings[pings.length - 1].ts;
+    const totalDuration = Math.max(1, Math.ceil(lastTs - firstTs));
+
+    console.log('PingPerf: duration', totalDuration, 'sec, first ts:', firstTs, 'last ts:', lastTs);
+
+    const buckets = [];
+    for (let i = 0; i < totalDuration; i++) {
+        buckets.push([]);
+    }
+
+    // Place each ping into its 1-second bucket
+    for (const p of pings) {
+        const bucketIdx = Math.min(Math.floor(p.ts - firstTs), totalDuration - 1);
+        buckets[bucketIdx].push(p);
+    }
+
+    console.log('PingPerf: bucket sizes:', buckets.map(b => b.length).join(', '));
+
+    // Estimate packets sent per second from total
+    const ppsEstimate = totalSent / Math.max(1, totalDuration);
+
+    const seconds = [];
+    for (let i = 0; i < buckets.length; i++) {
+        const bucket = buckets[i];
+        const received = bucket.length;
+        const sentEstimate = Math.round(ppsEstimate);
+        const lost = Math.max(0, sentEstimate - received);
+        const lossPercent = sentEstimate > 0 ? (lost / sentEstimate) * 100 : 0;
+        const avgRtt = received > 0 ? bucket.reduce((s, p) => s + p.rtt, 0) / received : 0;
+        const throughputBps = received * payloadSize * 8; // bits received in this second
+        const throughputMbps = throughputBps / 1e6;
+
+        // Jitter: avg absolute difference between consecutive RTTs
+        let jitter = 0;
+        if (bucket.length > 1) {
+            let jitterSum = 0;
+            for (let j = 1; j < bucket.length; j++) {
+                jitterSum += Math.abs(bucket[j].rtt - bucket[j - 1].rtt);
+            }
+            jitter = jitterSum / (bucket.length - 1);
+        }
+
+        const transfer = received * payloadSize;
+
+        seconds.push({
+            interval: `${i}.00-${i + 1}.00`,
+            startSec: i,
+            received, sent: sentEstimate, lost, lossPercent,
+            avgRtt, jitter, throughputMbps, transfer
+        });
+    }
+
+    // Compute summary stats
+    const allRtts = pings.map(p => p.rtt);
+    const avgRtt = allRtts.reduce((a, b) => a + b, 0) / allRtts.length;
+    const minRtt = Math.min(...allRtts);
+    const maxRtt = Math.max(...allRtts);
+
+    const throughputs = seconds.map(s => s.throughputMbps);
+    const avgThroughput = throughputs.reduce((a, b) => a + b, 0) / throughputs.length;
+    const maxThroughput = Math.max(...throughputs);
+    const minThroughput = Math.min(...throughputs);
+
+    const uplinkMbps = (payloadSize * (totalSent / Math.max(1, totalDuration)) * 8) / 1e6;
+    const bidirAvg = avgThroughput + uplinkMbps;
+
+    // Render everything
+    renderStats(avgThroughput, maxThroughput, minThroughput, uplinkMbps, bidirAvg, avgRtt, minRtt, maxRtt, totalLoss, payloadSize, totalSent, totalRecv);
+    renderCharts(seconds);
+    renderConsole(seconds, payloadSize, totalSent, totalRecv, totalLoss, avgRtt);
+
+    document.getElementById('analysisResults').classList.remove('hidden');
+}
+
+function renderStats(avg, max, min, uplink, bidir, avgRtt, minRtt, maxRtt, loss, payload, sent, recv) {
+    const grid = document.getElementById('statsGrid');
+    const stats = [
+        { label: 'Avg Downlink', value: avg.toFixed(2) + ' Mbps' },
+        { label: 'Max Downlink', value: max.toFixed(2) + ' Mbps' },
+        { label: 'Min Downlink', value: min.toFixed(2) + ' Mbps' },
+        { label: 'Uplink (est)', value: uplink.toFixed(2) + ' Mbps' },
+        { label: 'Bidirectional', value: bidir.toFixed(2) + ' Mbps' },
+        { label: 'Avg RTT', value: avgRtt.toFixed(2) + ' ms' },
+        { label: 'Min RTT', value: minRtt.toFixed(2) + ' ms' },
+        { label: 'Max RTT', value: maxRtt.toFixed(2) + ' ms' },
+        { label: 'Packet Loss', value: loss.toFixed(1) + '%' },
+        { label: 'Payload', value: payload + ' B' },
+        { label: 'Sent / Recv', value: sent + ' / ' + recv },
+    ];
+    grid.innerHTML = stats.map(s =>
+        `<div class="stat-card"><div class="stat-value">${s.value}</div><div class="stat-label">${s.label}</div></div>`
+    ).join('');
+}
+</script>
+
+<script>
+// ===== CHARTS =====
+let charts = {};
+function destroyCharts() {
+    Object.values(charts).forEach(c => c.destroy());
+    charts = {};
+}
+
+function renderCharts(seconds) {
+    destroyCharts();
+    const labels = seconds.map(s => s.interval + 's');
+    const chartOpts = (label, data, color, yLabel) => ({
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label, data, borderColor: color, backgroundColor: color + '22',
+                fill: true, tension: 0.3, pointRadius: 3, pointHoverRadius: 6, borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { title: { display: true, text: 'Interval' }, ticks: { font: { size: 10 } } },
+                y: { title: { display: true, text: yLabel }, beginAtZero: true, ticks: { font: { size: 10 } } }
+            }
+        }
+    });
+
+    charts.throughput = new Chart(document.getElementById('chartThroughput'), chartOpts('Throughput', seconds.map(s => s.throughputMbps.toFixed(3)), '#1e3a8a', 'Mbps'));
+    charts.latency = new Chart(document.getElementById('chartLatency'), chartOpts('RTT', seconds.map(s => s.avgRtt.toFixed(2)), '#059669', 'ms'));
+    charts.jitter = new Chart(document.getElementById('chartJitter'), chartOpts('Jitter', seconds.map(s => s.jitter.toFixed(2)), '#d97706', 'ms'));
+    charts.loss = new Chart(document.getElementById('chartLoss'), chartOpts('Loss', seconds.map(s => s.lossPercent.toFixed(1)), '#dc2626', '%'));
+}
+
+// ===== CONSOLE OUTPUT (iperf-style) =====
+function renderConsole(seconds, payload, totalSent, totalRecv, totalLoss, avgRtt) {
+    const el = document.getElementById('consoleOutput');
+    let out = '';
+    out += '─────────────────────────────────────────────────────────────────────────────────\n';
+    out += ' PingPerf — ICMP Throughput Analysis\n';
+    out += '─────────────────────────────────────────────────────────────────────────────────\n';
+    out += `[ ID]  Interval          Transfer       Throughput     Jitter     Lost/Total\n`;
+    out += '─────────────────────────────────────────────────────────────────────────────────\n';
+
+    seconds.forEach((s, i) => {
+        const id = String(i + 1).padStart(3);
+        const interval = (s.interval + ' sec').padEnd(17);
+        const transfer = formatBytes(s.transfer).padStart(12);
+        const tp = (s.throughputMbps.toFixed(2) + ' Mbps').padStart(13);
+        const jitter = (s.jitter.toFixed(1) + ' ms').padStart(9);
+        const lost = `${s.lost}/${s.sent} (${s.lossPercent.toFixed(1)}%)`.padStart(16);
+        out += `[${id}]  ${interval}  ${transfer}  ${tp}  ${jitter}  ${lost}\n`;
+    });
+
+    out += '─────────────────────────────────────────────────────────────────────────────────\n';
+
+    // Summary
+    const totalTransfer = seconds.reduce((a, s) => a + s.transfer, 0);
+    const avgTp = seconds.reduce((a, s) => a + s.throughputMbps, 0) / seconds.length;
+    const avgJitter = seconds.reduce((a, s) => a + s.jitter, 0) / seconds.length;
+    out += `[SUM]  0.00-${seconds.length}.00 sec   ${formatBytes(totalTransfer).padStart(12)}  ${(avgTp.toFixed(2) + ' Mbps').padStart(13)}  ${(avgJitter.toFixed(1) + ' ms').padStart(9)}  ${totalSent - totalRecv}/${totalSent} (${totalLoss.toFixed(1)}%)\n`;
+    out += '─────────────────────────────────────────────────────────────────────────────────\n';
+
+    el.textContent = out;
+}
+
+function formatBytes(bytes) {
+    if (bytes >= 1e6) return (bytes / 1e6).toFixed(2) + ' MBytes';
+    if (bytes >= 1e3) return (bytes / 1e3).toFixed(1) + ' KBytes';
+    return bytes + ' Bytes';
+}
+
+// ===== DOWNLOAD RESULTS =====
+function downloadResults() {
+    const console = document.getElementById('consoleOutput').textContent;
+    const blob = new Blob([console], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pingperf-results.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
