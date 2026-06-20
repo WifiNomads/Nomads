@@ -1,0 +1,31 @@
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Credentials & secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+credentials.json
+token.json
+client_secret*.json
+
+# Node (if added later)
+node_modules/
+npm-debug.log*
+
+# Build artifacts
+dist/
+build/
+
+# Logs
+*.log
