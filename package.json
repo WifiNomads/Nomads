@@ -1,0 +1,10 @@
+{
+  "name": "wifi-nomads",
+  "version": "1.0.0",
+  "description": "Wi-Fi Nomads - Professional Wi-Fi Community",
+  "scripts": {
+    "start": "npx serve . -l 3000",
+    "dev": "npx serve . -l 3000 --no-clipboard"
+  },
+  "private": true
+}
